@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "btcusd_m15_20250618_0600_utc",
+  "symbol": "BTCUSD",
+  "timeframe": "M15",
+  "time_zone": "UTC",
+  "timestamp_role": "candle_open",
+  "source_sha256": "534d598a168086f9582b339d4a434beaff42aba9fef4060a9fb93a0022d59fce",
+  "source_file": "samples/raw/BTCUSD_M15_12h_2025-06-18_UTC.csv",
+  "canonical_csv": "samples/normalized/BTCUSD_M15_12h_2025-06-18_UTC.csv",
+  "canonical_json": "samples/normalized/BTCUSD_M15_12h_2025-06-18_UTC.json",
+  "row_count": 48,
+  "first_timestamp_utc": "2025-06-18T06:00:00Z",
+  "last_timestamp_utc": "2025-06-18T17:45:00Z",
+  "time_step_seconds": 900,
+  "timestamp_role_verified": false,
+  "missing_intervals": 0,
+  "duplicate_timestamps": 0,
+  "invalid_ohlc_rows": 0,
+  "volume_present": false,
+  "is_synthetic": false,
+  "unknowns": [
+    "data_provider",
+    "price_unit",
+    "session_schedule"
+  ]
+}

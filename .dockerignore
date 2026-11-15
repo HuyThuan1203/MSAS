@@ -1,0 +1,15 @@
+.git
+.github
+.gitignore
+.vscode
+__pycache__
+*.pyc
+*.log
+.env
+.env.*
+.venv
+data
+notes
+*.zip
+*.pptx
+*.png

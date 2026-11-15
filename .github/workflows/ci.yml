@@ -1,0 +1,81 @@
+name: MSAS validation and Docker build
+on:
+  push:
+    branches: [main, 'feat/**', 'release/**']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-python:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Unit, importer, API and schema tests
+        run: python -m unittest discover -s tests -v
+      - name: Python syntax check
+        run: python -m compileall -q app scripts tests
+  test-structure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: JavaScript syntax and source tests
+        run: |
+          for file in static/*.js; do node --check "$file"; done
+          node tests/test_source_cases.js
+          node tests/test_sample_replay.js
+          node tests/test_advanced_structure.js
+          node tests/test_ui_theme_i18n.js
+  browser-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install isolated QA browser (not a runtime dependency)
+        run: |
+          python -m pip install -r requirements-qa.txt
+          python -m playwright install --with-deps chromium
+      - name: UI smoke on Chromium (EN/VI, theme, replay, import, mobile)
+        run: python scripts/qa_gate.py --browser --require-node --json-report qa-artifacts/qa-report.json
+      - name: Upload browser screenshots and test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: msas-browser-qa
+          path: qa-artifacts/
+          if-no-files-found: ignore
+          retention-days: 14
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build container
+        run: docker build --pull -t msas:ci .
+      - name: Verify HTTP health
+        run: |
+          docker run --rm -d --name msas-ci -p 127.0.0.1:18080:8080 msas:ci
+          trap 'docker rm -f msas-ci >/dev/null 2>&1 || true' EXIT
+          for i in $(seq 1 25); do
+            if curl --fail --silent http://127.0.0.1:18080/api/health | grep -q '"ok"'; then
+              echo 'Health endpoint ready'
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs msas-ci
+          exit 1

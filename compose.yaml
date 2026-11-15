@@ -1,0 +1,18 @@
+services:
+  market-structure:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: market-structure-studio
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - market_structure_storage:/app/data
+    environment:
+      DATA_DIR: /app/data
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  market_structure_storage:

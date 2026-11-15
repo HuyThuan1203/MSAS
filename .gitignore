@@ -1,0 +1,17 @@
+data/*
+!data/.gitkeep
+*.pyc
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+.env
+.env.*
+*.log
+*.sqlite3
+.DS_Store
+*.zip
+qa-artifacts/
+.coverage
+coverage/
+node_modules/

@@ -1,0 +1,2100 @@
+{
+  "schema_version": "1.0.0",
+  "analysis_version": "market_structure_advanced_v1",
+  "source_dataset_id": "btcusd_m15_20250618_0600_utc",
+  "source_sha256": "534d598a168086f9582b339d4a434beaff42aba9fef4060a9fb93a0022d59fce",
+  "is_synthetic": false,
+  "source_timeframe": "M15",
+  "model_provenance": {
+    "ppt": "Cau_truc_nang_cao_-_Final.pptx",
+    "policy": "provisional",
+    "volume_used": false
+  },
+  "summary": {
+    "bars": 48,
+    "localSwingCount": 15,
+    "acceptedStructuralSwingCount": 10,
+    "localTrendAtEnd": "unknown",
+    "externalTrendAtEnd": "up",
+    "internalTrendAtEnd": "unknown",
+    "events": 4
+  },
+  "pivots": [
+    {
+      "id": "SL-4",
+      "index": 4,
+      "time": "2025-06-18T07:00:00Z",
+      "type": "SL",
+      "price": 104731.26,
+      "confirmed_at": 5,
+      "structure_confirmed_at": 7,
+      "validity": "eligible",
+      "structural_status": "confirmed",
+      "comparison": "SL",
+      "zone_id": null
+    },
+    {
+      "id": "SH-6",
+      "index": 6,
+      "time": "2025-06-18T07:30:00Z",
+      "type": "SH",
+      "price": 105035.9,
+      "confirmed_at": 7,
+      "structure_confirmed_at": null,
+      "validity": "eligible",
+      "structural_status": "superseded",
+      "comparison": "",
+      "zone_id": null
+    },
+    {
+      "id": "SH-8",
+      "index": 8,
+      "time": "2025-06-18T08:00:00Z",
+      "type": "SH",
+      "price": 105336.17,
+      "confirmed_at": 9,
+      "structure_confirmed_at": 11,
+      "validity": "eligible",
+      "structural_status": "confirmed",
+      "comparison": "SH",
+      "zone_id": null
+    },
+    {
+      "id": "SL-10",
+      "index": 10,
+      "time": "2025-06-18T08:30:00Z",
+      "type": "SL",
+      "price": 104749.75,
+      "confirmed_at": 11,
+      "structure_confirmed_at": 13,
+      "validity": "eligible",
+      "structural_status": "confirmed",
+      "comparison": "HL",
+      "zone_id": null
+    },
+    {
+      "id": "SH-12",
+      "index": 12,
+      "time": "2025-06-18T09:00:00Z",
+      "type": "SH",
+      "price": 105159.7,
+      "confirmed_at": 13,
+      "structure_confirmed_at": 20,
+      "validity": "eligible",
+      "structural_status": "confirmed",
+      "comparison": "LH",
+      "zone_id": null
+    },
+    {
+      "id": "SH-17",
+      "index": 17,
+      "time": "2025-06-18T10:15:00Z",
+      "type": "SH",
+      "price": 104829.36,
+      "confirmed_at": 18,
+      "structure_confirmed_at": null,
+      "validity": "eligible",
+      "structural_status": "superseded",
+      "comparison": "",
+      "zone_id": null
+    },
+    {
+      "id": "SL-19",
+      "index": 19,
+      "time": "2025-06-18T10:45:00Z",
+      "type": "SL",
+      "price": 104191.62,
+      "confirmed_at": 20,
+      "structure_confirmed_at": 25,
+      "validity": "eligible",
+      "structural_status": "confirmed",
+      "comparison": "LL",
+      "zone_id": null
+    },
+    {
+      "id": "SH-24",
+      "index": 24,
+      "time": "2025-06-18T12:00:00Z",
+      "type": "SH",
+      "price": 104932.84,
+      "confirmed_at": 25,
+      "structure_confirmed_at": 31,
+      "validity": "eligible",
+      "structural_status": "confirmed",
+      "comparison": "LH",
+      "zone_id": null
+    },
+    {
+      "id": "SL-30",
+      "index": 30,
+      "time": "2025-06-18T13:30:00Z",
+      "type": "SL",
+      "price": 103837.75,
+      "confirmed_at": 31,
+      "structure_confirmed_at": 34,
+      "validity": "eligible",
+      "structural_status": "confirmed",
+      "comparison": "LL",
+      "zone_id": null
+    },
+    {
+      "id": "SH-33",
+      "index": 33,
+      "time": "2025-06-18T14:15:00Z",
+      "type": "SH",
+      "price": 105348.75,
+      "confirmed_at": 34,
+      "structure_confirmed_at": 38,
+      "validity": "eligible",
+      "structural_status": "confirmed",
+      "comparison": "HH",
+      "zone_id": null
+    },
+    {
+      "id": "SL-37",
+      "index": 37,
+      "time": "2025-06-18T15:15:00Z",
+      "type": "SL",
+      "price": 104161.37,
+      "confirmed_at": 38,
+      "structure_confirmed_at": 40,
+      "validity": "eligible",
+      "structural_status": "confirmed",
+      "comparison": "HL",
+      "zone_id": null
+    },
+    {
+      "id": "SH-39",
+      "index": 39,
+      "time": "2025-06-18T15:45:00Z",
+      "type": "SH",
+      "price": 105014.67,
+      "confirmed_at": 40,
+      "structure_confirmed_at": 42,
+      "validity": "eligible",
+      "structural_status": "confirmed",
+      "comparison": "LH",
+      "zone_id": null
+    },
+    {
+      "id": "SL-41",
+      "index": 41,
+      "time": "2025-06-18T16:15:00Z",
+      "type": "SL",
+      "price": 104366.46,
+      "confirmed_at": 42,
+      "structure_confirmed_at": null,
+      "validity": "eligible",
+      "structural_status": "superseded",
+      "comparison": "",
+      "zone_id": null
+    },
+    {
+      "id": "SL-44",
+      "index": 44,
+      "time": "2025-06-18T17:00:00Z",
+      "type": "SL",
+      "price": 104005,
+      "confirmed_at": 45,
+      "structure_confirmed_at": null,
+      "validity": "eligible",
+      "structural_status": "superseded",
+      "comparison": "",
+      "zone_id": null
+    },
+    {
+      "id": "SL-46",
+      "index": 46,
+      "time": "2025-06-18T17:30:00Z",
+      "type": "SL",
+      "price": 103627,
+      "confirmed_at": 47,
+      "structure_confirmed_at": null,
+      "validity": "eligible",
+      "structural_status": "pending",
+      "comparison": "",
+      "zone_id": null
+    }
+  ],
+  "external": {
+    "trend": "up",
+    "phase": "confirmed",
+    "majorHigh": {
+      "id": "SH-33",
+      "index": 33,
+      "type": "SH",
+      "price": 105348.75,
+      "confirmedAt": 38
+    },
+    "majorLow": {
+      "id": "SL-30",
+      "index": 30,
+      "type": "SL",
+      "price": 103837.75,
+      "confirmedAt": 34
+    },
+    "breakAt": null,
+    "breakLevel": null
+  },
+  "internal": {
+    "trend": "unknown",
+    "phase": "collecting",
+    "internalHigh": {
+      "id": "SH-39",
+      "index": 39,
+      "type": "SH",
+      "price": 105014.67,
+      "confirmedAt": 42
+    },
+    "internalLow": {
+      "id": "SL-37",
+      "index": 37,
+      "type": "SL",
+      "price": 104161.37,
+      "confirmedAt": 40
+    },
+    "protectedHigh": null,
+    "protectedLow": null,
+    "pendingDirection": null,
+    "pendingBreakAt": null,
+    "confirmed": false
+  },
+  "role_changes": [
+    {
+      "at": 25,
+      "pivot_id": "SH-12",
+      "pivot_index": 12,
+      "from": "confirmed_swing",
+      "to": "major_high",
+      "reason": "initial_major_pair"
+    },
+    {
+      "at": 25,
+      "pivot_id": "SL-19",
+      "pivot_index": 19,
+      "from": "confirmed_swing",
+      "to": "major_low",
+      "reason": "initial_major_pair"
+    },
+    {
+      "at": 33,
+      "pivot_id": "SH-12",
+      "pivot_index": 12,
+      "from": "major_high",
+      "to": "broken_major_high",
+      "reason": "external_reversal"
+    },
+    {
+      "at": 38,
+      "pivot_id": "SL-19",
+      "pivot_index": 19,
+      "from": "major_low",
+      "to": "historical_major",
+      "reason": "major_rolled"
+    },
+    {
+      "at": 38,
+      "pivot_id": "SH-33",
+      "pivot_index": 33,
+      "from": "confirmed_swing",
+      "to": "major_high",
+      "reason": "accepted_after_major_break"
+    },
+    {
+      "at": 38,
+      "pivot_id": "SL-30",
+      "pivot_index": 30,
+      "from": "confirmed_swing",
+      "to": "major_low",
+      "reason": "accepted_after_major_break"
+    },
+    {
+      "at": 40,
+      "pivot_id": "SL-37",
+      "pivot_index": 37,
+      "from": "confirmed_swing",
+      "to": "internal_sl",
+      "reason": "latest_internal_low"
+    },
+    {
+      "at": 42,
+      "pivot_id": "SH-39",
+      "pivot_index": 39,
+      "from": "confirmed_swing",
+      "to": "internal_sh",
+      "reason": "latest_internal_high"
+    }
+  ],
+  "events": [
+    {
+      "id": "major_established:25:0",
+      "at": 25,
+      "kind": "major_established",
+      "layer": "external",
+      "title": "Khởi tạo cấu trúc chính GIẢM",
+      "detail": "Major High 105159.7; Major Low 104191.62. Xác định từ Swing đã được chấp nhận theo HH+HL / LH+LL.",
+      "severity": "success",
+      "source": "ADV:S5,S14",
+      "refs": [
+        "SH-12",
+        "SL-19"
+      ],
+      "bar_open_time_utc": "2025-06-18T12:15:00Z",
+      "available_at_utc": "2025-06-18T12:30:00.000Z"
+    },
+    {
+      "id": "major_continuation:28:1",
+      "at": 28,
+      "kind": "major_continuation",
+      "layer": "external",
+      "title": "Cấu trúc chính tiếp diễn GIẢM",
+      "detail": "Close 104083.98 < Major Low 104191.62. Chờ Swing Low mới hợp lệ để cập nhật cặp Major.",
+      "severity": "success",
+      "source": "ADV:S7,S14",
+      "refs": [
+        "SL-19"
+      ],
+      "bar_open_time_utc": "2025-06-18T13:00:00Z",
+      "available_at_utc": "2025-06-18T13:15:00.000Z"
+    },
+    {
+      "id": "major_reversal:33:2",
+      "at": 33,
+      "kind": "major_reversal",
+      "layer": "external",
+      "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+      "detail": "Giá đóng 105196.32 cao hơn Major High 105159.7; giữ Major Low 104191.62, Major High mới chờ xác nhận.",
+      "severity": "success",
+      "source": "ADV:S3,S7,S14",
+      "refs": [
+        "SH-12",
+        "SL-19"
+      ],
+      "bar_open_time_utc": "2025-06-18T14:15:00Z",
+      "available_at_utc": "2025-06-18T14:30:00.000Z"
+    },
+    {
+      "id": "major_updated:38:3",
+      "at": 38,
+      "kind": "major_updated",
+      "layer": "external",
+      "title": "Đã cập nhật Major High / Major Low",
+      "detail": "Major High 105348.75; Major Low 103837.75. Hai mốc chỉ cập nhật khi Swing mới đã được xác nhận.",
+      "severity": "success",
+      "source": "ADV:S11,S13-14",
+      "refs": [
+        "SH-33",
+        "SL-30"
+      ],
+      "bar_open_time_utc": "2025-06-18T15:30:00Z",
+      "available_at_utc": "2025-06-18T15:45:00.000Z"
+    }
+  ],
+  "timeline": [
+    {
+      "at": 0,
+      "time": "2025-06-18T06:00:00Z",
+      "available_at_utc": "2025-06-18T06:15:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 1,
+      "time": "2025-06-18T06:15:00Z",
+      "available_at_utc": "2025-06-18T06:30:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 2,
+      "time": "2025-06-18T06:30:00Z",
+      "available_at_utc": "2025-06-18T06:45:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 3,
+      "time": "2025-06-18T06:45:00Z",
+      "available_at_utc": "2025-06-18T07:00:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 4,
+      "time": "2025-06-18T07:00:00Z",
+      "available_at_utc": "2025-06-18T07:15:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 5,
+      "time": "2025-06-18T07:15:00Z",
+      "available_at_utc": "2025-06-18T07:30:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 6,
+      "time": "2025-06-18T07:30:00Z",
+      "available_at_utc": "2025-06-18T07:45:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 7,
+      "time": "2025-06-18T07:45:00Z",
+      "available_at_utc": "2025-06-18T08:00:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": [
+        "SL-4"
+      ]
+    },
+    {
+      "at": 8,
+      "time": "2025-06-18T08:00:00Z",
+      "available_at_utc": "2025-06-18T08:15:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 9,
+      "time": "2025-06-18T08:15:00Z",
+      "available_at_utc": "2025-06-18T08:30:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 10,
+      "time": "2025-06-18T08:30:00Z",
+      "available_at_utc": "2025-06-18T08:45:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 11,
+      "time": "2025-06-18T08:45:00Z",
+      "available_at_utc": "2025-06-18T09:00:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": [
+        "SH-8"
+      ]
+    },
+    {
+      "at": 12,
+      "time": "2025-06-18T09:00:00Z",
+      "available_at_utc": "2025-06-18T09:15:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 13,
+      "time": "2025-06-18T09:15:00Z",
+      "available_at_utc": "2025-06-18T09:30:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": [
+        "SL-10"
+      ]
+    },
+    {
+      "at": 14,
+      "time": "2025-06-18T09:30:00Z",
+      "available_at_utc": "2025-06-18T09:45:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 15,
+      "time": "2025-06-18T09:45:00Z",
+      "available_at_utc": "2025-06-18T10:00:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 16,
+      "time": "2025-06-18T10:00:00Z",
+      "available_at_utc": "2025-06-18T10:15:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 17,
+      "time": "2025-06-18T10:15:00Z",
+      "available_at_utc": "2025-06-18T10:30:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 18,
+      "time": "2025-06-18T10:30:00Z",
+      "available_at_utc": "2025-06-18T10:45:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 19,
+      "time": "2025-06-18T10:45:00Z",
+      "available_at_utc": "2025-06-18T11:00:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 20,
+      "time": "2025-06-18T11:00:00Z",
+      "available_at_utc": "2025-06-18T11:15:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": [
+        "SH-12"
+      ]
+    },
+    {
+      "at": 21,
+      "time": "2025-06-18T11:15:00Z",
+      "available_at_utc": "2025-06-18T11:30:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 22,
+      "time": "2025-06-18T11:30:00Z",
+      "available_at_utc": "2025-06-18T11:45:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 23,
+      "time": "2025-06-18T11:45:00Z",
+      "available_at_utc": "2025-06-18T12:00:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 24,
+      "time": "2025-06-18T12:00:00Z",
+      "available_at_utc": "2025-06-18T12:15:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "majorHigh": null,
+        "majorLow": null,
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "uninitialized",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 25,
+      "time": "2025-06-18T12:15:00Z",
+      "available_at_utc": "2025-06-18T12:30:00.000Z",
+      "localTrend": "down",
+      "external": {
+        "trend": "down",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-12",
+          "index": 12,
+          "type": "SH",
+          "price": 105159.7,
+          "confirmedAt": 20
+        },
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 25
+        },
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [
+        {
+          "id": "major_established:25:0",
+          "at": 25,
+          "kind": "major_established",
+          "layer": "external",
+          "title": "Khởi tạo cấu trúc chính GIẢM",
+          "detail": "Major High 105159.7; Major Low 104191.62. Xác định từ Swing đã được chấp nhận theo HH+HL / LH+LL.",
+          "severity": "success",
+          "source": "ADV:S5,S14",
+          "refs": [
+            "SH-12",
+            "SL-19"
+          ]
+        }
+      ],
+      "confirmedPivots": [
+        "SL-19"
+      ]
+    },
+    {
+      "at": 26,
+      "time": "2025-06-18T12:30:00Z",
+      "available_at_utc": "2025-06-18T12:45:00.000Z",
+      "localTrend": "down",
+      "external": {
+        "trend": "down",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-12",
+          "index": 12,
+          "type": "SH",
+          "price": 105159.7,
+          "confirmedAt": 20
+        },
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 25
+        },
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 27,
+      "time": "2025-06-18T12:45:00Z",
+      "available_at_utc": "2025-06-18T13:00:00.000Z",
+      "localTrend": "down",
+      "external": {
+        "trend": "down",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-12",
+          "index": 12,
+          "type": "SH",
+          "price": 105159.7,
+          "confirmedAt": 20
+        },
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 25
+        },
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 28,
+      "time": "2025-06-18T13:00:00Z",
+      "available_at_utc": "2025-06-18T13:15:00.000Z",
+      "localTrend": "down",
+      "external": {
+        "trend": "down",
+        "phase": "awaiting_major_low",
+        "majorHigh": {
+          "id": "SH-12",
+          "index": 12,
+          "type": "SH",
+          "price": 105159.7,
+          "confirmedAt": 20
+        },
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 25
+        },
+        "breakAt": 28,
+        "breakLevel": 104191.62
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [
+        {
+          "id": "major_continuation:28:1",
+          "at": 28,
+          "kind": "major_continuation",
+          "layer": "external",
+          "title": "Cấu trúc chính tiếp diễn GIẢM",
+          "detail": "Close 104083.98 < Major Low 104191.62. Chờ Swing Low mới hợp lệ để cập nhật cặp Major.",
+          "severity": "success",
+          "source": "ADV:S7,S14",
+          "refs": [
+            "SL-19"
+          ]
+        }
+      ],
+      "confirmedPivots": []
+    },
+    {
+      "at": 29,
+      "time": "2025-06-18T13:15:00Z",
+      "available_at_utc": "2025-06-18T13:30:00.000Z",
+      "localTrend": "down",
+      "external": {
+        "trend": "down",
+        "phase": "awaiting_major_low",
+        "majorHigh": {
+          "id": "SH-12",
+          "index": 12,
+          "type": "SH",
+          "price": 105159.7,
+          "confirmedAt": 20
+        },
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 25
+        },
+        "breakAt": 28,
+        "breakLevel": 104191.62
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 30,
+      "time": "2025-06-18T13:30:00Z",
+      "available_at_utc": "2025-06-18T13:45:00.000Z",
+      "localTrend": "down",
+      "external": {
+        "trend": "down",
+        "phase": "awaiting_major_low",
+        "majorHigh": {
+          "id": "SH-12",
+          "index": 12,
+          "type": "SH",
+          "price": 105159.7,
+          "confirmedAt": 20
+        },
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 25
+        },
+        "breakAt": 28,
+        "breakLevel": 104191.62
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 31,
+      "time": "2025-06-18T13:45:00Z",
+      "available_at_utc": "2025-06-18T14:00:00.000Z",
+      "localTrend": "down",
+      "external": {
+        "trend": "down",
+        "phase": "awaiting_major_low",
+        "majorHigh": {
+          "id": "SH-12",
+          "index": 12,
+          "type": "SH",
+          "price": 105159.7,
+          "confirmedAt": 20
+        },
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 25
+        },
+        "breakAt": 28,
+        "breakLevel": 104191.62
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": [
+        "SH-24"
+      ]
+    },
+    {
+      "at": 32,
+      "time": "2025-06-18T14:00:00Z",
+      "available_at_utc": "2025-06-18T14:15:00.000Z",
+      "localTrend": "down",
+      "external": {
+        "trend": "down",
+        "phase": "awaiting_major_low",
+        "majorHigh": {
+          "id": "SH-12",
+          "index": 12,
+          "type": "SH",
+          "price": 105159.7,
+          "confirmedAt": 20
+        },
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 25
+        },
+        "breakAt": 28,
+        "breakLevel": 104191.62
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 33,
+      "time": "2025-06-18T14:15:00Z",
+      "available_at_utc": "2025-06-18T14:30:00.000Z",
+      "localTrend": "down",
+      "external": {
+        "trend": "up",
+        "phase": "awaiting_major_high",
+        "majorHigh": null,
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 25
+        },
+        "breakAt": 33,
+        "breakLevel": 105159.7
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [
+        {
+          "id": "major_reversal:33:2",
+          "at": 33,
+          "kind": "major_reversal",
+          "layer": "external",
+          "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+          "detail": "Giá đóng 105196.32 cao hơn Major High 105159.7; giữ Major Low 104191.62, Major High mới chờ xác nhận.",
+          "severity": "success",
+          "source": "ADV:S3,S7,S14",
+          "refs": [
+            "SH-12",
+            "SL-19"
+          ]
+        }
+      ],
+      "confirmedPivots": []
+    },
+    {
+      "at": 34,
+      "time": "2025-06-18T14:30:00Z",
+      "available_at_utc": "2025-06-18T14:45:00.000Z",
+      "localTrend": "down",
+      "external": {
+        "trend": "up",
+        "phase": "awaiting_major_high",
+        "majorHigh": null,
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 25
+        },
+        "breakAt": 33,
+        "breakLevel": 105159.7
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": [
+        "SL-30"
+      ]
+    },
+    {
+      "at": 35,
+      "time": "2025-06-18T14:45:00Z",
+      "available_at_utc": "2025-06-18T15:00:00.000Z",
+      "localTrend": "down",
+      "external": {
+        "trend": "up",
+        "phase": "awaiting_major_high",
+        "majorHigh": null,
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 25
+        },
+        "breakAt": 33,
+        "breakLevel": 105159.7
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 36,
+      "time": "2025-06-18T15:00:00Z",
+      "available_at_utc": "2025-06-18T15:15:00.000Z",
+      "localTrend": "down",
+      "external": {
+        "trend": "up",
+        "phase": "awaiting_major_high",
+        "majorHigh": null,
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 25
+        },
+        "breakAt": 33,
+        "breakLevel": 105159.7
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 37,
+      "time": "2025-06-18T15:15:00Z",
+      "available_at_utc": "2025-06-18T15:30:00.000Z",
+      "localTrend": "down",
+      "external": {
+        "trend": "up",
+        "phase": "awaiting_major_high",
+        "majorHigh": null,
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 25
+        },
+        "breakAt": 33,
+        "breakLevel": 105159.7
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 38,
+      "time": "2025-06-18T15:30:00Z",
+      "available_at_utc": "2025-06-18T15:45:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "up",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 38
+        },
+        "majorLow": {
+          "id": "SL-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "confirmedAt": 34
+        },
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [
+        {
+          "id": "major_updated:38:3",
+          "at": 38,
+          "kind": "major_updated",
+          "layer": "external",
+          "title": "Đã cập nhật Major High / Major Low",
+          "detail": "Major High 105348.75; Major Low 103837.75. Hai mốc chỉ cập nhật khi Swing mới đã được xác nhận.",
+          "severity": "success",
+          "source": "ADV:S11,S13-14",
+          "refs": [
+            "SH-33",
+            "SL-30"
+          ]
+        }
+      ],
+      "confirmedPivots": [
+        "SH-33"
+      ]
+    },
+    {
+      "at": 39,
+      "time": "2025-06-18T15:45:00Z",
+      "available_at_utc": "2025-06-18T16:00:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "up",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 38
+        },
+        "majorLow": {
+          "id": "SL-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "confirmedAt": 34
+        },
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 40,
+      "time": "2025-06-18T16:00:00Z",
+      "available_at_utc": "2025-06-18T16:15:00.000Z",
+      "localTrend": "up",
+      "external": {
+        "trend": "up",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 38
+        },
+        "majorLow": {
+          "id": "SL-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "confirmedAt": 34
+        },
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 40
+        },
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": [
+        "SL-37"
+      ]
+    },
+    {
+      "at": 41,
+      "time": "2025-06-18T16:15:00Z",
+      "available_at_utc": "2025-06-18T16:30:00.000Z",
+      "localTrend": "up",
+      "external": {
+        "trend": "up",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 38
+        },
+        "majorLow": {
+          "id": "SL-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "confirmedAt": 34
+        },
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 40
+        },
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 42,
+      "time": "2025-06-18T16:30:00Z",
+      "available_at_utc": "2025-06-18T16:45:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "up",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 38
+        },
+        "majorLow": {
+          "id": "SL-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "confirmedAt": 34
+        },
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": {
+          "id": "SH-39",
+          "index": 39,
+          "type": "SH",
+          "price": 105014.67,
+          "confirmedAt": 42
+        },
+        "internalLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 40
+        },
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": [
+        "SH-39"
+      ]
+    },
+    {
+      "at": 43,
+      "time": "2025-06-18T16:45:00Z",
+      "available_at_utc": "2025-06-18T17:00:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "up",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 38
+        },
+        "majorLow": {
+          "id": "SL-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "confirmedAt": 34
+        },
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": {
+          "id": "SH-39",
+          "index": 39,
+          "type": "SH",
+          "price": 105014.67,
+          "confirmedAt": 42
+        },
+        "internalLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 40
+        },
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 44,
+      "time": "2025-06-18T17:00:00Z",
+      "available_at_utc": "2025-06-18T17:15:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "up",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 38
+        },
+        "majorLow": {
+          "id": "SL-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "confirmedAt": 34
+        },
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": {
+          "id": "SH-39",
+          "index": 39,
+          "type": "SH",
+          "price": 105014.67,
+          "confirmedAt": 42
+        },
+        "internalLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 40
+        },
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 45,
+      "time": "2025-06-18T17:15:00Z",
+      "available_at_utc": "2025-06-18T17:30:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "up",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 38
+        },
+        "majorLow": {
+          "id": "SL-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "confirmedAt": 34
+        },
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": {
+          "id": "SH-39",
+          "index": 39,
+          "type": "SH",
+          "price": 105014.67,
+          "confirmedAt": 42
+        },
+        "internalLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 40
+        },
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 46,
+      "time": "2025-06-18T17:30:00Z",
+      "available_at_utc": "2025-06-18T17:45:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "up",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 38
+        },
+        "majorLow": {
+          "id": "SL-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "confirmedAt": 34
+        },
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": {
+          "id": "SH-39",
+          "index": 39,
+          "type": "SH",
+          "price": 105014.67,
+          "confirmedAt": 42
+        },
+        "internalLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 40
+        },
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 47,
+      "time": "2025-06-18T17:45:00Z",
+      "available_at_utc": "2025-06-18T18:00:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "up",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 38
+        },
+        "majorLow": {
+          "id": "SL-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "confirmedAt": 34
+        },
+        "breakAt": null,
+        "breakLevel": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": {
+          "id": "SH-39",
+          "index": 39,
+          "type": "SH",
+          "price": 105014.67,
+          "confirmedAt": 42
+        },
+        "internalLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 40
+        },
+        "protectedHigh": null,
+        "protectedLow": null,
+        "pendingDirection": null,
+        "pendingBreakAt": null,
+        "confirmed": false
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    }
+  ]
+}
