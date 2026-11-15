@@ -54,6 +54,10 @@ for(const id of ['majorDirection','internalDirection','feedMajorTrend','feedInte
  assert(html.includes(`id="${id}"`),`Missing visible structure state ${id}`);
 }
 const i18n=require('../static/i18n.js');
+const uiCode=fs.readFileSync(path.join(root,'static/studio.js'),'utf8');
+assert(uiCode.includes('pivotPrice(m.p.price)'),'Major horizontal label must show full data precision');
+assert(uiCode.includes('pivotPrice(item.p.price)'),'Major pivot anchor must show full data precision');
+assert(uiCode.includes('return pivotPrice(p.price)'),'Major snapshot must show full data precision');
 for(const l of ['en','vi']){
  for(const key of ['majorLabel','internalLabel','currentStatus','notConfirmed','majorHighLabel','majorLowLabel']){
   assert(i18n.text(key,l)!==key,`Missing ${l} translation for ${key}`);

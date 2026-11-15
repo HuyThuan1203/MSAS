@@ -9,6 +9,7 @@ const $=id=>document.getElementById(id);
 // Price data comes from the local HTTP API (Python Portable or Docker), never from an embedded CSV.
 let datasetId='btcusd-sample', datasetDetails=null, fileWaiting=null;
 const number=n=>Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const pivotPrice=n=>Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6});
 const compact=n=>Math.round(n).toLocaleString('en-US');
 const time=t=>String(t).slice(11,16);
 const escaped=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -106,11 +107,11 @@ function structureDirection(trend,phase){
  if(phase==='pending_confirmation'||phase?.startsWith('awaiting_major_'))label+=' · '+t('metaPending');
  return label;
 }
-function pivotValue(p){return p?number(p.price):t('notConfirmed');}
+function pivotValue(p){return p?pivotPrice(p.price):t('notConfirmed');}
 function pivotWithTime(p){
  if(!p)return t('notConfirmed');
  const raw=candles[p.index]?.time;
- return number(p.price)+(raw?' · '+raw.slice(0,16).replace('T',' ')+' UTC':'');
+ return pivotPrice(p.price)+(raw?' · '+raw.slice(0,16).replace('T',' ')+' UTC':'');
 }
 function updateStructureSnapshot(){
  const a=analysis?.advanced;if(!a)return;
@@ -231,7 +232,7 @@ function draw(now=performance.now()){
    ctx.save();ctx.globalAlpha=m.alpha;ctx.strokeStyle=m.color;ctx.lineWidth=m.major?1.65:1;
    ctx.setLineDash(m.dash);ctx.beginPath();ctx.moveTo(Math.max(left,xAt(m.p.index)),yy);ctx.lineTo(left+innerW,yy);ctx.stroke();ctx.setLineDash([]);
    ctx.fillStyle=m.color;ctx.font='bold 10px ui-monospace,monospace';ctx.textAlign='right';
-   const label=m.label+' '+number(m.p.price);
+   const label=m.label+' '+pivotPrice(m.p.price);
    ctx.fillText(label,left+innerW-5,yy+(m.label==='ML'?12:-6));ctx.restore();
   }
  }
@@ -298,7 +299,7 @@ function draw(now=performance.now()){
    ctx.save();ctx.lineWidth=2.25;ctx.strokeStyle=item.color;ctx.fillStyle='#fff';
    ctx.beginPath();ctx.arc(xx,yy,5.4,0,Math.PI*2);ctx.fill();ctx.stroke();
    ctx.font='bold 10px ui-monospace,monospace';ctx.textAlign='center';
-   const label=item.label+' · '+number(item.p.price),width=ctx.measureText(label).width+15;
+   const label=item.label+' · '+pivotPrice(item.p.price),width=ctx.measureText(label).width+15;
    const bx=Math.max(left+width/2,Math.min(left+innerW-width/2,xx));
    const by=Math.max(top+3,Math.min(bottom-25,yy+(item.above?-36:14)));
    ctx.fillStyle=item.color;ctx.beginPath();ctx.roundRect(bx-width/2,by,width,22,5);ctx.fill();

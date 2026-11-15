@@ -36,7 +36,7 @@ function text(key,lang='en',params={}){
  let tmpl=(UI[lang]||UI.en)[key]??UI.en[key]??key;
  return tmpl.replace(/\{([a-zA-Z][a-zA-Z0-9_]*)\}/g,(_,k)=>String(params[k]??''));
 }
-function fmt(num){return Number(num).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmt(num){return Number(num).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6});}
 function dir(d){return d==='up'?'UP':d==='down'?'DOWN':'UNKNOWN';}
 function eventLabel(kind,lang='en'){return (KIND[lang]||KIND.en)[kind]||'EVENT';}
 function eventText(e,lang='en'){
@@ -58,7 +58,7 @@ function eventText(e,lang='en'){
  case 'major_established':return {title:`Main ${direction} structure established`,detail:`Major High ${price(d.majorHigh)}; Major Low ${price(d.majorLow)}. Based on accepted alternating swings and HH+HL / LH+LL.`};
  case 'major_continuation':return {title:`Main ${direction} continuation`,detail:`Close ${price(d.close)} crossed ${up?'above Major High':'below Major Low'} ${price(d.brokenLevel)}. Waiting for an eligible new swing before updating the Major pair.`};
  case 'major_reversal':return {title:`Main structure reversed to ${direction}`,detail:`Close ${price(d.close)} crossed ${up?'above Major High':'below Major Low'} ${price(d.brokenLevel)}. Retained Major ${up?'Low':'High'}: ${price(d.retainedLevel)}; new Major ${up?'High':'Low'} is pending.`};
- case 'major_updated':return {title:'Major High / Low updated',detail:`Major High ${price(d.majorHigh)}; Major Low ${price(d.majorLow)}. Levels use the strongest already confirmed eligible swing of the break wave and its accepted preceding opposite point.`};
+ case 'major_updated':return {title:'Major High / Low updated',detail:`Major High ${price(d.majorHigh)}; Major Low ${price(d.majorLow)}. Levels use the strongest already confirmed eligible swing of the break wave and its confirmed corrective or preceding opposite pivot.`};
  case 'internal_established':return {title:`Internal ${direction} structure identified`,detail:`Accepted internal pivots satisfy ${up?'HH + HL':'LH + LL'} inside the Major range; main trend is unchanged.`};
  case 'internal_reversal':return {title:`Internal reversal to ${direction} · pending`,detail:`Close ${price(d.close)} crossed ${up?'Internal SH':'Internal SL'} ${price(d.brokenLevel)}. Main ${dir(d.majorDirection)} is unchanged; waiting for ${up?'HH + HL':'LH + LL'} confirmation.`};
  case 'internal_confirmed':return {title:`Internal ${direction} structure confirmed`,detail:'An eligible sequence of internal pivots confirms HH + HL or LH + LL in the new direction.'};
