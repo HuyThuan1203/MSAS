@@ -17,7 +17,26 @@ class TestContract(unittest.TestCase):
             self.assertTrue(raw.exists())
             m=json.loads(meta.read_text('utf-8'))
             c=json.loads(canonical.read_text('utf-8'))
-            self.assertEqual(m['source_sha256'],hashlib.sha256(raw.read_bytes()).hexdigest())
+            source_bytes=raw.read_bytes()
+            source_sha=hashlib.sha256(source_bytes).hexdigest()
+            expected_sha=m['source_sha256']
+            if source_sha != expected_sha:
+                # A Windows checkout may convert LF to CRLF when core.autocrlf=true.
+                # Never silently accept a modified raw file or rewrite the manifest.
+                if (b'\r\n' in source_bytes and
+                        hashlib.sha256(source_bytes.replace(b'\r\n',b'\n')).hexdigest() == expected_sha):
+                    self.fail(
+                        f'{raw.relative_to(ROOT)}: Git converted LF to CRLF. '
+                        'After pulling the .gitattributes fix, restore the original '
+                        'checked-in bytes with: '
+                        'git restore --source=HEAD --worktree -- samples/raw/ '
+                        '(only if you have no edits to those sample files).'
+                    )
+                self.fail(
+                    f'{raw.relative_to(ROOT)}: SHA-256 mismatch '
+                    f'(manifest={expected_sha}, working_file={source_sha}). '
+                    'Investigate source changes; do not modify the manifest to hide them.'
+                )
             self.assertEqual(c['metadata']['sha256'],m['source_sha256'])
             self.assertEqual(m['row_count'],48)
             self.assertEqual(len(c['candles']),48)
@@ -48,6 +67,12 @@ class TestContract(unittest.TestCase):
             self.assertEqual(len(normalized['candles']),48)
             self.assertEqual(normalized['meta']['mapping_mode'],'header')
             self.assertFalse(normalized['meta']['volume_present'])
+
+    def test_raw_csv_preserved_by_git_attributes(self):
+        # Raw provider CSVs are integrity-checked byte-for-byte. They must NOT
+        # be line-ending-normalized by Git on Windows.
+        attributes=(ROOT/'.gitattributes').read_text(encoding='utf-8')
+        self.assertIn('samples/raw/*.csv -text', attributes.splitlines())
 
     def test_source_integrity_and_schemas_parse(self):
         for f in (ROOT/'schemas').glob('*.json'):
