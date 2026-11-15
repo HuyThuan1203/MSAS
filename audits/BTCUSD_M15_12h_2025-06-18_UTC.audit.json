@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "analysis_version": "market_structure_advanced_v1",
+  "analysis_version": "market_structure_advanced_v1_1",
   "source_dataset_id": "btcusd_m15_20250618_0600_utc",
   "source_sha256": "534d598a168086f9582b339d4a434beaff42aba9fef4060a9fb93a0022d59fce",
   "is_synthetic": false,
@@ -298,7 +298,7 @@
       "pivot_index": 33,
       "from": "confirmed_swing",
       "to": "major_high",
-      "reason": "accepted_after_major_break"
+      "reason": "strongest_confirmed_major_break_wave"
     },
     {
       "at": 38,
@@ -306,7 +306,7 @@
       "pivot_index": 30,
       "from": "confirmed_swing",
       "to": "major_low",
-      "reason": "accepted_after_major_break"
+      "reason": "strongest_confirmed_major_break_wave"
     },
     {
       "at": 40,
@@ -339,6 +339,11 @@
         "SH-12",
         "SL-19"
       ],
+      "data": {
+        "direction": "down",
+        "majorHigh": 105159.7,
+        "majorLow": 104191.62
+      },
       "bar_open_time_utc": "2025-06-18T12:15:00Z",
       "available_at_utc": "2025-06-18T12:30:00.000Z"
     },
@@ -354,6 +359,11 @@
       "refs": [
         "SL-19"
       ],
+      "data": {
+        "direction": "down",
+        "close": 104083.98,
+        "brokenLevel": 104191.62
+      },
       "bar_open_time_utc": "2025-06-18T13:00:00Z",
       "available_at_utc": "2025-06-18T13:15:00.000Z"
     },
@@ -370,6 +380,12 @@
         "SH-12",
         "SL-19"
       ],
+      "data": {
+        "direction": "up",
+        "close": 105196.32,
+        "brokenLevel": 105159.7,
+        "retainedLevel": 104191.62
+      },
       "bar_open_time_utc": "2025-06-18T14:15:00Z",
       "available_at_utc": "2025-06-18T14:30:00.000Z"
     },
@@ -379,13 +395,21 @@
       "kind": "major_updated",
       "layer": "external",
       "title": "Đã cập nhật Major High / Major Low",
-      "detail": "Major High 105348.75; Major Low 103837.75. Hai mốc chỉ cập nhật khi Swing mới đã được xác nhận.",
+      "detail": "Major High 105348.75; Major Low 103837.75. Cặp đỉnh/đáy mạnh nhất đã xác nhận cho nhịp phá Major; không chọn cực trị chỉ vì xuất hiện gần nhất.",
       "severity": "success",
       "source": "ADV:S11,S13-14",
       "refs": [
         "SH-33",
         "SL-30"
       ],
+      "data": {
+        "direction": "up",
+        "majorHigh": 105348.75,
+        "majorLow": 103837.75,
+        "majorHighIndex": 33,
+        "majorLowIndex": 30,
+        "selection": "strongest_confirmed_wave_provisional"
+      },
       "bar_open_time_utc": "2025-06-18T15:30:00Z",
       "available_at_utc": "2025-06-18T15:45:00.000Z"
     }
@@ -1123,7 +1147,12 @@
           "refs": [
             "SH-12",
             "SL-19"
-          ]
+          ],
+          "data": {
+            "direction": "down",
+            "majorHigh": 105159.7,
+            "majorLow": 104191.62
+          }
         }
       ],
       "confirmedPivots": [
@@ -1256,7 +1285,12 @@
           "source": "ADV:S7,S14",
           "refs": [
             "SL-19"
-          ]
+          ],
+          "data": {
+            "direction": "down",
+            "close": 104083.98,
+            "brokenLevel": 104191.62
+          }
         }
       ],
       "confirmedPivots": []
@@ -1462,7 +1496,13 @@
           "refs": [
             "SH-12",
             "SL-19"
-          ]
+          ],
+          "data": {
+            "direction": "up",
+            "close": 105196.32,
+            "brokenLevel": 105159.7,
+            "retainedLevel": 104191.62
+          }
         }
       ],
       "confirmedPivots": []
@@ -1644,13 +1684,21 @@
           "kind": "major_updated",
           "layer": "external",
           "title": "Đã cập nhật Major High / Major Low",
-          "detail": "Major High 105348.75; Major Low 103837.75. Hai mốc chỉ cập nhật khi Swing mới đã được xác nhận.",
+          "detail": "Major High 105348.75; Major Low 103837.75. Cặp đỉnh/đáy mạnh nhất đã xác nhận cho nhịp phá Major; không chọn cực trị chỉ vì xuất hiện gần nhất.",
           "severity": "success",
           "source": "ADV:S11,S13-14",
           "refs": [
             "SH-33",
             "SL-30"
-          ]
+          ],
+          "data": {
+            "direction": "up",
+            "majorHigh": 105348.75,
+            "majorLow": 103837.75,
+            "majorHighIndex": 33,
+            "majorLowIndex": 30,
+            "selection": "strongest_confirmed_wave_provisional"
+          }
         }
       ],
       "confirmedPivots": [

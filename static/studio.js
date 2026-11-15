@@ -101,6 +101,36 @@ function stepTo(index,{animate=true,flash=false}={}){
  updateTop();updateFeed(changed&&flash);
  schedule();
 }
+function structureDirection(trend,phase){
+ let label=t(trend==='up'?'metaUp':trend==='down'?'metaDown':'metaUnknown');
+ if(phase==='pending_confirmation'||phase?.startsWith('awaiting_major_'))label+=' · '+t('metaPending');
+ return label;
+}
+function pivotValue(p){return p?number(p.price):t('notConfirmed');}
+function pivotWithTime(p){
+ if(!p)return t('notConfirmed');
+ const raw=candles[p.index]?.time;
+ return number(p.price)+(raw?' · '+raw.slice(0,16).replace('T',' ')+' UTC':'');
+}
+function updateStructureSnapshot(){
+ const a=analysis?.advanced;if(!a)return;
+ const e=a.external,n=a.internal;
+ for(const [name,obj,phase] of [['major',e,e.phase],['internal',n,n.phase]]){
+  const strip=$(name+'Strip');strip.dataset.trend=obj.trend;
+  $(name+'Direction').textContent=structureDirection(obj.trend,phase);
+  const feed=name==='major'?'feedMajorTrend':'feedInternalTrend';
+  $(feed).textContent=structureDirection(obj.trend,phase);
+  $(feed).dataset.trend=obj.trend;
+ }
+ $('majorHighValue').textContent=pivotValue(e.majorHigh);
+ $('majorLowValue').textContent=pivotValue(e.majorLow);
+ $('internalHighValue').textContent=pivotValue(n.internalHigh);
+ $('internalLowValue').textContent=pivotValue(n.internalLow);
+ $('feedMajorHigh').textContent=pivotWithTime(e.majorHigh);
+ $('feedMajorLow').textContent=pivotWithTime(e.majorLow);
+ $('feedInternalHigh').textContent=pivotWithTime(n.internalHigh);
+ $('feedInternalLow').textContent=pivotWithTime(n.internalLow);
+}
 function updateTop(){
  const c=candles[current],delta=c.close-c.open,pct=c.open?delta/c.open*100:0;
  $('lastClose').textContent=number(c.close);$('lastDelta').textContent=(pct>=0?'+':'')+pct.toFixed(2)+'%';$('lastDelta').classList.toggle('negative',pct<0);
@@ -109,7 +139,8 @@ function updateTop(){
  const ext=analysis.advanced.external,int=analysis.advanced.internal;
  const titleDirection=x=>t(x==='up'?'metaUp':x==='down'?'metaDown':'metaUnknown');
  const sourceLine=t('metaCandles',{count:candles.length.toLocaleString('en-US')})+' · '+inferFrame()+(datasetDetails?.meta?.timezone?' · '+datasetDetails.meta.timezone:'')+(datasetDetails?.meta?.gaps?' · '+t('metaGap',{count:datasetDetails.meta.gaps}):'');
- $('dataDetails').textContent=sourceLine+' · '+t('metaMain')+': '+titleDirection(ext.trend)+' / '+t('metaInternal')+': '+titleDirection(int.trend)+(int.pendingDirection?' ('+t('metaPending')+')':'');
+ $('dataDetails').textContent=sourceLine;
+ updateStructureSnapshot();
  $('progressCount').textContent=(current+1)+' / '+candles.length;
  $('timeLabel').textContent=time(c.time);$('feedTime').textContent=c.time.slice(0,16);
 }
@@ -180,24 +211,28 @@ function draw(now=performance.now()){
    ctx.textAlign='left';ctx.font='bold 10px ui-monospace,monospace';ctx.fillStyle='#6b4c27';ctx.fillText('IB '+time(mother.time),x1+4,Math.max(top+12,y1-7));
   }
  }
- // Advanced levels are drawn only when known from CLOSED candles.
+ // Structural levels become visible only when the current CLOSED prefix knows them.
+ // A horizontal segment starts at its historical pivot, not the chart's left edge.
  if(layers.structure&&analysis.advanced){
   const {external:ex,internal:inn}=analysis.advanced;
   const marked=[
-   {p:ex.majorHigh,label:'MH',color:'#205a9b',dash:[7,4],alpha:.86},
-   {p:ex.majorLow,label:'ML',color:'#077f68',dash:[7,4],alpha:.86},
-   {p:inn.protectedHigh||inn.internalHigh,label:'iSH',color:'#835c23',dash:[3,7],alpha:.76},
-   {p:inn.protectedLow||inn.internalLow,label:'iSL',color:'#835c23',dash:[3,7],alpha:.76}
+   {p:ex.majorHigh,label:'MH',color:'#1c529a',dash:[7,4],alpha:.95,major:true},
+   {p:ex.majorLow,label:'ML',color:'#00745a',dash:[7,4],alpha:.95,major:true},
+   {p:inn.protectedHigh||inn.internalHigh,label:'iSH',color:'#926029',dash:[3,7],alpha:.69},
+   {p:inn.protectedLow||inn.internalLow,label:'iSL',color:'#926029',dash:[3,7],alpha:.69}
   ];
   const usedY=[];
   for(const m of marked){
    if(!m.p)continue;
    const yy=yAt(m.p.price);
-   if(yy<top||yy>bottom||usedY.some(v=>Math.abs(v-yy)<12))continue;
-   usedY.push(yy);ctx.save();ctx.globalAlpha=m.alpha;ctx.strokeStyle=m.color;ctx.lineWidth=1;
-   ctx.setLineDash(m.dash);ctx.beginPath();ctx.moveTo(left,yy);ctx.lineTo(left+innerW,yy);ctx.stroke();ctx.setLineDash([]);
+   if(yy<top||yy>bottom)continue;
+   if(!m.major&&usedY.some(v=>Math.abs(v-yy)<13))continue;
+   usedY.push(yy);
+   ctx.save();ctx.globalAlpha=m.alpha;ctx.strokeStyle=m.color;ctx.lineWidth=m.major?1.65:1;
+   ctx.setLineDash(m.dash);ctx.beginPath();ctx.moveTo(Math.max(left,xAt(m.p.index)),yy);ctx.lineTo(left+innerW,yy);ctx.stroke();ctx.setLineDash([]);
    ctx.fillStyle=m.color;ctx.font='bold 10px ui-monospace,monospace';ctx.textAlign='right';
-   ctx.fillText(m.label,left+innerW-5,yy-5);ctx.restore();
+   const label=m.label+' '+number(m.p.price);
+   ctx.fillText(label,left+innerW-5,yy+(m.label==='ML'?12:-6));ctx.restore();
   }
  }
  const accepted=analysis.confirmed;
@@ -235,6 +270,7 @@ function draw(now=performance.now()){
    const x=xAt(s.index),y=yAt(s.price);
    if(layers.raw){ctx.save();ctx.strokeStyle=s.status==='inside_rejected'?'#ac4b47':PALETTE.raw;ctx.lineWidth=1.15;ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.stroke();if(s.status!=='eligible'){ctx.beginPath();ctx.moveTo(x-3.5,y-3.5);ctx.lineTo(x+3.5,y+3.5);ctx.moveTo(x+3.5,y-3.5);ctx.lineTo(x-3.5,y+3.5);ctx.stroke();}ctx.restore();}
    if(!layers.structure||!['confirmed','pending'].includes(s.structStatus))continue;
+   if([analysis.advanced?.external.majorHigh?.id,analysis.advanced?.external.majorLow?.id].includes(s.id))continue;
    const full=s.structStatus==='confirmed',col=!full?'#647a8a':s.type==='SH'?'#2859aa':'#0b7866';
    ctx.save();const newAccepted=tr&&tr.added.has(s.id);if(newAccepted)ctx.globalAlpha=.3+.7*k;
    ctx.fillStyle=full?col:THEME.background;ctx.strokeStyle=col;ctx.lineWidth=1.5;
@@ -248,6 +284,25 @@ function draw(now=performance.now()){
    ctx.strokeStyle=col;ctx.globalAlpha*=.43;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(posX,posY+(s.type==='SH'?hh:0));ctx.stroke();ctx.globalAlpha=newAccepted?.3+.7*k:1;
    ctx.fillStyle=full?'#edf4fb':'#f1f5f8';ctx.strokeStyle=col;ctx.lineWidth=.75;ctx.beginPath();ctx.roundRect(posX-ww/2,posY,ww,hh,5);ctx.fill();ctx.stroke();
    ctx.textAlign='center';ctx.fillStyle=full?'#21364a':'#4c6373';ctx.fillText(label,posX,posY+14);ctx.restore();
+  }
+ }
+ // Anchor labels exactly at the currently active Major pivot candles. A marker
+ // can only appear after that pivot has become an accepted Major in this prefix.
+ if(layers.structure&&analysis.advanced){
+  const ex=analysis.advanced.external;
+  for(const item of [{p:ex.majorHigh,label:'MH',color:'#1c529a',above:true},
+                     {p:ex.majorLow,label:'ML',color:'#00745a',above:false}]){
+   if(!item.p||item.p.index<first||item.p.index>=first+count)continue;
+   const xx=xAt(item.p.index),yy=yAt(item.p.price);
+   if(yy<top||yy>bottom)continue;
+   ctx.save();ctx.lineWidth=2.25;ctx.strokeStyle=item.color;ctx.fillStyle='#fff';
+   ctx.beginPath();ctx.arc(xx,yy,5.4,0,Math.PI*2);ctx.fill();ctx.stroke();
+   ctx.font='bold 10px ui-monospace,monospace';ctx.textAlign='center';
+   const label=item.label+' · '+number(item.p.price),width=ctx.measureText(label).width+15;
+   const bx=Math.max(left+width/2,Math.min(left+innerW-width/2,xx));
+   const by=Math.max(top+3,Math.min(bottom-25,yy+(item.above?-36:14)));
+   ctx.fillStyle=item.color;ctx.beginPath();ctx.roundRect(bx-width/2,by,width,22,5);ctx.fill();
+   ctx.fillStyle='#fff';ctx.fillText(label,bx,by+15);ctx.restore();
   }
  }
  // Connect the live event to its actual historical pivot; this is a visual pulse only.

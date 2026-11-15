@@ -25,6 +25,18 @@
     <div class="quote"><div class="last-price"><strong id="lastClose" class="mono">--</strong><span class="mono" id="lastDelta">--</span></div></div>
    </div>
    <div class="overlaybar"><div class="ohlc mono"><span class="field"><em>O</em><b id="openVal">--</b></span><span class="field"><em>H</em><b id="highVal">--</b></span><span class="field"><em>L</em><b id="lowVal">--</b></span><span class="field"><em>C</em><b id="closeVal">--</b></span></div><div class="layers"><span data-i18n="indicators">INDICATORS</span><button id="toggleStructure" class="layer" aria-pressed="true" type="button"><i></i><span data-i18n="structure">Structure</span></button><button data-color="gold" id="toggleInside" class="layer" aria-pressed="true" type="button"><i></i><span data-i18n="inside">Inside bar</span></button><button id="toggleRaw" class="layer" aria-pressed="false" type="button"><i></i><span data-i18n="candidates">Candidates</span></button></div></div>
+   <div class="structure-statusbar" id="chartStructureSummary" aria-label="Structure at the current closed candle" aria-live="polite">
+    <div class="structure-strip major-strip" id="majorStrip" data-trend="unknown">
+     <span class="structure-kicker" data-i18n="majorLabel">MAIN / MAJOR</span>
+     <strong class="structure-direction" id="majorDirection">UNKNOWN</strong>
+     <div class="structure-pivots"><span><b>MH</b> <em class="mono" id="majorHighValue">—</em></span><span><b>ML</b> <em class="mono" id="majorLowValue">—</em></span></div>
+    </div>
+    <div class="structure-strip internal-strip" id="internalStrip" data-trend="unknown">
+     <span class="structure-kicker" data-i18n="internalLabel">INTERNAL</span>
+     <strong class="structure-direction" id="internalDirection">UNKNOWN</strong>
+     <div class="structure-pivots"><span><b>iSH</b> <em class="mono" id="internalHighValue">—</em></span><span><b>iSL</b> <em class="mono" id="internalLowValue">—</em></span></div>
+    </div>
+   </div>
    <div id="errorbox" class="error" role="alert"></div><div id="importToast" class="import-toast" role="status" aria-live="polite"></div>
    <div id="chartBox" class="graph"><canvas id="chart" aria-label="Candlestick chart and market-structure overlays" data-i18n-aria="chartAria" role="img"></canvas><div class="axis-legend mono" id="canvasTimeframe">M15 / CLOSED CANDLES</div><div class="tooltip hidden" id="tooltip"></div></div>
    <div class="controls">
@@ -41,6 +53,13 @@
   <aside class="stream" aria-label="Replay event notifications" data-i18n-aria="feedAria">
    <div class="stream-top"><div><div class="stream-heading"><i id="livePulse" class="beacon"></i><h2 data-i18n="notifications">Notifications</h2></div><p data-i18n="updatedOnClose">Updated after each candle closes</p></div><span class="mode">REPLAY</span></div>
    <div class="asof"><span data-i18n="candleClose">LAST CLOSED CANDLE</span><b class="mono" id="feedTime">--</b></div>
+   <div class="structure-snapshot" id="structureSnapshot" aria-live="polite">
+    <div class="snapshot-title" data-i18n="currentStatus">STRUCTURE AT THIS CANDLE CLOSE</div>
+    <div class="snapshot-row"><b data-i18n="majorLabel">MAIN / MAJOR</b><strong id="feedMajorTrend" data-trend="unknown">UNKNOWN</strong></div>
+    <div class="snapshot-pivots"><div><span data-i18n="majorHighLabel">Major High</span><b class="mono" id="feedMajorHigh">Not confirmed</b></div><div><span data-i18n="majorLowLabel">Major Low</span><b class="mono" id="feedMajorLow">Not confirmed</b></div></div>
+    <div class="snapshot-row snapshot-internal"><b data-i18n="internalLabel">INTERNAL</b><strong id="feedInternalTrend" data-trend="unknown">UNKNOWN</strong></div>
+    <div class="snapshot-pivots"><div><span>iSH</span><b class="mono" id="feedInternalHigh">Not confirmed</b></div><div><span>iSL</span><b class="mono" id="feedInternalLow">Not confirmed</b></div></div>
+   </div>
    <div class="live-hero" id="hero"><div class="signal-type" id="heroCategory">AWAITING DATA</div><h3 id="heroTitle">--</h3><p id="heroDetail">--</p><div class="hero-time"><span id="heroMeta">--</span></div></div>
    <div class="history-header"><b data-i18n="latestEvents">RECENT EVENTS</b><span id="eventCount">0 events</span></div>
    <div class="signal-list" id="events" aria-live="off"></div>

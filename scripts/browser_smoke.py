@@ -77,11 +77,22 @@ async def main() -> None:
                     await page.locator("#scrubber").fill("47")
                     await page.locator("#scrubber").dispatch_event("input")
                     assert await page.locator("#progressCount").inner_text() == "48 / 48"
+                    # The current structure must be visible on every closed-candle prefix,
+                    # including times without a new event. Major points are pivot-anchored.
+                    assert await page.locator("#majorDirection").inner_text() == "UP"
+                    assert "3,396.65" in await page.locator("#feedMajorHigh").inner_text()
+                    assert "3,373.55" in await page.locator("#feedMajorLow").inner_text()
+                    assert await page.locator("#internalDirection").inner_text() == "UP"
+                    assert await page.locator("#feedMajorTrend").inner_text() == "UP"
+                    assert await page.locator("#feedInternalTrend").inner_text() == "UP"
                     english = await page.locator("#heroDetail").inner_text()
                     assert not any(ch in english for ch in "áàêịộđườ"), english
                     await page.locator("#languageSelect").select_option("vi")
                     assert await page.locator(".chart-heading h2").inner_text() == "Biểu đồ cấu trúc"
                     assert await page.locator(".stream-top h2").inner_text() == "Thông báo"
+                    assert await page.locator("#majorDirection").inner_text() == "TĂNG"
+                    assert await page.locator("#internalDirection").inner_text() == "TĂNG"
+                    assert await page.locator("#feedMajorHigh").inner_text().startswith("3,396.65")
                     await page.locator("#languageSelect").select_option("en")
                     assert await page.locator(".chart-heading h2").inner_text() == "Market structure"
                     await page.locator("#restart").click()

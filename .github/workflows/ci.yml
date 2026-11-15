@@ -22,6 +22,21 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Python syntax check
         run: python -m compileall -q app scripts tests
+  test-windows-csv-checkout:
+    runs-on: windows-latest
+    steps:
+      - name: Reproduce Windows Git automatic line endings
+        run: git config --global core.autocrlf true
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Ensure provider CSV bytes remain unchanged
+        shell: pwsh
+        run: |
+          $attr = git check-attr text -- samples/raw/BTCUSD_M15_12h_2025-06-18_UTC.csv
+          if ($attr -notmatch 'text: unset') { throw "Expected -text Git attribute: $attr" }
+          python -m unittest discover -s tests -p test_contracts.py -v
   test-structure:
     runs-on: ubuntu-latest
     steps:
@@ -35,6 +50,7 @@ jobs:
           node tests/test_source_cases.js
           node tests/test_sample_replay.js
           node tests/test_advanced_structure.js
+          node tests/test_major_selection.js
           node tests/test_ui_theme_i18n.js
   browser-e2e:
     runs-on: ubuntu-latest

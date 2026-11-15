@@ -15,6 +15,30 @@ $env:DATA_DIR="$PWD\data"
 
 Open `http://127.0.0.1:8081`. Docker users: `docker compose up --build -d` and open `http://127.0.0.1:8080` (after verifying the port is free). See `docs/advanced/WINDOWS_PORTABLE_UPGRADE.md` to keep the previous V4 installation/data safe.
 
+## Windows: `test_manifest_and_canonical` fails after clone
+
+If the error says `534d598a... != ecdfecbb...` on BTCUSD, Windows Git
+converted the original raw CSV from LF to CRLF during checkout. The app's
+price rows have **not** thereby changed, but the raw-file SHA-256 contract
+must remain strict. This repository includes `.gitattributes` with
+`samples/raw/*.csv -text` to preserve exact file bytes on **new clones**.
+
+For a clone that already contains the converted files, first make sure you
+have no personal edits under `samples/raw/`, then run from the repo root:
+
+```powershell
+git pull --ff-only
+git status --short -- samples/raw/
+# The next command DISCARDs edits to the two bundled raw sample files only.
+git restore --source=HEAD --worktree -- samples/raw/
+& "C:\Program Files\Python310\python.exe" scripts/qa_gate.py
+```
+
+**Do not replace the SHA-256 hashes in manifests to silence the failure.**
+Do not run `git reset --hard`, which could discard unrelated work.
+`qa_gate.py` is a *test runner*, not the app server. To open the chart,
+use the `app/server.py` command in Quick start and navigate to port 8081.
+
 ## Theme, language and quality tools
 
 - **Default language:** English (EN), with Vietnamese (VI) selector at the top of the chart. The selected language is remembered in the browser; a fresh browser defaults to EN. All visible event categories/details are translated from structured event fields.
@@ -23,6 +47,14 @@ Open `http://127.0.0.1:8081`. Docker users: `docker compose up --build -d` and o
 - **Browser QA:** Optional Playwright suite is documented in `docs/quality/QUALITY_TOOLCHAIN.md` and runs in GitHub Actions, not required on the company laptop. GitHub CI also builds the Docker image and checks the health endpoint.
 - **Agent Skill:** `.claude/skills/msas-engineering/SKILL.md` plus `CLAUDE.md` provide traceable conventions for Claude Code/VSCode; users can package the Skill for other assistants.
 - **VSCode:** `.vscode/tasks.json` supplies local run/QA/Docker tasks, `launch.json` supplies debugger config, and `extensions.json` recommends optional extensions (not automatically installed).
+
+## V5.1 — Major/Internal status and pivot-anchored chart labels
+
+- The **Main / Major** and **Internal** trend states are always visible at each CLOSED candle, even if that candle triggers no new event. Distinguish UP, DOWN and UNKNOWN; an awaiting/pending level is never fabricated.
+- The notification panel also shows the current Major High/Low and Internal SH/SL with exact historical pivot timestamp and price. Horizontal MH/ML levels start from their pivot candles; markers are rendered on those candles only after the Major role was established.
+- **Provisional Major selection fix**: after a Close break of an established Major boundary, choose the strongest already structurally confirmed SH/SL of the breaking wave, not merely the latest confirmed Swing. This fixes the regression where XAUUSD SH44 (3394.498) incorrectly displaced stronger confirmed SH34 (3396.648). The paired corrective Low under this provisional policy is SL37 (3373.545); this is a derived engine output, NOT user-certified annotation from the PPT diagram.
+- A historical pivot may become Major only when its role is known: event `at` is never backdated to its original pivot index. `analysis_version` is now `market_structure_advanced_v1_1`. Canonical dataset schema stays v1.0.0. Both audit files have been regenerated; original raw CSVs are unchanged.
+- Run `node tests/test_major_selection.js` and `python scripts/qa_gate.py --require-node`, then verify Chromium+Docker CI. See `docs/advanced/MAJOR_PIVOT_SELECTION.md` for source/assumptions and unresolved cases.
 
 ## What changed in V5
 

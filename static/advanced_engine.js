@@ -114,6 +114,36 @@ function initialize(s,at){
      `Major High ${H.price}; Major Low ${L.price}. Xác định từ Swing đã được chấp nhận theo HH+HL / LH+LL.`,
      [H.id,L.id],'ADV:S5,S14','success',{direction:trend,majorHigh:H.price,majorLow:L.price});
 }
+/** Choose the strongest ALREADY CONFIRMED structural extreme of the pending
+ * break wave, not the last swing to happen to confirm after a Close breakout.
+ * A major role is assigned only at `at`, never at the historical pivot time.
+ * Slide 11/13: major expansion 10/9 or 14/13; source does not fully specify
+ * competing pivot tie-breaks, so this remains an explicit provisional policy.
+ */
+function pendingMajorPair(s,direction){
+ const e=s.external,kind=direction==='up'?'SH':'SL';
+ if(e.breakAt===null||e.breakLevel===null)return null;
+ const anchor=direction==='up'?(e.majorHigh?.index??s.segmentStart-1):(e.majorLow?.index??s.segmentStart-1);
+ const eligible=s.history.filter(p=>p.type===kind&&p.index>anchor&&
+  (direction==='up'?p.price>e.breakLevel:p.price<e.breakLevel));
+ // An accepted extreme may be known BEFORE the Close crosses the old Major
+ // boundary. Prefer the strongest price across the wave, not the latest pivot.
+ eligible.sort((a,b)=>direction==='up'?b.price-a.price||a.index-b.index:a.price-b.price||a.index-b.index);
+ for(const extreme of eligible){
+  // If the new extreme was already confirmed BEFORE the closing breakout,
+  // the protected counter-extreme can form AFTER it but BEFORE the breakout.
+  // XAU source user annotation: MH SH-34 followed by corrective ML SL-37.
+  // Otherwise use the latest preceding opposite pivot (PPT 14/13 case).
+  const opposites=s.history.filter(p=>p.type!==kind && p.index>anchor);
+  const follow=opposites.filter(p=>p.index>extreme.index && p.index<=e.breakAt);
+  follow.sort((a,b)=>direction==='up'?a.price-b.price||a.index-b.index:b.price-a.price||a.index-b.index);
+  const opposite=follow[0]||earlierOpposite(s.history,extreme);
+  if(opposite){
+   return direction==='up'?{high:extreme,low:opposite}:{high:opposite,low:extreme};
+  }
+ }
+ return null;
+}
 function cross(prev,now,threshold,direction){
  if(threshold===null||threshold===undefined)return false;
  return direction==='up'?(now>threshold&&(prev===null||prev<=threshold)):(now<threshold&&(prev===null||prev>=threshold));
@@ -182,22 +212,22 @@ function advance(s,at,close,newlyConfirmed=[]){
  // Init when the local accepted swing history is sufficient.
  initialize(s,at);
  if(external.phase==='awaiting_major_high'&&external.breakAt!==null){
-  const newHigh=newlyConfirmed.filter(p=>p.type==='SH' && p.price>external.breakLevel && p.index> (external.majorHigh?.index??-1)).at(-1);
-  const opp=newHigh?earlierOpposite(s.history,newHigh):null;
-  if(newHigh&&opp&&opp.type==='SL'){
-   setMajor(s,at,'up',newHigh,opp,'accepted_after_major_break');
+  const pair=pendingMajorPair(s,'up');
+  if(pair){
+   setMajor(s,at,'up',pair.high,pair.low,'strongest_confirmed_major_break_wave');
    log(s,at,'major_updated','external','Đã cập nhật Major High / Major Low',
-       `Major High ${newHigh.price}; Major Low ${opp.price}. Hai mốc chỉ cập nhật khi Swing mới đã được xác nhận.`,
-       [newHigh.id,opp.id],'ADV:S11,S13-14','success',{direction:'up',majorHigh:newHigh.price,majorLow:opp.price});
+       `Major High ${pair.high.price}; Major Low ${pair.low.price}. Cặp đỉnh/đáy mạnh nhất đã xác nhận cho nhịp phá Major; không chọn cực trị chỉ vì xuất hiện gần nhất.`,
+       [pair.high.id,pair.low.id],'ADV:S11,S13-14','success',{direction:'up',majorHigh:pair.high.price,majorLow:pair.low.price,
+        majorHighIndex:pair.high.index,majorLowIndex:pair.low.index,selection:'strongest_confirmed_wave_provisional'});
   }
  }else if(external.phase==='awaiting_major_low'&&external.breakAt!==null){
-  const newLow=newlyConfirmed.filter(p=>p.type==='SL' && p.price<external.breakLevel && p.index> (external.majorLow?.index??-1)).at(-1);
-  const opp=newLow?earlierOpposite(s.history,newLow):null;
-  if(newLow&&opp&&opp.type==='SH'){
-   setMajor(s,at,'down',opp,newLow,'accepted_after_major_break');
+  const pair=pendingMajorPair(s,'down');
+  if(pair){
+   setMajor(s,at,'down',pair.high,pair.low,'strongest_confirmed_major_break_wave');
    log(s,at,'major_updated','external','Đã cập nhật Major High / Major Low',
-       `Major High ${opp.price}; Major Low ${newLow.price}. Hai mốc chỉ cập nhật khi Swing mới đã được xác nhận.`,
-       [opp.id,newLow.id],'ADV:S14','success',{direction:'down',majorHigh:opp.price,majorLow:newLow.price});
+       `Major High ${pair.high.price}; Major Low ${pair.low.price}. Cặp đỉnh/đáy mạnh nhất đã xác nhận cho nhịp phá Major; không chọn cực trị chỉ vì xuất hiện gần nhất.`,
+       [pair.high.id,pair.low.id],'ADV:S11,S13-14','success',{direction:'down',majorHigh:pair.high.price,majorLow:pair.low.price,
+        majorHighIndex:pair.high.index,majorLowIndex:pair.low.index,selection:'strongest_confirmed_wave_provisional'});
   }
  }
  if(external.phase==='confirmed')refreshInternal(s,at);
@@ -219,7 +249,7 @@ function analysisFromAccepted(candles,accepted,upto){
  const state=makeState();
  for(let t=0;t<=end;t++)advance(state,t,candles[t].close,grouped.get(t)||[]);
  return {end,external:state.external,internal:state.internal,events:state.events,roleChanges:state.roleChanges,
-         acceptedCount:state.history.length,policy:{source:'ADV PPT S3-S14',majorSelection:'provisional',
+         acceptedCount:state.history.length,policy:{source:'ADV PPT S3-S14',majorSelection:'strongest-confirmed-extreme-in-closed-break-wave (provisional)',
             initialMajor:'latest confirmed trend pair',closeBreak:'strict',noLookahead:true},
          _state:state};
 }

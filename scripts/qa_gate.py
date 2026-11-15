@@ -22,6 +22,7 @@ NODE_SUITES = (
     "tests/test_source_cases.js",
     "tests/test_sample_replay.js",
     "tests/test_advanced_structure.js",
+    "tests/test_major_selection.js",
     "tests/test_ui_theme_i18n.js",
 )
 

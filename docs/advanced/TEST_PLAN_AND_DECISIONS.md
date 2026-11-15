@@ -44,3 +44,10 @@
 ## Manual review required before production
 
 A domain reviewer should compare every 1–14 state with the exact diagram and approve the provisional rules. Apply new fixtures after sign-off, rerun all tests, and increment `analysis_version`. This is a **pattern-recognition replay**, not a P&L backtest, trading signal or model risk approval.
+
+## V5.1 regression gate
+
+- `tests/test_major_selection.js` checks the former XAUUSD regression: after the close break at bar 43, stronger SH34 (3396.648) rather than weaker subsequent SH44 (3394.498) becomes the selected Major High. The provisional associated confirmed corrective SL is SL37 (3373.545); no source asserts this is a human-certified gold anchor.
+- Exercise 48 causal prefixes, closed-bar confirmation, and slide-13 synthetic role timeline; never reveal later pivots in earlier prefixes.
+- Browser E2E checks that MAIN / INTERNAL states, MH/ML and unconfirmed statuses appear in the chart and notification panel at each replay step in both EN/VI.
+- Until the user provides exact OHLC-index labels for the screenshot-selected Major points, treat this as a source-informed regression improvement, not a fully approved structural ground truth.

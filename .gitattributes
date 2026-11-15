@@ -1,0 +1,6 @@
+# MSAS source data provenance: keep CSV sample bytes EXACTLY as committed.
+# Do not allow Windows core.autocrlf to rewrite raw provider data.
+samples/raw/*.csv -text
+
+# Keep normalized/generated CSV output consistent across platforms.
+samples/normalized/*.csv text eol=lf

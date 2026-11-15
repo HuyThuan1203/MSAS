@@ -19,7 +19,7 @@ for(let t=0;t<candles.length;t++){
   external:aa.external,internal:aa.internal,
   eventsAt:aa.events.filter(e=>e.at===t),confirmedPivots:bb.confirmed.filter(p=>p.structConfirmedAt===t).map(p=>p.id)});
 }
-const report={schema_version:'1.0.0',analysis_version:'market_structure_advanced_v1',
+const report={schema_version:'1.0.0',analysis_version:'market_structure_advanced_v1_1',
  source_dataset_id:input.dataset_id,source_sha256:input.metadata.sha256,
  is_synthetic:input.metadata.is_synthetic,source_timeframe:input.timeframe,
  model_provenance:{ppt:'Cau_truc_nang_cao_-_Final.pptx',policy:'provisional',volume_used:false},

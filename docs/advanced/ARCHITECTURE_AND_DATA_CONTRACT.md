@@ -85,3 +85,7 @@ Provider file (original raw; do not mutate)
 - Keep `schema_version` for data and `analysis_version` for algorithm separate. A changed semantic rule requires **analysis version bump and new fixtures**, even if JSON fields do not change.
 - New schema fields should be optional or behind a major schema version; keep previous audit exports available. Never rewrite old event times after a policy change.
 - Input limit and runtime characteristics remain those of the original app (12 MB / 25k rows; the prefix-based GUI can slow down on long histories). **V5 has been tested thoroughly on 40/48-bar samples, not benchmarked for 25k candles.**
+
+## Analysis version V5.1
+
+`analysis_version=market_structure_advanced_v1_1` marks the semantic Major re-pivoting change. Dataset schema `1.0.0` and the basic `engine.js` source-locked rules remain unchanged. Historical events are recomputed causally and audit JSON files are regenerated from the same canonical 48-bar inputs, never by editing old audit event timestamps. At every prefix the UI must report `external.trend`, `internal.trend`, `external.majorHigh/majorLow`, `internal.internalHigh/internalLow` including `null` as unconfirmed. Chart MH/ML anchor markers refer to each pivot's `index`; a role change appears no earlier than the actual closed bar `at`.

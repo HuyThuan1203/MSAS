@@ -43,3 +43,8 @@
 ## Source policy & required human sign-off
 
 `ADV:S3-14` rules are locked; implementation interpretations `I` are exposed in outputs under `model_provenance.policy="provisional"`. Before trading production, supply candle-index labels for SH/SL, 1–14 Major/Internal role timeline, reversal/continuation close times, and expected gray cases to ratify assumptions. No model-produced label is a ground-truth annotation.
+
+## V5.1 Major update correction (implementation interpretation, requires human ratification)
+
+A confirmed major boundary is changed only on a closed-candle break or a pending opposite reversal.
+When a Close breaks the old Major boundary, the new Major extreme is selected from **all already structurally confirmed eligible pivots** in that breaking wave, using the price-extreme criterion; picking the last confirmed pivot can demote a Major High to a lower high (XAUUSD example in `MAJOR_PIVOT_SELECTION.md`). The nearest accepted opposite pivot before the selected extreme is paired as the candidate counterpart. This is a **provisional selection policy** because the PPT does not define a complete competing-pivot/tie-break algorithm for every real OHLC sequence. Never present the resulting timestamp and price as a user-annotated gold label. Display the source pivot index separately from the candle-close time when the Major role became known.

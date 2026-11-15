@@ -9,3 +9,5 @@ Read `.claude/skills/msas-engineering/SKILL.md` before implementing market struc
 - **Visible UI:** EN is default, VI is selectable. The chart canvas is solid `#c6d2df`, no grid; up white body 100%, down `#66bb6a` 90%, black borders 60%, black wicks 100%.
 - **Testing:** run `python scripts/qa_gate.py --require-node` where Node is installed. Browser CI smoke and Docker health gates required before production claims. Record gaps rather than unsupported PASS.
 - **Public repo safety:** never include raw confidential files, credentials, local artifacts, or source PPT binaries without explicit authorization. Keep repository scope only.
+
+- **V5.1 active Major selection:** consult `docs/advanced/MAJOR_PIVOT_SELECTION.md`. Do not promote a weaker, more recent SH in place of a stronger confirmed candidate after a Close breakout. Validate exact pivot index/time and active Major/Internal status at every replay prefix. This policy remains provisional without user-labeled OHLC ground truth.
