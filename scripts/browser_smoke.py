@@ -92,7 +92,7 @@ async def main() -> None:
                     assert await page.locator(".stream-top h2").inner_text() == "Thông báo"
                     assert await page.locator("#majorDirection").inner_text() == "TĂNG"
                     assert await page.locator("#internalDirection").inner_text() == "TĂNG"
-                    assert await page.locator("#feedMajorHigh").inner_text().startswith("3,396.648")
+                    assert (await page.locator("#feedMajorHigh").inner_text()).startswith("3,396.648")
                     await page.locator("#languageSelect").select_option("en")
                     assert await page.locator(".chart-heading h2").inner_text() == "Market structure"
                     await page.locator("#restart").click()
