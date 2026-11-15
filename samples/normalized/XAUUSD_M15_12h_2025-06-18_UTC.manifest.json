@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "xauusd_m15_20250618_0600_utc",
+  "symbol": "XAUUSD",
+  "timeframe": "M15",
+  "time_zone": "UTC",
+  "timestamp_role": "candle_open",
+  "source_sha256": "7b89bcb95d5f83418a258b0075da95913c57f637328ff1ec076a44fd76aa9ea2",
+  "source_file": "samples/raw/XAUUSD_M15_12h_2025-06-18_UTC.csv",
+  "canonical_csv": "samples/normalized/XAUUSD_M15_12h_2025-06-18_UTC.csv",
+  "canonical_json": "samples/normalized/XAUUSD_M15_12h_2025-06-18_UTC.json",
+  "row_count": 48,
+  "first_timestamp_utc": "2025-06-18T06:00:00Z",
+  "last_timestamp_utc": "2025-06-18T17:45:00Z",
+  "time_step_seconds": 900,
+  "timestamp_role_verified": false,
+  "missing_intervals": 0,
+  "duplicate_timestamps": 0,
+  "invalid_ohlc_rows": 0,
+  "volume_present": false,
+  "is_synthetic": false,
+  "unknowns": [
+    "data_provider",
+    "price_unit",
+    "session_schedule"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "MSAS: Debug Python server (8081)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/app/server.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "env": {"HOST": "127.0.0.1", "PORT": "8081", "DATA_DIR": "${workspaceFolder}/data"},
+      "justMyCode": true
+    }
+  ]
+}

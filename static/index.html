@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Market Structure Studio | MSAS V5</title>
+<link rel="stylesheet" href="/studio.css">
+</head>
+<body>
+<input id="csvFile" type="file" accept=".csv,.tsv,.txt,.json,.jsonl,.xlsx" hidden aria-label="Import price dataset" data-i18n-aria="uploadTitle">
+<main class="app viewport">
+ <div class="workspace">
+  <section class="chart-panel" aria-label="Candlestick chart and market-structure overlays" data-i18n-aria="chartAria">
+   <div class="chart-heading">
+    <div class="chart-source">
+      <div class="source-tools"><span class="source-prefix" data-i18n="data">DATA</span>
+       <select id="datasetSelect" aria-label="Select dataset" data-i18n-aria="chooseDataset"><option>Connecting…</option></select>
+       <button type="button" id="uploadData" class="upload-btn" title="Import CSV, TSV, TXT, JSON or XLSX" data-i18n-title="uploadTitle" data-i18n="upload">+ Import</button>
+       <button type="button" id="removeData" class="delete-btn" title="Remove imported dataset" aria-label="Remove imported dataset" data-i18n-title="removeTitle" data-i18n-aria="removeTitle" hidden>×</button>
+       <label class="lang-control" for="languageSelect"><span class="sr-only">Language / Ngôn ngữ</span><select id="languageSelect" aria-label="Language / Ngôn ngữ"><option value="en" selected>EN</option><option value="vi">VI</option></select></label>
+      </div>
+      <h2 data-i18n="chartTitle">Market structure</h2><div class="data-details" id="dataDetails" data-i18n="loading">Loading data…</div>
+    </div>
+    <div class="quote"><div class="last-price"><strong id="lastClose" class="mono">--</strong><span class="mono" id="lastDelta">--</span></div></div>
+   </div>
+   <div class="overlaybar"><div class="ohlc mono"><span class="field"><em>O</em><b id="openVal">--</b></span><span class="field"><em>H</em><b id="highVal">--</b></span><span class="field"><em>L</em><b id="lowVal">--</b></span><span class="field"><em>C</em><b id="closeVal">--</b></span></div><div class="layers"><span data-i18n="indicators">INDICATORS</span><button id="toggleStructure" class="layer" aria-pressed="true" type="button"><i></i><span data-i18n="structure">Structure</span></button><button data-color="gold" id="toggleInside" class="layer" aria-pressed="true" type="button"><i></i><span data-i18n="inside">Inside bar</span></button><button id="toggleRaw" class="layer" aria-pressed="false" type="button"><i></i><span data-i18n="candidates">Candidates</span></button></div></div>
+   <div id="errorbox" class="error" role="alert"></div><div id="importToast" class="import-toast" role="status" aria-live="polite"></div>
+   <div id="chartBox" class="graph"><canvas id="chart" aria-label="Candlestick chart and market-structure overlays" data-i18n-aria="chartAria" role="img"></canvas><div class="axis-legend mono" id="canvasTimeframe">M15 / CLOSED CANDLES</div><div class="tooltip hidden" id="tooltip"></div></div>
+   <div class="controls">
+    <div class="transportline"><div class="transport">
+      <button class="ibtn" id="restart" title="First candle" aria-label="First candle" data-i18n-title="firstCandle" data-i18n-aria="firstCandle"><svg viewBox="0 0 24 24"><path d="M5 4v16M20 12H8m0 0 6-6m-6 6 6 6"/></svg></button>
+      <button class="ibtn" id="prev" title="Previous candle" aria-label="Previous candle" data-i18n-title="previousCandle" data-i18n-aria="previousCandle"><svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></button>
+      <button class="mainbtn" id="play" aria-label="Play"><svg id="playIcon" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></svg><span id="playText">Play</span></button>
+      <button class="ibtn" id="next" title="Next candle" aria-label="Next candle" data-i18n-title="nextCandle" data-i18n-aria="nextCandle"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>
+      <div class="speedbox"><label for="speed" data-i18n="replaySpeed">SPEED</label><select id="speed" aria-label="Replay speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option selected value="1">1×</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option></select></div>
+    </div><div class="readout mono"><span class="index" id="progressCount">-- / --</span><strong id="timeLabel">--:--</strong></div></div>
+    <div class="timeline"><span id="firstTime" class="mono">--:--</span><input type="range" min="0" max="39" value="39" step="1" id="scrubber" class="scrubber" aria-label="Replay timeline" data-i18n-aria="timeline"><span id="lastTime" class="mono">--:--</span></div>
+   </div>
+  </section>
+  <aside class="stream" aria-label="Replay event notifications" data-i18n-aria="feedAria">
+   <div class="stream-top"><div><div class="stream-heading"><i id="livePulse" class="beacon"></i><h2 data-i18n="notifications">Notifications</h2></div><p data-i18n="updatedOnClose">Updated after each candle closes</p></div><span class="mode">REPLAY</span></div>
+   <div class="asof"><span data-i18n="candleClose">LAST CLOSED CANDLE</span><b class="mono" id="feedTime">--</b></div>
+   <div class="live-hero" id="hero"><div class="signal-type" id="heroCategory">AWAITING DATA</div><h3 id="heroTitle">--</h3><p id="heroDetail">--</p><div class="hero-time"><span id="heroMeta">--</span></div></div>
+   <div class="history-header"><b data-i18n="latestEvents">RECENT EVENTS</b><span id="eventCount">0 events</span></div>
+   <div class="signal-list" id="events" aria-live="off"></div>
+  </aside>
+ </div>
+</main>
+<dialog id="columnDialog" class="column-modal" aria-labelledby="modalTitle">
+ <form id="mappingForm" method="dialog">
+  <div class="modal-head"><h2 id="modalTitle" data-i18n="mappingTitle">Confirm column mapping</h2><p id="mappingReason" data-i18n="mappingReason">Could not identify the source columns with confidence.</p></div>
+  <div class="mapping-grid">
+   <label><span data-i18n="timestamp">Timestamp</span><select id="col_timestamp" required></select></label>
+   <label>Open<select id="col_open" required></select></label>
+   <label>High<select id="col_high" required></select></label>
+   <label>Low<select id="col_low" required></select></label>
+   <label>Close<select id="col_close" required></select></label>
+   <label><span data-i18n="volumeOptional">Volume (optional)</span><select id="col_volume"></select></label>
+  </div>
+  <label class="date-order"><span data-i18n="dateOrder">Date format</span><select id="dateOrder"><option value="auto" data-i18n="dateAuto">Auto-detect</option><option value="DMY">DD/MM/YYYY</option><option value="MDY">MM/DD/YYYY</option></select></label>
+  <div class="preview-caption" data-i18n="mappingPreview">Preview of the first three rows · verify column assignments before applying</div><div class="column-preview"><table id="columnPreview"></table></div>
+  <div class="modal-actions"><button type="button" id="cancelMap" class="modal-secondary" data-i18n="cancel">Cancel</button><button type="submit" class="modal-primary" data-i18n="applyMapping">Apply mapping</button></div>
+ </form>
+</dialog>
+<script defer src="/chart-theme.js"></script>
+<script defer src="/i18n.js"></script>
+<script defer src="/engine.js"></script>
+<script defer src="/advanced_engine.js"></script>
+<script defer src="/studio.js"></script>
+</body>
+</html>

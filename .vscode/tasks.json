@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "MSAS: Start local server (8081)",
+      "type": "shell",
+      "command": "python app/server.py",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {"HOST": "127.0.0.1", "PORT": "8081", "DATA_DIR": "${workspaceFolder}/data"}
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "MSAS: QA gate (local)",
+      "type": "shell",
+      "command": "python scripts/qa_gate.py",
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "MSAS: Docker build and run",
+      "type": "shell",
+      "command": "docker compose up --build -d",
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": [],
+      "group": "build"
+    }
+  ]
+}

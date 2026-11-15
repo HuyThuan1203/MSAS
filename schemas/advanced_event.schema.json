@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/market-structure/advanced-event/v1",
+  "title": "Causal structural event v1.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "at",
+    "kind",
+    "layer",
+    "title",
+    "detail",
+    "severity",
+    "source",
+    "refs"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "at": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "kind": {
+      "enum": [
+        "major_established",
+        "major_continuation",
+        "major_reversal",
+        "major_updated",
+        "internal_established",
+        "internal_reversal",
+        "internal_confirmed"
+      ]
+    },
+    "layer": {
+      "enum": [
+        "external",
+        "internal"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "detail": {
+      "type": "string"
+    },
+    "severity": {
+      "enum": [
+        "success",
+        "info",
+        "warning",
+        "error"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "pattern": "^ADV:"
+    },
+    "refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "bar_open_time_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "available_at_utc": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}

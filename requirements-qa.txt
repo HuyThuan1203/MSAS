@@ -1,0 +1,2 @@
+# Optional integration testing only; NOT needed by Windows portable app or Docker runtime.
+playwright>=1.53,<2
