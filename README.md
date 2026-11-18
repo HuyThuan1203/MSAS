@@ -1,4 +1,4 @@
-# Market Structure Studio V5 — Advanced Major / Internal
+# Market Structure Studio V5.2 — MSS / CISD Structural Replay
 
 **Scope:** deterministic, closed-candle market-structure study for replay/backtesting **pattern detection**. No exchange integration, BUY/SELL recommendation, or P&L inference. V5 extends V4 with major/external structure and minor/internal structure based on the new 14-slide user PPT. The original 3-candle/Inside-Bar detection semantics remain unchanged; its same-kind pivot selection is still provisional. The V5 UI localizes structured events independently of the detection logic.
 
@@ -47,6 +47,62 @@ use the `app/server.py` command in Quick start and navigate to port 8081.
 - **Browser QA:** Optional Playwright suite is documented in `docs/quality/QUALITY_TOOLCHAIN.md` and runs in GitHub Actions, not required on the company laptop. GitHub CI also builds the Docker image and checks the health endpoint.
 - **Agent Skill:** `.claude/skills/msas-engineering/SKILL.md` plus `CLAUDE.md` provide traceable conventions for Claude Code/VSCode; users can package the Skill for other assistants.
 - **VSCode:** `.vscode/tasks.json` supplies local run/QA/Docker tasks, `launch.json` supplies debugger config, and `extensions.json` recommends optional extensions (not automatically installed).
+
+## V5.2 — Close-confirmed MSS, candle-wick C, early CISD B
+
+The implementation in `static/advanced_engine.js` follows the user's reversal-decision PPT
+**Mau_hinh_xac_nhan_ao_chieu_-_Final**, slides 3-8, and the existing
+advanced structure PPT slides 3-14. The rule-by-slide matrix and unresolved choices
+are in [`docs/advanced/MSS_CISD_RULEBOOK.md`](docs/advanced/MSS_CISD_RULEBOOK.md).
+
+- **S+**: a closed candle's Close breaks the active opposite Major boundary in
+  the direction opposite the current Main trend (`Close > MH` when Main DOWN,
+  `Close < ML` when Main UP). Strong confirmed MSS: switch Main at this close,
+  keep the opposite Major, mark newly needed pivot `Not confirmed`.
+- **C**: a candle's wick pierces the same opposite Major level but its body
+  closes back inside; Main is **unchanged**. C is weak reversal effort, **not**
+  confirmation. This distinction uses **High/Low and Close**, not Close alone.
+- **B (CISD)**: the counter-trend candle Close strictly crosses the Open of
+  the first candle in the final contiguous old-direction candle group in the
+  active wave. Early behavior change, NOT a confirmed structure reversal.
+- **Tolerance = 0** for S+, C, B; equality cannot trigger a crossing.
+- The chart shows only active MH/ML and material `S+`, `C`, `B` labels. The
+  notification stream is a short high-level event feed; raw Swing/Inside Bar
+  details remain in chart and exported JSON, not every notification.
+- The **Main / Internal** state and current MH / ML / iSH / iSL are recomputed
+  at each **closed** candle. No lookahead; unformed levels remain null.
+
+The Major selection policy from V5.1 and the precise wave-boundary tie-break
+for CISD remain **provisional**. They have reproducible tests, not universal
+financial-market certification. The two 48-candle CSVs are price examples,
+**not human-labeled trading decisions**. Canonical datasets and raw hashes are
+unchanged; the analysis/audit version is `market_structure_advanced_v1_2`.
+
+### One-file offline demo — no Docker, Python or network needed by the recipient
+
+`dist/MSAS_Standalone_Offline.html` includes the current engine, EN/VI UI,
+all four approved demo datasets, local file import/mapping and JSON export.
+It works in a current Chromium-based browser without sending input data to a
+remote server. XLSX uses its built-in first-sheet reader; timestamps/columns
+which cannot be inferred safely must be confirmed by the user.
+
+To rebuild the standalone HTML from the repository modules:
+
+```powershell
+& "C:\Program Files\Python310\python.exe" scripts/build_standalone.py
+```
+
+To run test suites without Docker:
+
+```powershell
+& "C:\Program Files\Python310\python.exe" scripts/qa_gate.py
+node tests/test_mss_cisd.js
+node tests/test_major_selection.js
+```
+
+Playwright is optional locally (`python scripts/offline_smoke.py` after QA
+requirements/Chromium install); GitHub CI runs it on its own hosted runner.
+Docker health and Windows LF/CRLF source-integrity checks remain in CI.
 
 ## V5.1 — Major/Internal status and pivot-anchored chart labels
 

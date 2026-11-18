@@ -36,3 +36,8 @@ The browser suite boots an isolated local server with a temporary port and data 
 5. Run `python scripts/qa_gate.py --require-node` before commit, then validate browser and Docker in CI.
 6. Save raw CSV verbatim; normalize without inventing Volume or missing candles; update hashes only for new approved data.
 7. Publish via feature branch and PR. Do not force-push `main`; require CI green and review for algorithm changes.
+
+## V5.2 MSS/CISD acceptance
+
+`tests/test_mss_cisd.js` tests source-backed S+/C/B and tolerance=0, mirror symmetry, multi-cluster CISD references, exact no-lookahead, and four benchmark samples.
+`python scripts/build_standalone.py` produces a single offline HTML from canonical source modules without npm or network. `python scripts/offline_smoke.py` exercises the full HTML in Chromium at desktop/mobile resolution (supports local browser environment only); this check is **required** in GitHub Actions. The raw data hash and Windows `core.autocrlf` checks are unchanged. Refer to `docs/advanced/MSS_CISD_RULEBOOK.md` for the S/I/U rule ledger and explicitly provisional wave-boundary policy.

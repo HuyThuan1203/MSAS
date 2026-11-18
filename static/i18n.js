@@ -28,9 +28,36 @@ Object.assign(UI.vi,{
  majorHighLabel:'Đỉnh quan trọng',majorLowLabel:'Đáy quan trọng',notConfirmed:'Chưa xác nhận',
  statePending:'Chờ Major mới',stateConfirmed:'Đã xác nhận',statusAt:'lúc {time}',
 });
+Object.assign(UI.en,{
+ exportSnapshot:'↓ JSON',exportTitle:'Export current closed-candle analysis and visible history',exportDone:'Analysis snapshot exported.',
+ helpTitle:'Using MSAS Offline',helpIntro:'All price files stay inside this browser tab. No server, accounts or network requests.',
+ helpFiles:'Supported formats: CSV, TSV, TXT, JSON, JSONL and XLSX. Volume is optional. Each row represents one CLOSED candle.',
+ helpMapping:'If columns or dates are unclear, confirm their mapping and DMY/MDY in the dialog. Duplicated timestamps and invalid OHLC are rejected.',
+ helpSession:'Imported files are held in this tab only. Export a JSON analysis snapshot before closing. This is REPLAY, not live exchange data.',
+ helpRule:'Major/Internal logic is provisional based on the PPT examples. Unknown trend stays UNKNOWN; no lookahead or trading advice.',closeHelp:'Close'
+});
+Object.assign(UI.vi,{
+ exportSnapshot:'↓ JSON',exportTitle:'Xuất kết quả cấu trúc tại nến hiện tại cùng lịch sử đã xem',exportDone:'Đã xuất kết quả phân tích.',
+ helpTitle:'Hướng dẫn MSAS Offline',helpIntro:'Dữ liệu giá chỉ ở trong tab trình duyệt này. Không gửi lên máy chủ, không cần mạng.',
+ helpFiles:'Hỗ trợ CSV, TSV, TXT, JSON, JSONL và XLSX. Volume có thể không có. Mỗi dòng là một nến ĐÃ ĐÓNG.',
+ helpMapping:'Nếu tên cột hoặc ngày tháng chưa rõ, hãy chọn ánh xạ và DMY/MDY. Dữ liệu trùng thời gian hoặc OHLC sai sẽ bị từ chối.',
+ helpSession:'Dữ liệu nhập chỉ lưu trong tab đang mở. Hãy xuất JSON trước khi đóng. Đây là phát lại, KHÔNG phải dữ liệu trực tiếp.',
+ helpRule:'Major/Internal dùng quy tắc PPT đang ở mức tạm thời. Không xác định là UNKNOWN, không tự gọi sideway; không nhìn trước nến.',closeHelp:'Đóng'
+});
+// Source-locked MSS/CISD labels; VI is authored, not machine-translated.
+Object.assign(UI.en,{
+ noSignal:'No new major structure signal',
+ noSignalDetail:'No S+, C, B or structural level update on this closed candle. Current Main/Internal states remain visible above.',
+ noneCount:'NO MAJOR SIGNAL',latestEvents:'KEY STRUCTURAL EVENTS'
+});
+Object.assign(UI.vi,{
+ noSignal:'Không có tín hiệu cấu trúc quan trọng mới',
+ noSignalDetail:'Nến này không có S+, C, B hoặc cập nhật Major. Xem trạng thái cấu trúc chính/phụ đang hiệu lực phía trên.',
+ noneCount:'KHÔNG CÓ TÍN HIỆU CHÍNH',latestEvents:'SỰ KIỆN CẤU TRÚC CHÍNH'
+});
 const KIND={
- en:{major_established:'MAIN · ESTABLISHED',major_continuation:'MAIN · CONTINUATION',major_reversal:'MAIN · REVERSAL',major_updated:'MAIN · LEVELS UPDATED',internal_established:'INTERNAL · IDENTIFIED',internal_reversal:'INTERNAL · REVERSAL',internal_confirmed:'INTERNAL · CONFIRMED',start:'REPLAY STARTED',inside:'INSIDE BAR',breakout:'MOTHER RANGE BREAK',swing:'LOCAL SWING',replace:'SWING REPLACEMENT',pair:'OPPOSITE SWING',classification:'STRUCTURE',trend:'TREND CHANGE'},
- vi:{major_established:'CHÍNH · KHỞI TẠO',major_continuation:'CHÍNH · TIẾP DIỄN',major_reversal:'CHÍNH · ĐẢO CHIỀU',major_updated:'CHÍNH · MAJOR CẬP NHẬT',internal_established:'PHỤ · NHẬN DIỆN',internal_reversal:'PHỤ · ĐẢO CHIỀU',internal_confirmed:'PHỤ · XÁC NHẬN',start:'KHỞI TẠO',inside:'INSIDE BAR',breakout:'PHÁ BIÊN',swing:'SWING CỤC BỘ',replace:'DỜI SWING',pair:'XÁC NHẬN CẶP',classification:'CẤU TRÚC',trend:'ĐỔI XU HƯỚNG'}
+ en:{major_established:'MAIN · ESTABLISHED',major_continuation:'MAIN · CONTINUATION',major_reversal:'MSS · S+ STRONG',major_updated:'MAIN · LEVELS UPDATED',internal_established:'INTERNAL · IDENTIFIED',internal_reversal:'INTERNAL · REVERSAL',internal_confirmed:'INTERNAL · CONFIRMED',mss_weak:'MSS · C WEAK',cisd:'CISD · B EARLY',start:'REPLAY STARTED',inside:'INSIDE BAR',breakout:'MOTHER RANGE BREAK',swing:'LOCAL SWING',replace:'SWING REPLACEMENT',pair:'OPPOSITE SWING',classification:'STRUCTURE',trend:'TREND CHANGE'},
+ vi:{major_established:'CHÍNH · KHỞI TẠO',major_continuation:'CHÍNH · TIẾP DIỄN',major_reversal:'MSS · S+ MẠNH',major_updated:'CHÍNH · MAJOR CẬP NHẬT',internal_established:'PHỤ · NHẬN DIỆN',internal_reversal:'PHỤ · ĐẢO CHIỀU',internal_confirmed:'PHỤ · XÁC NHẬN',mss_weak:'MSS · C YẾU',cisd:'CISD · B SỚM',start:'KHỞI TẠO',inside:'INSIDE BAR',breakout:'PHÁ BIÊN',swing:'SWING CỤC BỘ',replace:'DỜI SWING',pair:'XÁC NHẬN CẶP',classification:'CẤU TRÚC',trend:'ĐỔI XU HƯỚNG'}
 };
 function text(key,lang='en',params={}){
  let tmpl=(UI[lang]||UI.en)[key]??UI.en[key]??key;
@@ -57,7 +84,9 @@ function eventText(e,lang='en'){
  case 'trend':return {title:d.direction==='up'?'UP structure confirmed':d.direction==='down'?'DOWN structure confirmed':'Structure returned to UNKNOWN',detail:d.direction==='up'?'Latest accepted pivots satisfy HH + HL.':d.direction==='down'?'Latest accepted pivots satisfy LH + LL.':'The latest pivot pairs are not aligned; do not infer a sideways market.'};
  case 'major_established':return {title:`Main ${direction} structure established`,detail:`Major High ${price(d.majorHigh)}; Major Low ${price(d.majorLow)}. Based on accepted alternating swings and HH+HL / LH+LL.`};
  case 'major_continuation':return {title:`Main ${direction} continuation`,detail:`Close ${price(d.close)} crossed ${up?'above Major High':'below Major Low'} ${price(d.brokenLevel)}. Waiting for an eligible new swing before updating the Major pair.`};
- case 'major_reversal':return {title:`Main structure reversed to ${direction}`,detail:`Close ${price(d.close)} crossed ${up?'above Major High':'below Major Low'} ${price(d.brokenLevel)}. Retained Major ${up?'Low':'High'}: ${price(d.retainedLevel)}; new Major ${up?'High':'Low'} is pending.`};
+ case 'major_reversal':return {title:`S+ · Strong MSS: Main shifts to ${direction}`,detail:`Close ${price(d.close)} ${up?'exceeds Major High':'breaks below Major Low'} ${price(d.brokenLevel)} (tolerance 0). Opposite Major retained at ${price(d.retainedLevel)}; new pivot waits for an eligible swing.`};
+ case 'mss_weak':return {title:'C · Weak MSS attempt (wick only)',detail:`Wick ${price(d.wick)} crossed ${up?'Major High':'Major Low'} ${price(d.brokenLevel)}, but the candle body closed back inside at ${price(d.close)}. Main ${dir(d.mainTrend)} is unchanged.`};
+ case 'cisd':return {title:'B · CISD (early delivery shift)',detail:`Close ${price(d.close)} crossed the first Open ${price(d.referenceOpen)} of the last ${d.mainTrend==='down'?'bearish':'bullish'} candle cluster (bar ${d.referenceStartIndex}). Main ${dir(d.mainTrend)} is NOT reversed.`};
  case 'major_updated':return {title:'Major High / Low updated',detail:`Major High ${price(d.majorHigh)}; Major Low ${price(d.majorLow)}. Levels use the strongest already confirmed eligible swing of the break wave and its confirmed corrective or preceding opposite pivot.`};
  case 'internal_established':return {title:`Internal ${direction} structure identified`,detail:`Accepted internal pivots satisfy ${up?'HH + HL':'LH + LL'} inside the Major range; main trend is unchanged.`};
  case 'internal_reversal':return {title:`Internal reversal to ${direction} · pending`,detail:`Close ${price(d.close)} crossed ${up?'Internal SH':'Internal SL'} ${price(d.brokenLevel)}. Main ${dir(d.majorDirection)} is unchanged; waiting for ${up?'HH + HL':'LH + LL'} confirmation.`};
@@ -73,3 +102,4 @@ function serverError(error,lang='en'){
 }
 return {UI,KIND,text,eventLabel,eventText,serverError};
 });
+

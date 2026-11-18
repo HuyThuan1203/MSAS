@@ -6,7 +6,7 @@ const I=window.MSASI18N;
 const THEME=window.MSASChartTheme;
 if(!I||!THEME)throw Error('Missing MSAS UI localization or chart theme module.');
 const $=id=>document.getElementById(id);
-// Price data comes from the local HTTP API (Python Portable or Docker), never from an embedded CSV.
+// Data is imported using the local MSAS API; offline standalone installs a same-origin browser adapter.
 let datasetId='btcusd-sample', datasetDetails=null, fileWaiting=null;
 const number=n=>Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const pivotPrice=n=>Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6});
@@ -41,7 +41,14 @@ function setLanguage(value){
   option.textContent=option.dataset.rawName?.replace(/\(mẫu\)/i,lang==='en'?'(sample)':'(mẫu)')||option.textContent;
  }
 }
-const PRIORITY={major_reversal:16,major_updated:15,major_continuation:14,internal_reversal:13,internal_confirmed:12,major_established:11,internal_established:10,trend:8,pair:7,classification:6,replace:5,breakout:4,swing:3,inside:2,start:1};
+// Notifications intentionally show only material structural decisions and
+// user-defined confirmation signals. Raw local pivots and Inside Bars remain
+// available on the chart/JSON audit; they do not flood the event feed.
+const IMPORTANT_KINDS=new Set(['major_reversal','major_updated','major_continuation',
+  'major_established','internal_reversal','internal_confirmed','mss_weak','cisd']);
+const PRIORITY={major_reversal:100,mss_weak:90,cisd:80,major_updated:65,
+  major_continuation:55,internal_reversal:48,internal_confirmed:42,
+  major_established:35,internal_established:0};
 const PLAY_ICON='<path d="m8 5 11 7-11 7z"/>';
 const PAUSE_ICON='<rect x="6.5" y="5" width="3.5" height="14" rx="1"/><rect x="14" y="5" width="3.5" height="14" rx="1"/>';
 const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -54,7 +61,9 @@ const lerp=(a,b,t)=>a+(b-a)*t;
 function severity(ev){
  if(ev.kind==='swing'&&ev.severity==='error')return '#f87988';
  if(ev.kind==='swing'&&ev.severity==='neutral')return '#9cabb8';
- if(ev.kind==='major_reversal')return '#f87988';
+ if(ev.kind==='major_reversal')return ev.data?.direction==='up'?'#55e4be':'#fa7989';
+ if(ev.kind==='mss_weak')return '#ecc17f';
+ if(ev.kind==='cisd')return '#9bb6ff';
  if(ev.kind.startsWith('major_'))return '#80b7ff';
  if(ev.kind.startsWith('internal_'))return '#e8bc82';
  if(ev.kind==='trend')return ev.data?.direction==='down'?'#f87988':ev.data?.direction==='up'?'#46e2bd':'#a7b4d6';
@@ -63,7 +72,13 @@ function severity(ev){
  if(ev.kind==='swing')return '#95b5ff';
  return '#95afc0';
 }
-function currentEventList(){return analysis.events.filter(ev=>ev.at===current).sort((a,b)=>(PRIORITY[b.kind]||0)-(PRIORITY[a.kind]||0));}
+function materialEvents(){
+ return analysis?.advanced?.events.filter(ev=>IMPORTANT_KINDS.has(ev.kind))||[];
+}
+function currentEventList(){
+ return materialEvents().filter(ev=>ev.at===current)
+   .sort((a,b)=>(PRIORITY[b.kind]||0)-(PRIORITY[a.kind]||0));
+}
 function getAnalysis(i){
  if(cache.has(i))return cache.get(i);
  const result=E.analyzePrefix(candles,i);
@@ -111,7 +126,7 @@ function pivotValue(p){return p?pivotPrice(p.price):t('notConfirmed');}
 function pivotWithTime(p){
  if(!p)return t('notConfirmed');
  const raw=candles[p.index]?.time;
- return pivotPrice(p.price)+(raw?' · '+raw.slice(0,16).replace('T',' ')+' UTC':'');
+ return pivotPrice(p.price)+(raw?' · '+raw.slice(0,16).replace('T',' ')+(datasetDetails?.meta?.timezone?' '+datasetDetails.meta.timezone:''):'');
 }
 function updateStructureSnapshot(){
  const a=analysis?.advanced;if(!a)return;
@@ -158,8 +173,9 @@ function updateFeed(animate){
  $('heroTitle').textContent=leadTranslated?.title||t('noSignal');
  $('heroDetail').textContent=leadTranslated?.detail||t('noSignalDetail');
  $('heroMeta').textContent=t('closeMeta',{time:time(candles[lead?lead.at:current].time)});
- const history=[...analysis.events].filter(ev=>ev!==lead).sort((a,b)=>b.at-a.at || (PRIORITY[b.kind]||0)-(PRIORITY[a.kind]||0)).slice(0,4);
- $('eventCount').textContent=t('eventCount',{count:analysis.events.length});
+ const important=materialEvents();
+ const history=important.filter(ev=>ev!==lead).sort((a,b)=>b.at-a.at || (PRIORITY[b.kind]||0)-(PRIORITY[a.kind]||0)).slice(0,4);
+ $('eventCount').textContent=t('eventCount',{count:important.length});
  const root=$('events');
  if(!history.length){root.innerHTML='<div class="empty">'+escaped(t('emptyEvents'))+'</div>';return;}
  root.innerHTML=history.map(ev=>{
@@ -306,6 +322,32 @@ function draw(now=performance.now()){
    ctx.fillStyle='#fff';ctx.fillText(label,bx,by+15);ctx.restore();
   }
  }
+ // PPT reversal labels: one high-priority label per closed candle.
+ // S+ = CLOSE beyond active opposing Major (main trend flips); C = wick-only
+ // rejection with body inside; B = CISD delivery shift without Major reversal.
+ if(layers.structure&&analysis.advanced){
+  const labels=analysis.advanced.events.filter(ev=>
+    ['major_reversal','mss_weak','cisd'].includes(ev.kind) && ev.at<=current &&
+    ev.at>=first && ev.at<first+count);
+  const oneByCandle=new Map();
+  for(const e of labels){
+   const previous=oneByCandle.get(e.at);
+   if(!previous||(PRIORITY[e.kind]||0)>(PRIORITY[previous.kind]||0))oneByCandle.set(e.at,e);
+  }
+  for(const ev of [...oneByCandle.values()].slice(-8)){
+   const candle=candles[ev.at],x=xAt(ev.at);
+   const upward=ev.data?.direction==='up',strong=ev.kind==='major_reversal';
+   const label=strong?'S+':ev.kind==='mss_weak'?'C':'B';
+   const fill=strong?(upward?'#047760':'#b73c52'):ev.kind==='mss_weak'?'#9a6d2a':'#425ca9';
+   const isBelow=upward,anchorY=yAt(isBelow?candle.low:candle.high);
+   const y=Math.max(top+3,Math.min(bottom-23,anchorY+(isBelow?11:-31)));
+   ctx.save();ctx.fillStyle=fill;ctx.font='bold 11px ui-monospace,monospace';
+   const text=label+(strong?(upward?' ↑':' ↓'):'');
+   const bw=ctx.measureText(text).width+14;
+   ctx.beginPath();ctx.roundRect(x-bw/2,y,bw,22,5);ctx.fill();
+   ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(text,x,y+15);ctx.restore();
+  }
+ }
  // Connect the live event to its actual historical pivot; this is a visual pulse only.
  if(tr&&tr.flash&&p<1){
   const ev=currentEventList()[0];
@@ -364,7 +406,7 @@ function loadDataset(payload, initialIndex=0){
  stepTo(Math.min(initialIndex,candles.length-1),{animate:false});
 }
 async function apiJSON(path,options){
- const resp=await fetch(path,{cache:'no-store',...options});
+ const resp=window.MSASOfflineAPI ? await window.MSASOfflineAPI.fetch(path,options) : await fetch(path,options);
  let body;try{body=await resp.json()}catch(e){throw Error(t('invalidServer'));}
  if(!resp.ok){const err=new Error(body.error||t('requestFailed'));err.payload=body;throw err;}
  return body;
@@ -467,6 +509,29 @@ $('removeData').addEventListener('click',async()=>{
  try{await apiJSON('/api/datasets/'+encodeURIComponent(datasetId),{method:'DELETE'});await syncDatasetList('btcusd-sample');await switchDataset('btcusd-sample',15);popupNotice(t('importRemoved'));}
  catch(err){setError(err.message);}
 });
+// Share a point-in-time, closed-candle analysis report. No future candle data.
+$('exportAudit').addEventListener('click',()=>{
+ if(!candles.length||!analysis)return;
+ const a=analysis.advanced,info={
+  format:'msas-replay-snapshot-v2', analysis_version:'market_structure_advanced_v1_2',
+  exported_at:new Date().toISOString(), offline:!!window.MSASOfflineAPI, market_data_source:source,
+  dataset:datasetDetails?.dataset||null, metadata:datasetDetails?.meta||null,
+  warnings:datasetDetails?.warnings||[], last_closed_index:current,
+  last_closed_time:candles[current].time,
+  candles:candles.slice(0,current+1),
+  main:a.external, internal:a.internal, mss:a.mss, cisd:a.cisd, roleChanges:a.roleChanges,
+  acceptedSwings:analysis.confirmed,events:analysis.events,
+  policy:{source:'ADV S3-14 + REV S3-8',majorSelection:'provisional',mssTolerance:0,noLookahead:true},
+  note:'Replay pattern assessment. No financial advice; Main/Internal rules are provisional.'
+ };
+ const blob=new Blob([JSON.stringify(info,null,2)],{type:'application/json;charset=utf-8'});
+ const url=URL.createObjectURL(blob);const link=document.createElement('a');
+ link.href=url;link.download='MSAS_'+String(datasetId).replace(/[^a-z0-9_-]/gi,'_')+'_bar'+(current+1)+'.json';
+ document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+ popupNotice(t('exportDone'));
+});
+$('helpData').addEventListener('click',()=>{$('helpDialog').showModal();});
+$('closeHelp').addEventListener('click',()=>{$('helpDialog').close();});
 $('cancelMap').addEventListener('click',()=>{$('columnDialog').close();fileWaiting=null;});
 $('mappingForm').addEventListener('submit',event=>{
  event.preventDefault();
@@ -498,3 +563,4 @@ refreshStaticLocale();
  try{await syncDatasetList('btcusd-sample');await switchDataset('btcusd-sample',15);}catch(err){setError(t('serverUnavailable',{message:I.serverError(err,lang)}));}
 })();
 })();
+

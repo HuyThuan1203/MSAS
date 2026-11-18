@@ -11,6 +11,10 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
 const VALID_TRENDS=new Set(['unknown','up','down']);
+// PPT 'Mau_hinh_xac_nhan_ao_chieu_-_Final' slide 8: zero tolerance.
+// A wick only is a weak MSS attempt (C); only a CLOSE strictly beyond the
+// active Major confirms MSS S+ and reverses the main trend.
+const MSS_TOLERANCE=0;
 const level=p=>p?{id:p.id,index:p.index,type:p.type,price:p.price,confirmedAt:p.structConfirmedAt??p.confirmedAt??null}:null;
 const latest=(pivots,type)=>{for(let i=pivots.length-1;i>=0;i--)if(pivots[i].type===type)return pivots[i];return null;};
 const earlierOpposite=(pivots,p)=>{for(let i=pivots.length-1;i>=0;i--){const q=pivots[i];if(q.type!==p.type&&q.index<p.index)return q;}return null;};
@@ -21,7 +25,9 @@ function pairTrend(pivots){
  if(H>0&&L>0)return 'up';if(H<0&&L<0)return 'down';return 'unknown';
 }
 function makeState(){return {
- at:-1,previousClose:null,history:[],events:[],roleChanges:[],
+ at:-1,previousClose:null,history:[],events:[],roleChanges:[],closed:[],
+ mss:{tolerance:MSS_TOLERANCE,last:null,lastWeak:null,weakAttempt:null},
+ cisd:{reference:null,last:null,emitted:[]},
  external:{trend:'unknown',phase:'uninitialized',majorHigh:null,majorLow:null,breakAt:null,breakLevel:null},
  internal:{trend:'unknown',phase:'uninitialized',internalHigh:null,internalLow:null,protectedHigh:null,protectedLow:null,pendingDirection:null,pendingBreakAt:null,confirmed:false},
  segmentStart:-1
@@ -144,14 +150,87 @@ function pendingMajorPair(s,direction){
  }
  return null;
 }
+/** Most recent candle cluster moving in the OLD main trend, within the latest
+ * eligible swing wave. The Open of its FIRST candle is the CISD reference.
+ * The wave boundary uses confirmed opposite swing evidence only, never future
+ * pivots. See REV slides 5-8; the exact wave-boundary tie-break is provisional.
+ */
+function lastOldDirectionCluster(s,at,trend){
+ const oldBearish=trend==='down';
+ const oppositeType=oldBearish?'SH':'SL';
+ const opposite=s.history.filter(p=>p.type===oppositeType).at(-1);
+ const waveStart=Math.max(0,s.segmentStart,opposite?.index??0);
+ const oldDirection=c=>c && Number.isFinite(c.open)&&
+    (oldBearish?c.close<c.open:c.close>c.open);
+ let end=-1;
+ for(let i=at-1;i>=waveStart;i--){if(oldDirection(s.closed[i])){end=i;break;}}
+ if(end<0)return null;
+ let start=end;
+ while(start-1>=waveStart&&oldDirection(s.closed[start-1]))start--;
+ return {direction:trend,startIndex:start,endIndex:end,open:s.closed[start].open,
+         waveStartIndex:waveStart,opposingSwingId:opposite?.id??null};
+}
+function scanReversalSignals(s,at,bar,previousMajor){
+ const {trend,majorHigh,majorLow}=previousMajor;
+ if(!['up','down'].includes(trend)||!Number.isFinite(bar.open))return;
+ const isDown=trend==='down';
+ const threshold=isDown?majorHigh:majorLow;
+ if(threshold&&Number.isFinite(isDown?bar.high:bar.low)){
+  // C: only wick crosses the Major boundary; the body stays inside it.
+  const wickBreak=isDown?bar.high>threshold.price+MSS_TOLERANCE:bar.low<threshold.price-MSS_TOLERANCE;
+  const bodyInside=isDown?bar.open<=threshold.price && bar.close<threshold.price:
+                           bar.open>=threshold.price && bar.close>threshold.price;
+  const weak=wickBreak&&bodyInside;
+  const key=trend+':'+threshold.id;
+  if(weak&&s.mss.weakAttempt!==key){
+   const direction=isDown?'up':'down';
+   const ev=log(s,at,'mss_weak','external','MSS C · nỗ lực đảo chiều yếu',
+      `Râu nến vượt ${isDown?'Major High':'Major Low'} ${threshold.price}, nhưng Close ${bar.close} trở lại biên. Main ${trend==='up'?'TĂNG':'GIẢM'} giữ nguyên.`,
+      [threshold.id],'REV:S4,S8','warning',
+      {label:'C',direction,mainTrend:trend,close:bar.close,wick:isDown?bar.high:bar.low,
+       brokenLevel:threshold.price,majorPivotId:threshold.id,confirmed:false,tolerance:MSS_TOLERANCE});
+   s.mss.lastWeak={at,label:'C',eventId:ev.id,majorPivotId:threshold.id};
+  }
+  s.mss.weakAttempt=weak?key:null;
+ }else s.mss.weakAttempt=null;
+ // B: this candle must oppose the old direction; a close through the FIRST
+ // old-direction candle's Open of the LAST contiguous group is required.
+ const ref=lastOldDirectionCluster(s,at,trend);
+ s.cisd.reference=ref;
+ if(!ref)return;
+ const reversesDelivery=isDown?bar.close>bar.open:bar.close<bar.open;
+ const crossed=isDown?bar.close>ref.open+MSS_TOLERANCE:bar.close<ref.open-MSS_TOLERANCE;
+ const key=trend+':'+ref.startIndex;
+ if(reversesDelivery&&crossed&&!s.cisd.emitted.includes(key)){
+  const direction=isDown?'up':'down';
+  const ev=log(s,at,'cisd','delivery','CISD B · thay đổi hành vi giá',
+    `Close ${bar.close} vượt Open ${ref.open} của nến đầu cụm ${trend==='down'?'GIẢM':'TĂNG'} cuối cùng. Đây chỉ là tín hiệu sớm; Major vẫn ${trend==='up'?'TĂNG':'GIẢM'}.`,
+    [],'REV:S5-S8','warning',
+    {label:'B',direction,mainTrend:trend,close:bar.close,referenceOpen:ref.open,
+     referenceStartIndex:ref.startIndex,referenceEndIndex:ref.endIndex,
+     waveStartIndex:ref.waveStartIndex,confirmed:false,tolerance:MSS_TOLERANCE});
+  s.cisd.emitted.push(key);
+  s.cisd.last={at,label:'B',eventId:ev.id,referenceOpen:ref.open,
+                referenceStartIndex:ref.startIndex,majorDirectionUnchanged:true};
+ }
+}
 function cross(prev,now,threshold,direction){
  if(threshold===null||threshold===undefined)return false;
  return direction==='up'?(now>threshold&&(prev===null||prev<=threshold)):(now<threshold&&(prev===null||prev>=threshold));
 }
-function advance(s,at,close,newlyConfirmed=[]){
+function advance(s,at,candleOrClose,newlyConfirmed=[]){
+ // Numeric close-only synthetic fixtures are supported for structural tests.
+ // They cannot generate candle-shape (C) or Open/Close (B) labels.
+ const raw=typeof candleOrClose==='number'?{close:candleOrClose}:candleOrClose;
+ const close=raw?.close;
  if(!Number.isFinite(close))throw Error('Giá đóng cửa phải hữu hạn.');
+ const bar={open:Number.isFinite(raw.open)?raw.open:null,
+            high:Number.isFinite(raw.high)?raw.high:null,
+            low:Number.isFinite(raw.low)?raw.low:null,close};
+ s.closed.push(bar);
  if(at!==s.at+1)throw Error('Phải xử lý từng nến đã đóng theo thứ tự, không bỏ qua hoặc quay ngược.');
  const prev=s.previousClose,external=s.external,internal=s.internal;
+ const majorBefore={trend:external.trend,majorHigh:external.majorHigh,majorLow:external.majorLow};
  // Price breaches are evaluated against levels known BEFORE the current candle closed.
  if(external.trend!=='unknown'){
   const h=external.majorHigh,l=external.majorLow;
@@ -163,7 +242,9 @@ function advance(s,at,close,newlyConfirmed=[]){
    s.segmentStart=at;clearInternal(s);
    log(s,at,'major_reversal','external','Cấu trúc chính đảo chiều TĂNG → GIẢM',
        `Giá đóng ${close} thấp hơn Major Low ${oldLow.price}; giữ Major High ${h?.price??'chưa có'}, Major Low mới chờ xác nhận.`,
-       [h?.id,oldLow.id].filter(Boolean),'ADV:S3,S7,S13-14','error',{direction:'down',close,brokenLevel:oldLow.price,retainedLevel:h?.price??null});
+       [h?.id,oldLow.id].filter(Boolean),'ADV:S3,S7,S13-14;REV:S3,S8','error',
+       {label:'S+',direction:'down',close,brokenLevel:oldLow.price,retainedLevel:h?.price??null,
+        majorPivotId:oldLow.id,confirmed:true,tolerance:MSS_TOLERANCE});
   }else if(external.trend==='down'&&h&&cross(prev,close,h.price,'up')){
    const oldHigh=h;
    changeRole(s,at,h,'major_high','broken_major_high','external_reversal');
@@ -172,7 +253,9 @@ function advance(s,at,close,newlyConfirmed=[]){
    s.segmentStart=at;clearInternal(s);
    log(s,at,'major_reversal','external','Cấu trúc chính đảo chiều GIẢM → TĂNG',
        `Giá đóng ${close} cao hơn Major High ${oldHigh.price}; giữ Major Low ${l?.price??'chưa có'}, Major High mới chờ xác nhận.`,
-       [oldHigh.id,l?.id].filter(Boolean),'ADV:S3,S7,S14','success',{direction:'up',close,brokenLevel:oldHigh.price,retainedLevel:l?.price??null});
+       [oldHigh.id,l?.id].filter(Boolean),'ADV:S3,S7,S14;REV:S3,S8','success',
+       {label:'S+',direction:'up',close,brokenLevel:oldHigh.price,retainedLevel:l?.price??null,
+        majorPivotId:oldHigh.id,confirmed:true,tolerance:MSS_TOLERANCE});
   }else if(external.phase==='confirmed'&&h&&l){
    if(external.trend==='up'&&cross(prev,close,h.price,'up')){
     external.phase='awaiting_major_high';external.breakAt=at;external.breakLevel=h.price;
@@ -200,6 +283,16 @@ function advance(s,at,close,newlyConfirmed=[]){
     }
    }
   }
+ }
+ // A confirmed S+ takes priority over weak C / early B on this same candle.
+ // C and B never switch external.trend and never create Major pivots.
+ if(majorBefore.trend!=='unknown'&&external.trend!==majorBefore.trend){
+  const ev=s.events.find(e=>e.at===at&&e.kind==='major_reversal');
+  s.mss.last={at,label:'S+',direction:external.trend,eventId:ev?.id??null,
+              brokenLevel:ev?.data?.brokenLevel??null};
+  s.mss.weakAttempt=null;s.cisd.reference=null;
+ }else{
+  scanReversalSignals(s,at,bar,majorBefore);
  }
  // Only pivots which are structurally confirmed by THIS closed candle may enter the ledger.
  for(const p of newlyConfirmed){
@@ -247,10 +340,15 @@ function analysisFromAccepted(candles,accepted,upto){
   grouped.get(at).push(p);
  }
  const state=makeState();
- for(let t=0;t<=end;t++)advance(state,t,candles[t].close,grouped.get(t)||[]);
- return {end,external:state.external,internal:state.internal,events:state.events,roleChanges:state.roleChanges,
+ for(let t=0;t<=end;t++)advance(state,t,candles[t],grouped.get(t)||[]);
+ return {end,external:state.external,internal:state.internal,
+         mss:{tolerance:MSS_TOLERANCE,last:state.mss.last,lastWeak:state.mss.lastWeak},
+         cisd:{reference:state.cisd.reference,last:state.cisd.last},
+         events:state.events,roleChanges:state.roleChanges,
          acceptedCount:state.history.length,policy:{source:'ADV PPT S3-S14',majorSelection:'strongest-confirmed-extreme-in-closed-break-wave (provisional)',
-            initialMajor:'latest confirmed trend pair',closeBreak:'strict',noLookahead:true},
+            initialMajor:'latest confirmed trend pair',closeBreak:'strict',tolerance:0,
+            mssSource:'REV S3-S4,S8',cisdSource:'REV S5-S8',
+            cisdWaveBoundary:'latest eligible opposite pivot (provisional)',noLookahead:true},
          _state:state};
 }
 function analyzeAdvancedPrefix(candles,upto,base){
@@ -263,5 +361,6 @@ function analyzeAdvancedPrefix(candles,upto,base){
  }
  return analysisFromAccepted(candles,base.confirmed,end);
 }
-return {makeState,advance,analysisFromAccepted,analyzeAdvancedPrefix,pairTrend};
+return {makeState,advance,analysisFromAccepted,analyzeAdvancedPrefix,pairTrend,lastOldDirectionCluster,MSS_TOLERANCE};
 });
+

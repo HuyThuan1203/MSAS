@@ -1,91 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="dark">
-<title>Market Structure Studio | MSAS V5</title>
-<link rel="stylesheet" href="/studio.css">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="dark" name="color-scheme"/>
+<meta content="no-referrer" name="referrer"/>
+<!-- Local MSAS UI; native offline single-file build is generated separately. -->
+<title>MSAS — Market Structure Replay</title>
+<link href="/studio.css" rel="stylesheet"/>
 </head>
 <body>
-<input id="csvFile" type="file" accept=".csv,.tsv,.txt,.json,.jsonl,.xlsx" hidden aria-label="Import price dataset" data-i18n-aria="uploadTitle">
+<input accept=".csv,.tsv,.txt,.json,.jsonl,.xlsx" aria-label="Import price dataset" data-i18n-aria="uploadTitle" hidden="" id="csvFile" type="file"/>
 <main class="app viewport">
- <div class="workspace">
-  <section class="chart-panel" aria-label="Candlestick chart and market-structure overlays" data-i18n-aria="chartAria">
-   <div class="chart-heading">
-    <div class="chart-source">
-      <div class="source-tools"><span class="source-prefix" data-i18n="data">DATA</span>
-       <select id="datasetSelect" aria-label="Select dataset" data-i18n-aria="chooseDataset"><option>Connecting…</option></select>
-       <button type="button" id="uploadData" class="upload-btn" title="Import CSV, TSV, TXT, JSON or XLSX" data-i18n-title="uploadTitle" data-i18n="upload">+ Import</button>
-       <button type="button" id="removeData" class="delete-btn" title="Remove imported dataset" aria-label="Remove imported dataset" data-i18n-title="removeTitle" data-i18n-aria="removeTitle" hidden>×</button>
-       <label class="lang-control" for="languageSelect"><span class="sr-only">Language / Ngôn ngữ</span><select id="languageSelect" aria-label="Language / Ngôn ngữ"><option value="en" selected>EN</option><option value="vi">VI</option></select></label>
-      </div>
-      <h2 data-i18n="chartTitle">Market structure</h2><div class="data-details" id="dataDetails" data-i18n="loading">Loading data…</div>
-    </div>
-    <div class="quote"><div class="last-price"><strong id="lastClose" class="mono">--</strong><span class="mono" id="lastDelta">--</span></div></div>
-   </div>
-   <div class="overlaybar"><div class="ohlc mono"><span class="field"><em>O</em><b id="openVal">--</b></span><span class="field"><em>H</em><b id="highVal">--</b></span><span class="field"><em>L</em><b id="lowVal">--</b></span><span class="field"><em>C</em><b id="closeVal">--</b></span></div><div class="layers"><span data-i18n="indicators">INDICATORS</span><button id="toggleStructure" class="layer" aria-pressed="true" type="button"><i></i><span data-i18n="structure">Structure</span></button><button data-color="gold" id="toggleInside" class="layer" aria-pressed="true" type="button"><i></i><span data-i18n="inside">Inside bar</span></button><button id="toggleRaw" class="layer" aria-pressed="false" type="button"><i></i><span data-i18n="candidates">Candidates</span></button></div></div>
-   <div class="structure-statusbar" id="chartStructureSummary" aria-label="Structure at the current closed candle" aria-live="polite">
-    <div class="structure-strip major-strip" id="majorStrip" data-trend="unknown">
-     <span class="structure-kicker" data-i18n="majorLabel">MAIN / MAJOR</span>
-     <strong class="structure-direction" id="majorDirection">UNKNOWN</strong>
-     <div class="structure-pivots"><span><b>MH</b> <em class="mono" id="majorHighValue">—</em></span><span><b>ML</b> <em class="mono" id="majorLowValue">—</em></span></div>
-    </div>
-    <div class="structure-strip internal-strip" id="internalStrip" data-trend="unknown">
-     <span class="structure-kicker" data-i18n="internalLabel">INTERNAL</span>
-     <strong class="structure-direction" id="internalDirection">UNKNOWN</strong>
-     <div class="structure-pivots"><span><b>iSH</b> <em class="mono" id="internalHighValue">—</em></span><span><b>iSL</b> <em class="mono" id="internalLowValue">—</em></span></div>
-    </div>
-   </div>
-   <div id="errorbox" class="error" role="alert"></div><div id="importToast" class="import-toast" role="status" aria-live="polite"></div>
-   <div id="chartBox" class="graph"><canvas id="chart" aria-label="Candlestick chart and market-structure overlays" data-i18n-aria="chartAria" role="img"></canvas><div class="axis-legend mono" id="canvasTimeframe">M15 / CLOSED CANDLES</div><div class="tooltip hidden" id="tooltip"></div></div>
-   <div class="controls">
-    <div class="transportline"><div class="transport">
-      <button class="ibtn" id="restart" title="First candle" aria-label="First candle" data-i18n-title="firstCandle" data-i18n-aria="firstCandle"><svg viewBox="0 0 24 24"><path d="M5 4v16M20 12H8m0 0 6-6m-6 6 6 6"/></svg></button>
-      <button class="ibtn" id="prev" title="Previous candle" aria-label="Previous candle" data-i18n-title="previousCandle" data-i18n-aria="previousCandle"><svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></button>
-      <button class="mainbtn" id="play" aria-label="Play"><svg id="playIcon" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></svg><span id="playText">Play</span></button>
-      <button class="ibtn" id="next" title="Next candle" aria-label="Next candle" data-i18n-title="nextCandle" data-i18n-aria="nextCandle"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>
-      <div class="speedbox"><label for="speed" data-i18n="replaySpeed">SPEED</label><select id="speed" aria-label="Replay speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option selected value="1">1×</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option></select></div>
-    </div><div class="readout mono"><span class="index" id="progressCount">-- / --</span><strong id="timeLabel">--:--</strong></div></div>
-    <div class="timeline"><span id="firstTime" class="mono">--:--</span><input type="range" min="0" max="39" value="39" step="1" id="scrubber" class="scrubber" aria-label="Replay timeline" data-i18n-aria="timeline"><span id="lastTime" class="mono">--:--</span></div>
-   </div>
-  </section>
-  <aside class="stream" aria-label="Replay event notifications" data-i18n-aria="feedAria">
-   <div class="stream-top"><div><div class="stream-heading"><i id="livePulse" class="beacon"></i><h2 data-i18n="notifications">Notifications</h2></div><p data-i18n="updatedOnClose">Updated after each candle closes</p></div><span class="mode">REPLAY</span></div>
-   <div class="asof"><span data-i18n="candleClose">LAST CLOSED CANDLE</span><b class="mono" id="feedTime">--</b></div>
-   <div class="structure-snapshot" id="structureSnapshot" aria-live="polite">
-    <div class="snapshot-title" data-i18n="currentStatus">STRUCTURE AT THIS CANDLE CLOSE</div>
-    <div class="snapshot-row"><b data-i18n="majorLabel">MAIN / MAJOR</b><strong id="feedMajorTrend" data-trend="unknown">UNKNOWN</strong></div>
-    <div class="snapshot-pivots"><div><span data-i18n="majorHighLabel">Major High</span><b class="mono" id="feedMajorHigh">Not confirmed</b></div><div><span data-i18n="majorLowLabel">Major Low</span><b class="mono" id="feedMajorLow">Not confirmed</b></div></div>
-    <div class="snapshot-row snapshot-internal"><b data-i18n="internalLabel">INTERNAL</b><strong id="feedInternalTrend" data-trend="unknown">UNKNOWN</strong></div>
-    <div class="snapshot-pivots"><div><span>iSH</span><b class="mono" id="feedInternalHigh">Not confirmed</b></div><div><span>iSL</span><b class="mono" id="feedInternalLow">Not confirmed</b></div></div>
-   </div>
-   <div class="live-hero" id="hero"><div class="signal-type" id="heroCategory">AWAITING DATA</div><h3 id="heroTitle">--</h3><p id="heroDetail">--</p><div class="hero-time"><span id="heroMeta">--</span></div></div>
-   <div class="history-header"><b data-i18n="latestEvents">RECENT EVENTS</b><span id="eventCount">0 events</span></div>
-   <div class="signal-list" id="events" aria-live="off"></div>
-  </aside>
- </div>
+<div class="workspace">
+<section aria-label="Candlestick chart and market-structure overlays" class="chart-panel" data-i18n-aria="chartAria">
+<div class="chart-heading">
+<div class="chart-source">
+<div class="source-tools"><span class="source-prefix" data-i18n="data">DATA</span>
+<select aria-label="Select dataset" data-i18n-aria="chooseDataset" id="datasetSelect"><option>Connecting…</option></select>
+<button class="upload-btn" data-i18n="upload" data-i18n-title="uploadTitle" id="uploadData" title="Import CSV, TSV, TXT, JSON or XLSX" type="button">+ Import</button>
+<button class="upload-btn" data-i18n="exportSnapshot" data-i18n-title="exportTitle" id="exportAudit" title="Export current analysis JSON" type="button">↓ JSON</button>
+<button aria-label="Help" class="delete-btn" data-i18n-title="helpTitle" id="helpData" style="display:inline-flex!important" title="Data format and privacy" type="button">?</button>
+<button aria-label="Remove imported dataset" class="delete-btn" data-i18n-aria="removeTitle" data-i18n-title="removeTitle" hidden="" id="removeData" title="Remove imported dataset" type="button">×</button>
+<label class="lang-control" for="languageSelect"><span class="sr-only">Language / Ngôn ngữ</span><select aria-label="Language / Ngôn ngữ" id="languageSelect"><option value="en" selected>EN</option><option value="vi">VI</option></select></label>
+</div>
+<h2 data-i18n="chartTitle">Market structure</h2><div class="data-details" data-i18n="loading" id="dataDetails">Loading data…</div>
+</div>
+<div class="quote"><div class="last-price"><strong class="mono" id="lastClose">--</strong><span class="mono" id="lastDelta">--</span></div></div>
+</div>
+<div class="overlaybar"><div class="ohlc mono"><span class="field"><em>O</em><b id="openVal">--</b></span><span class="field"><em>H</em><b id="highVal">--</b></span><span class="field"><em>L</em><b id="lowVal">--</b></span><span class="field"><em>C</em><b id="closeVal">--</b></span></div><div class="layers"><span data-i18n="indicators">INDICATORS</span><button aria-pressed="true" class="layer" id="toggleStructure" type="button"><i></i><span data-i18n="structure">Structure</span></button><button aria-pressed="true" class="layer" data-color="gold" id="toggleInside" type="button"><i></i><span data-i18n="inside">Inside bar</span></button><button aria-pressed="false" class="layer" id="toggleRaw" type="button"><i></i><span data-i18n="candidates">Candidates</span></button></div></div>
+<div aria-label="Structure at the current closed candle" aria-live="polite" class="structure-statusbar" id="chartStructureSummary">
+<div class="structure-strip major-strip" data-trend="unknown" id="majorStrip">
+<span class="structure-kicker" data-i18n="majorLabel">MAIN / MAJOR</span>
+<strong class="structure-direction" id="majorDirection">UNKNOWN</strong>
+<div class="structure-pivots"><span><b>MH</b> <em class="mono" id="majorHighValue">—</em></span><span><b>ML</b> <em class="mono" id="majorLowValue">—</em></span></div>
+</div>
+<div class="structure-strip internal-strip" data-trend="unknown" id="internalStrip">
+<span class="structure-kicker" data-i18n="internalLabel">INTERNAL</span>
+<strong class="structure-direction" id="internalDirection">UNKNOWN</strong>
+<div class="structure-pivots"><span><b>iSH</b> <em class="mono" id="internalHighValue">—</em></span><span><b>iSL</b> <em class="mono" id="internalLowValue">—</em></span></div>
+</div>
+</div>
+<div class="error" id="errorbox" role="alert"></div><div aria-live="polite" class="import-toast" id="importToast" role="status"></div>
+<div class="graph" id="chartBox"><canvas aria-label="Candlestick chart and market-structure overlays" data-i18n-aria="chartAria" id="chart" role="img"></canvas><div class="axis-legend mono" id="canvasTimeframe">M15 / CLOSED CANDLES</div><div class="tooltip hidden" id="tooltip"></div></div>
+<div class="controls">
+<div class="transportline"><div class="transport">
+<button aria-label="First candle" class="ibtn" data-i18n-aria="firstCandle" data-i18n-title="firstCandle" id="restart" title="First candle"><svg viewbox="0 0 24 24"><path d="M5 4v16M20 12H8m0 0 6-6m-6 6 6 6"></path></svg></button>
+<button aria-label="Previous candle" class="ibtn" data-i18n-aria="previousCandle" data-i18n-title="previousCandle" id="prev" title="Previous candle"><svg viewbox="0 0 24 24"><path d="m15 6-6 6 6 6"></path></svg></button>
+<button aria-label="Play" class="mainbtn" id="play"><svg id="playIcon" viewbox="0 0 24 24"><path d="m8 5 11 7-11 7z"></path></svg><span id="playText">Play</span></button>
+<button aria-label="Next candle" class="ibtn" data-i18n-aria="nextCandle" data-i18n-title="nextCandle" id="next" title="Next candle"><svg viewbox="0 0 24 24"><path d="m9 6 6 6-6 6"></path></svg></button>
+<div class="speedbox"><label data-i18n="replaySpeed" for="speed">SPEED</label><select aria-label="Replay speed" id="speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option selected="" value="1">1×</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option></select></div>
+</div><div class="readout mono"><span class="index" id="progressCount">-- / --</span><strong id="timeLabel">--:--</strong></div></div>
+<div class="timeline"><span class="mono" id="firstTime">--:--</span><input aria-label="Replay timeline" class="scrubber" data-i18n-aria="timeline" id="scrubber" max="39" min="0" step="1" type="range" value="39"/><span class="mono" id="lastTime">--:--</span></div>
+</div>
+</section>
+<aside aria-label="Replay event notifications" class="stream" data-i18n-aria="feedAria">
+<div class="stream-top"><div><div class="stream-heading"><i class="beacon" id="livePulse"></i><h2 data-i18n="notifications">Notifications</h2></div><p data-i18n="updatedOnClose">Updated after each candle closes</p></div><span class="mode">OFFLINE REPLAY</span></div>
+<div class="asof"><span data-i18n="candleClose">LAST CLOSED CANDLE</span><b class="mono" id="feedTime">--</b></div>
+<div aria-live="polite" class="structure-snapshot" id="structureSnapshot">
+<div class="snapshot-title" data-i18n="currentStatus">STRUCTURE AT THIS CANDLE CLOSE</div>
+<div class="snapshot-row"><b data-i18n="majorLabel">MAIN / MAJOR</b><strong data-trend="unknown" id="feedMajorTrend">UNKNOWN</strong></div>
+<div class="snapshot-pivots"><div><span data-i18n="majorHighLabel">Major High</span><b class="mono" id="feedMajorHigh">Not confirmed</b></div><div><span data-i18n="majorLowLabel">Major Low</span><b class="mono" id="feedMajorLow">Not confirmed</b></div></div>
+<div class="snapshot-row snapshot-internal"><b data-i18n="internalLabel">INTERNAL</b><strong data-trend="unknown" id="feedInternalTrend">UNKNOWN</strong></div>
+<div class="snapshot-pivots"><div><span>iSH</span><b class="mono" id="feedInternalHigh">Not confirmed</b></div><div><span>iSL</span><b class="mono" id="feedInternalLow">Not confirmed</b></div></div>
+</div>
+<div class="live-hero" id="hero"><div class="signal-type" id="heroCategory">AWAITING DATA</div><h3 id="heroTitle">--</h3><p id="heroDetail">--</p><div class="hero-time"><span id="heroMeta">--</span></div></div>
+<div class="history-header"><b data-i18n="latestEvents">RECENT EVENTS</b><span id="eventCount">0 events</span></div>
+<div aria-live="off" class="signal-list" id="events"></div>
+</aside>
+</div>
 </main>
-<dialog id="columnDialog" class="column-modal" aria-labelledby="modalTitle">
- <form id="mappingForm" method="dialog">
-  <div class="modal-head"><h2 id="modalTitle" data-i18n="mappingTitle">Confirm column mapping</h2><p id="mappingReason" data-i18n="mappingReason">Could not identify the source columns with confidence.</p></div>
-  <div class="mapping-grid">
-   <label><span data-i18n="timestamp">Timestamp</span><select id="col_timestamp" required></select></label>
-   <label>Open<select id="col_open" required></select></label>
-   <label>High<select id="col_high" required></select></label>
-   <label>Low<select id="col_low" required></select></label>
-   <label>Close<select id="col_close" required></select></label>
-   <label><span data-i18n="volumeOptional">Volume (optional)</span><select id="col_volume"></select></label>
-  </div>
-  <label class="date-order"><span data-i18n="dateOrder">Date format</span><select id="dateOrder"><option value="auto" data-i18n="dateAuto">Auto-detect</option><option value="DMY">DD/MM/YYYY</option><option value="MDY">MM/DD/YYYY</option></select></label>
-  <div class="preview-caption" data-i18n="mappingPreview">Preview of the first three rows · verify column assignments before applying</div><div class="column-preview"><table id="columnPreview"></table></div>
-  <div class="modal-actions"><button type="button" id="cancelMap" class="modal-secondary" data-i18n="cancel">Cancel</button><button type="submit" class="modal-primary" data-i18n="applyMapping">Apply mapping</button></div>
- </form>
+<dialog aria-labelledby="helpTitle" class="column-modal" id="helpDialog">
+<div class="modal-head"><h2 data-i18n="helpTitle" id="helpTitle">How to use MSAS Offline</h2><p data-i18n="helpIntro">Use a local Python server or Docker. Imported files are stored by your selected local service.</p></div>
+<div class="help-body">
+<p data-i18n="helpFiles">Import CSV, TSV, TXT, JSON, JSONL or XLSX. Volume is optional. Use one closed OHLC candle per row.</p>
+<pre>Timestamp,Open,High,Low,Close,Volume
+2025-06-18 06:00:00,3380,3385,3378,3383,
+2025-06-18 06:15:00,3383,3388,3382,3386,</pre>
+<p data-i18n="helpMapping">If the source headers or date order are unclear, confirm column mapping and DMY/MDY in the dialog. Duplicate or invalid OHLC rows are rejected.</p>
+<p data-i18n="helpSession">Uploaded datasets are stored by your local MSAS server. Export an audit snapshot to share the current analysis.</p>
+<p data-i18n="helpRule">Major/Internal levels follow provisional PPT interpretation; uncertain trend remains UNKNOWN, not SIDEWAYS. Events use closed candles only.</p>
+</div><div class="modal-actions"><button class="modal-primary" data-i18n="closeHelp" id="closeHelp" type="button">Close</button></div>
 </dialog>
-<script defer src="/chart-theme.js"></script>
-<script defer src="/i18n.js"></script>
-<script defer src="/engine.js"></script>
-<script defer src="/advanced_engine.js"></script>
-<script defer src="/studio.js"></script>
-</body>
+<dialog aria-labelledby="modalTitle" class="column-modal" id="columnDialog">
+<form id="mappingForm" method="dialog">
+<div class="modal-head"><h2 data-i18n="mappingTitle" id="modalTitle">Confirm column mapping</h2><p data-i18n="mappingReason" id="mappingReason">Could not identify the source columns with confidence.</p></div>
+<div class="mapping-grid">
+<label><span data-i18n="timestamp">Timestamp</span><select id="col_timestamp" required=""></select></label>
+<label>Open<select id="col_open" required=""></select></label>
+<label>High<select id="col_high" required=""></select></label>
+<label>Low<select id="col_low" required=""></select></label>
+<label>Close<select id="col_close" required=""></select></label>
+<label><span data-i18n="volumeOptional">Volume (optional)</span><select id="col_volume"></select></label>
+</div>
+<label class="date-order"><span data-i18n="dateOrder">Date format</span><select id="dateOrder"><option data-i18n="dateAuto" value="auto">Auto-detect</option><option value="DMY">DD/MM/YYYY</option><option value="MDY">MM/DD/YYYY</option></select></label>
+<div class="preview-caption" data-i18n="mappingPreview">Preview of the first three rows · verify column assignments before applying</div><div class="column-preview"><table id="columnPreview"></table></div>
+<div class="modal-actions"><button class="modal-secondary" data-i18n="cancel" id="cancelMap" type="button">Cancel</button><button class="modal-primary" data-i18n="applyMapping" type="submit">Apply mapping</button></div>
+</form>
+</dialog>
+
+
+
+
+
+
+
+<script defer="" src="/chart-theme.js"></script><script defer="" src="/i18n.js"></script><script defer="" src="/engine.js"></script><script defer="" src="/advanced_engine.js"></script><script defer="" src="/studio.js"></script></body>
 </html>

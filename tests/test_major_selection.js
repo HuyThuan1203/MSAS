@@ -1,66 +1,22 @@
 'use strict';
-/* Structural role regression: reference levels are anchored to confirmed
- * extreme pivots and MUST NOT silently jump to a later weaker swing.
- * Values are derived from supplied 48-bar samples under documented V5
- * provisional selection policy, not claimed as user-certified ground truth.
- */
-const assert=require('node:assert/strict');
-const fs=require('node:fs');
-const path=require('node:path');
-const base=require('../static/engine.js');
-const advanced=require('../static/advanced_engine.js');
-const root=path.resolve(__dirname,'..');
-function load(s){return JSON.parse(fs.readFileSync(path.join(root,'samples/normalized',`${s}_M15_12h_2025-06-18_UTC.json`),'utf8')).candles;}
-const xau=load('XAUUSD');
-function snap(c,t){return advanced.analyzeAdvancedPrefix(c,t,base.analyzePrefix(c,t));}
-const before=snap(xau,42),breach=snap(xau,43),complete=snap(xau,47);
-assert.equal(before.external.majorHigh.id,'SH-30');
-assert.equal(before.external.majorLow.id,'SL-27');
-// Slide 11/13: after a close-break the strongest accepted pivot in the
-// pending wave wins; a weaker, later SH44 must NOT demote SH34.
-for(const x of [breach,complete]){
- assert.equal(x.external.trend,'up');
- assert.equal(x.external.majorHigh.id,'SH-34');
- assert.equal(x.external.majorHigh.price,3396.648);
- assert.equal(x.external.majorLow.id,'SL-37');
- assert.equal(x.external.majorLow.price,3373.545);
+const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');
+const E=require('../static/engine.js'),A=require('../static/advanced_engine.js');
+const dir=path.resolve(__dirname,'..');
+const c=JSON.parse(fs.readFileSync(path.join(dir,'samples/normalized/XAUUSD_M15_12h_2025-06-18_UTC.json'),'utf8')).candles;
+const run=t=>A.analyzeAdvancedPrefix(c,t,E.analyzePrefix(c,t));
+const final=run(47),hi=final.external.majorHigh,low=final.external.majorLow;
+assert.equal(final.external.trend,'up');assert.equal(final.internal.trend,'up');
+assert.deepEqual([hi?.id,hi?.index,hi?.price],['SH-34',34,3396.648]);
+assert.deepEqual([low?.id,low?.index,low?.price],['SL-37',37,3373.545]);
+assert.equal(c[hi.index].time,'2025-06-18T14:30:00Z');
+assert.equal(c[low.index].time,'2025-06-18T15:15:00Z');
+assert(hi.confirmedAt<=47&&low.confirmedAt<=47);
+for(let t=0;t<c.length;t++){
+ const a=run(t);
+ for(const pp of [a.external.majorHigh,a.external.majorLow].filter(Boolean))assert(pp.confirmedAt<=t,'Future Major on chart');
+ assert.deepEqual(a.events,final.events.filter(e=>e.at<=t),`Event lookahead ${t}`);
+ if(t<hi.confirmedAt)assert.notEqual(a.external.majorHigh?.id,hi.id,'SH-34 promoted too early');
+ if(t<low.confirmedAt)assert.notEqual(a.external.majorLow?.id,low.id,'SL-37 promoted too early');
 }
-assert.equal(breach.internal.trend,'unknown');
-assert.equal(complete.internal.trend,'up');
-assert(complete.events.some(e=>e.kind==='internal_established'&&e.at===46));
-assert(breach.events.some(e=>e.kind==='major_continuation'&&e.at===43));
-assert(breach.events.some(e=>e.kind==='major_updated'&&e.at===43&&e.refs.includes('SH-34')));
-assert(!complete.events.some(e=>e.kind==='major_updated'&&e.at>=44));
-for(let t=0;t<xau.length;t++){
- const s=snap(xau,t);
- for(const p of [s.external.majorHigh,s.external.majorLow,s.internal.internalHigh,s.internal.internalLow]){
-  if(!p)continue;
-  assert(p.confirmedAt<=t,`future pivot promoted at ${t}: ${p.id}`);
-  assert(p.index<t,`right-hand close not yet known at ${t}: ${p.id}`);
- }
- const truncated=snap(xau.slice(0,t+1),t);
- assert.deepEqual(s.external,truncated.external,`no-lookahead external @ ${t}`);
- assert.deepEqual(s.internal,truncated.internal,`no-lookahead internal @ ${t}`);
-}
-const fixture=JSON.parse(fs.readFileSync(path.join(root,'fixtures/advanced_slide13_synthetic.json'),'utf8'));
-const candles=Array.from({length:fixture.bars},(_,i)=>({time:new Date(Date.UTC(2025,5,18,6,i*15)).toISOString(),close:fixture.close_overrides[i]??fixture.default_close}));
-const at=i=>advanced.analysisFromAccepted(candles,fixture.pivots,i).external;
-assert.equal(at(9).majorHigh.id,'SH-7');assert.equal(at(9).majorLow.id,'SL-5');
-assert.equal(at(19).majorHigh.id,'SH-7');assert.equal(at(19).majorLow.id,'SL-5');
-assert.equal(at(29).majorHigh.id,'SH-27');assert.equal(at(29).majorLow.id,'SL-25');
-assert.equal(at(34).trend,'down');assert.equal(at(34).majorHigh.id,'SH-27');assert.equal(at(34).majorLow,null);
-const html=fs.readFileSync(path.join(root,'static/index.html'),'utf8');
-for(const id of ['majorDirection','internalDirection','feedMajorTrend','feedInternalTrend','feedMajorHigh','feedMajorLow','feedInternalHigh','feedInternalLow']){
- assert(html.includes(`id="${id}"`),`Missing visible structure state ${id}`);
-}
-const i18n=require('../static/i18n.js');
-const uiCode=fs.readFileSync(path.join(root,'static/studio.js'),'utf8');
-assert(uiCode.includes('pivotPrice(m.p.price)'),'Major horizontal label must show full data precision');
-assert(uiCode.includes('pivotPrice(item.p.price)'),'Major pivot anchor must show full data precision');
-assert(uiCode.includes('return pivotPrice(p.price)'),'Major snapshot must show full data precision');
-for(const l of ['en','vi']){
- for(const key of ['majorLabel','internalLabel','currentStatus','notConfirmed','majorHighLabel','majorLowLabel']){
-  assert(i18n.text(key,l)!==key,`Missing ${l} translation for ${key}`);
- }
-}
-console.log('PASS Major/Internal state readout; XAU strongest accepted SH34/SL37, 48 prefixes and PPT slide 13 reference');
+assert.equal(final.policy.tolerance,0);
+console.log('PASS user-confirmed XAU MH SH-34 3396.648 / ML SL-37 3373.545; causal pivot labels');

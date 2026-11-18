@@ -51,6 +51,7 @@ jobs:
           node tests/test_sample_replay.js
           node tests/test_advanced_structure.js
           node tests/test_major_selection.js
+          node tests/test_mss_cisd.js
           node tests/test_ui_theme_i18n.js
   browser-e2e:
     runs-on: ubuntu-latest
@@ -68,6 +69,16 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: UI smoke on Chromium (EN/VI, theme, replay, import, mobile)
         run: python scripts/qa_gate.py --browser --require-node --json-report qa-artifacts/qa-report.json
+      - name: Build offline single-file HTML
+        run: python scripts/build_standalone.py
+      - name: Chromium offline single-file UI: EN/VI, S+ C B, import, no-network
+        run: python scripts/offline_smoke.py
+      - name: Upload shareable HTML demo
+        uses: actions/upload-artifact@v4
+        with:
+          name: MSAS-Standalone-Offline
+          path: dist/MSAS_Standalone_Offline.html
+          retention-days: 14
       - name: Upload browser screenshots and test report
         if: always()
         uses: actions/upload-artifact@v4

@@ -1,31 +1,267 @@
 {
- "$schema":"https://json-schema.org/draft/2020-12/schema",
- "$id":"https://example.invalid/market-structure/advanced-state/v1",
- "title":"Advanced Major and Internal snapshot v1.0.0",
- "type":"object","required":["end","external","internal","events","roleChanges","acceptedCount","policy"],
- "properties":{
-  "end":{"type":"integer","minimum":0},
-  "external":{"type":"object","required":["trend","phase","majorHigh","majorLow","breakAt","breakLevel"],"properties":{
-   "trend":{"enum":["up","down","unknown"]},
-   "phase":{"enum":["uninitialized","confirmed","awaiting_major_high","awaiting_major_low"]},
-   "majorHigh":{"$ref":"#/$defs/maybe_level"},"majorLow":{"$ref":"#/$defs/maybe_level"},
-   "breakAt":{"type":["integer","null"]},"breakLevel":{"type":["number","null"]}}},
-  "internal":{"type":"object","required":["trend","phase","internalHigh","internalLow","protectedHigh","protectedLow","pendingDirection","pendingBreakAt","confirmed"],"properties":{
-   "trend":{"enum":["up","down","unknown"]},
-   "phase":{"enum":["uninitialized","collecting","confirmed","pending_confirmation"]},
-   "internalHigh":{"$ref":"#/$defs/maybe_level"},"internalLow":{"$ref":"#/$defs/maybe_level"},
-   "protectedHigh":{"$ref":"#/$defs/maybe_level"},"protectedLow":{"$ref":"#/$defs/maybe_level"},
-   "pendingDirection":{"enum":["up","down",null]},"pendingBreakAt":{"type":["integer","null"]},"confirmed":{"type":"boolean"}}},
-  "events":{"type":"array","items":{"$ref":"https://example.invalid/market-structure/advanced-event/v1"}},
-  "roleChanges":{"type":"array","items":{"type":"object","required":["at","pivot_id","pivot_index","from","to","reason"],"properties":{
-   "at":{"type":"integer","minimum":0},"pivot_id":{"type":"string"},"pivot_index":{"type":"integer"},
-   "from":{"type":"string"},"to":{"type":"string"},"reason":{"type":"string"}}}},
-  "acceptedCount":{"type":"integer","minimum":0},"policy":{"type":"object"}
- },
- "$defs":{
-  "maybe_level":{"anyOf":[{"type":"null"},{"$ref":"#/$defs/level"}]},
-  "level":{"type":"object","required":["id","index","type","price","confirmedAt"],"properties":{
-   "id":{"type":"string"},"index":{"type":"integer"},"type":{"enum":["SH","SL"]},
-   "price":{"type":"number"},"confirmedAt":{"type":["integer","null"]}}}
- }
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/market-structure/advanced-state/v1",
+  "title": "Advanced Major / Internal / MSS / CISD snapshot v1.2.0",
+  "type": "object",
+  "required": [
+    "end",
+    "external",
+    "internal",
+    "events",
+    "roleChanges",
+    "acceptedCount",
+    "policy",
+    "mss",
+    "cisd"
+  ],
+  "properties": {
+    "end": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "external": {
+      "type": "object",
+      "required": [
+        "trend",
+        "phase",
+        "majorHigh",
+        "majorLow",
+        "breakAt",
+        "breakLevel"
+      ],
+      "properties": {
+        "trend": {
+          "enum": [
+            "up",
+            "down",
+            "unknown"
+          ]
+        },
+        "phase": {
+          "enum": [
+            "uninitialized",
+            "confirmed",
+            "awaiting_major_high",
+            "awaiting_major_low"
+          ]
+        },
+        "majorHigh": {
+          "$ref": "#/$defs/maybe_level"
+        },
+        "majorLow": {
+          "$ref": "#/$defs/maybe_level"
+        },
+        "breakAt": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "breakLevel": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "internal": {
+      "type": "object",
+      "required": [
+        "trend",
+        "phase",
+        "internalHigh",
+        "internalLow",
+        "protectedHigh",
+        "protectedLow",
+        "pendingDirection",
+        "pendingBreakAt",
+        "confirmed"
+      ],
+      "properties": {
+        "trend": {
+          "enum": [
+            "up",
+            "down",
+            "unknown"
+          ]
+        },
+        "phase": {
+          "enum": [
+            "uninitialized",
+            "collecting",
+            "confirmed",
+            "pending_confirmation"
+          ]
+        },
+        "internalHigh": {
+          "$ref": "#/$defs/maybe_level"
+        },
+        "internalLow": {
+          "$ref": "#/$defs/maybe_level"
+        },
+        "protectedHigh": {
+          "$ref": "#/$defs/maybe_level"
+        },
+        "protectedLow": {
+          "$ref": "#/$defs/maybe_level"
+        },
+        "pendingDirection": {
+          "enum": [
+            "up",
+            "down",
+            null
+          ]
+        },
+        "pendingBreakAt": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "confirmed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "https://example.invalid/market-structure/advanced-event/v1"
+      }
+    },
+    "roleChanges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "at",
+          "pivot_id",
+          "pivot_index",
+          "from",
+          "to",
+          "reason"
+        ],
+        "properties": {
+          "at": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pivot_id": {
+            "type": "string"
+          },
+          "pivot_index": {
+            "type": "integer"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "acceptedCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "policy": {
+      "type": "object"
+    },
+    "mss": {
+      "type": "object",
+      "required": [
+        "tolerance",
+        "last",
+        "lastWeak"
+      ],
+      "properties": {
+        "tolerance": {
+          "const": 0
+        },
+        "last": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "lastWeak": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      }
+    },
+    "cisd": {
+      "type": "object",
+      "required": [
+        "reference",
+        "last"
+      ],
+      "properties": {
+        "reference": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "last": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "maybe_level": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/level"
+        }
+      ]
+    },
+    "level": {
+      "type": "object",
+      "required": [
+        "id",
+        "index",
+        "type",
+        "price",
+        "confirmedAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "index": {
+          "type": "integer"
+        },
+        "type": {
+          "enum": [
+            "SH",
+            "SL"
+          ]
+        },
+        "price": {
+          "type": "number"
+        },
+        "confirmedAt": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    }
+  }
 }

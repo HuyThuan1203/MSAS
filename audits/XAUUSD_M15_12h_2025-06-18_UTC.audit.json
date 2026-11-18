@@ -1,14 +1,18 @@
 {
   "schema_version": "1.0.0",
-  "analysis_version": "market_structure_advanced_v1_1",
+  "analysis_version": "market_structure_advanced_v1_2",
   "source_dataset_id": "xauusd_m15_20250618_0600_utc",
   "source_sha256": "7b89bcb95d5f83418a258b0075da95913c57f637328ff1ec076a44fd76aa9ea2",
   "is_synthetic": false,
   "source_timeframe": "M15",
   "model_provenance": {
-    "ppt": "Cau_truc_nang_cao_-_Final.pptx",
-    "policy": "provisional",
-    "volume_used": false
+    "ppt": [
+      "Cau_truc_nang_cao_-_Final.pptx",
+      "Mau_hinh_xac_nhan_ao_chieu_-_Final.pptx"
+    ],
+    "policy": "mixed source-locked/provisional",
+    "volume_used": false,
+    "mss_tolerance": 0
   },
   "summary": {
     "bars": 48,
@@ -17,7 +21,10 @@
     "localTrendAtEnd": "up",
     "externalTrendAtEnd": "up",
     "internalTrendAtEnd": "up",
-    "events": 6
+    "mssStrongCount": 1,
+    "mssWeakCount": 1,
+    "cisdCount": 2,
+    "events": 9
   },
   "pivots": [
     {
@@ -330,6 +337,40 @@
     "pendingBreakAt": null,
     "confirmed": true
   },
+  "mss": {
+    "tolerance": 0,
+    "last": {
+      "at": 30,
+      "label": "S+",
+      "direction": "up",
+      "eventId": "major_reversal:30:2",
+      "brokenLevel": 3388.205
+    },
+    "lastWeak": {
+      "at": 37,
+      "label": "C",
+      "eventId": "mss_weak:37:5",
+      "majorPivotId": "SL-27"
+    }
+  },
+  "cisd": {
+    "reference": {
+      "direction": "up",
+      "startIndex": 45,
+      "endIndex": 45,
+      "open": 3390.348,
+      "waveStartIndex": 41,
+      "opposingSwingId": "SL-41"
+    },
+    "last": {
+      "at": 36,
+      "label": "B",
+      "eventId": "cisd:36:4",
+      "referenceOpen": 3386.505,
+      "referenceStartIndex": 32,
+      "majorDirectionUnchanged": true
+    }
+  },
   "role_changes": [
     {
       "at": 28,
@@ -515,29 +556,58 @@
       "available_at_utc": "2025-06-18T13:15:00.000Z"
     },
     {
-      "id": "major_reversal:30:1",
+      "id": "cisd:29:1",
+      "at": 29,
+      "kind": "cisd",
+      "layer": "delivery",
+      "title": "CISD B · thay đổi hành vi giá",
+      "detail": "Close 3386.225 vượt Open 3385.585 của nến đầu cụm GIẢM cuối cùng. Đây chỉ là tín hiệu sớm; Major vẫn GIẢM.",
+      "severity": "warning",
+      "source": "REV:S5-S8",
+      "refs": [],
+      "data": {
+        "label": "B",
+        "direction": "up",
+        "mainTrend": "down",
+        "close": 3386.225,
+        "referenceOpen": 3385.585,
+        "referenceStartIndex": 26,
+        "referenceEndIndex": 26,
+        "waveStartIndex": 26,
+        "confirmed": false,
+        "tolerance": 0
+      },
+      "bar_open_time_utc": "2025-06-18T13:15:00Z",
+      "available_at_utc": "2025-06-18T13:30:00.000Z"
+    },
+    {
+      "id": "major_reversal:30:2",
       "at": 30,
       "kind": "major_reversal",
       "layer": "external",
       "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
       "detail": "Giá đóng 3388.845 cao hơn Major High 3388.205; giữ Major Low 3375.248, Major High mới chờ xác nhận.",
       "severity": "success",
-      "source": "ADV:S3,S7,S14",
+      "source": "ADV:S3,S7,S14;REV:S3,S8",
       "refs": [
         "SH-12",
         "SL-19"
       ],
       "data": {
+        "label": "S+",
         "direction": "up",
         "close": 3388.845,
         "brokenLevel": 3388.205,
-        "retainedLevel": 3375.248
+        "retainedLevel": 3375.248,
+        "majorPivotId": "SH-12",
+        "confirmed": true,
+        "tolerance": 0
       },
       "bar_open_time_utc": "2025-06-18T13:30:00Z",
       "available_at_utc": "2025-06-18T13:45:00.000Z"
     },
     {
-      "id": "major_updated:32:2",
+      "id": "major_updated:32:3",
       "at": 32,
       "kind": "major_updated",
       "layer": "external",
@@ -561,7 +631,58 @@
       "available_at_utc": "2025-06-18T14:15:00.000Z"
     },
     {
-      "id": "major_continuation:43:3",
+      "id": "cisd:36:4",
+      "at": 36,
+      "kind": "cisd",
+      "layer": "delivery",
+      "title": "CISD B · thay đổi hành vi giá",
+      "detail": "Close 3384.735 vượt Open 3386.505 của nến đầu cụm TĂNG cuối cùng. Đây chỉ là tín hiệu sớm; Major vẫn TĂNG.",
+      "severity": "warning",
+      "source": "REV:S5-S8",
+      "refs": [],
+      "data": {
+        "label": "B",
+        "direction": "down",
+        "mainTrend": "up",
+        "close": 3384.735,
+        "referenceOpen": 3386.505,
+        "referenceStartIndex": 32,
+        "referenceEndIndex": 33,
+        "waveStartIndex": 31,
+        "confirmed": false,
+        "tolerance": 0
+      },
+      "bar_open_time_utc": "2025-06-18T15:00:00Z",
+      "available_at_utc": "2025-06-18T15:15:00.000Z"
+    },
+    {
+      "id": "mss_weak:37:5",
+      "at": 37,
+      "kind": "mss_weak",
+      "layer": "external",
+      "title": "MSS C · nỗ lực đảo chiều yếu",
+      "detail": "Râu nến vượt Major Low 3378.745, nhưng Close 3382.348 trở lại biên. Main TĂNG giữ nguyên.",
+      "severity": "warning",
+      "source": "REV:S4,S8",
+      "refs": [
+        "SL-27"
+      ],
+      "data": {
+        "label": "C",
+        "direction": "down",
+        "mainTrend": "up",
+        "close": 3382.348,
+        "wick": 3373.545,
+        "brokenLevel": 3378.745,
+        "majorPivotId": "SL-27",
+        "confirmed": false,
+        "tolerance": 0
+      },
+      "bar_open_time_utc": "2025-06-18T15:15:00Z",
+      "available_at_utc": "2025-06-18T15:30:00.000Z"
+    },
+    {
+      "id": "major_continuation:43:6",
       "at": 43,
       "kind": "major_continuation",
       "layer": "external",
@@ -581,7 +702,7 @@
       "available_at_utc": "2025-06-18T17:00:00.000Z"
     },
     {
-      "id": "major_updated:43:4",
+      "id": "major_updated:43:7",
       "at": 43,
       "kind": "major_updated",
       "layer": "external",
@@ -605,7 +726,7 @@
       "available_at_utc": "2025-06-18T17:00:00.000Z"
     },
     {
-      "id": "internal_established:46:5",
+      "id": "internal_established:46:8",
       "at": 46,
       "kind": "internal_established",
       "layer": "internal",
@@ -649,6 +770,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -675,6 +805,15 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -703,6 +842,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -729,6 +877,15 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -757,6 +914,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -783,6 +949,15 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -811,6 +986,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -837,6 +1021,15 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -865,6 +1058,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -891,6 +1093,15 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -919,6 +1130,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -945,6 +1165,15 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -973,6 +1202,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -999,6 +1237,15 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
       },
       "eventsAt": [],
       "confirmedPivots": [
@@ -1029,6 +1276,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1056,6 +1312,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1082,6 +1347,15 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
       },
       "eventsAt": [],
       "confirmedPivots": [
@@ -1112,6 +1386,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1138,6 +1421,15 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -1166,6 +1458,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1192,6 +1493,15 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -1220,6 +1530,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1246,6 +1565,15 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -1274,6 +1602,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1300,6 +1637,15 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -1328,6 +1674,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1355,6 +1710,15 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1381,6 +1745,15 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
       },
       "eventsAt": [],
       "confirmedPivots": [
@@ -1428,6 +1801,15 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": null
       },
       "eventsAt": [
         {
@@ -1496,7 +1878,54 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
-      "eventsAt": [],
+      "mss": {
+        "tolerance": 0,
+        "last": null,
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": {
+          "direction": "down",
+          "startIndex": 26,
+          "endIndex": 26,
+          "open": 3385.585,
+          "waveStartIndex": 26,
+          "opposingSwingId": "SH-26"
+        },
+        "last": {
+          "at": 29,
+          "label": "B",
+          "eventId": "cisd:29:1",
+          "referenceOpen": 3385.585,
+          "referenceStartIndex": 26,
+          "majorDirectionUnchanged": true
+        }
+      },
+      "eventsAt": [
+        {
+          "id": "cisd:29:1",
+          "at": 29,
+          "kind": "cisd",
+          "layer": "delivery",
+          "title": "CISD B · thay đổi hành vi giá",
+          "detail": "Close 3386.225 vượt Open 3385.585 của nến đầu cụm GIẢM cuối cùng. Đây chỉ là tín hiệu sớm; Major vẫn GIẢM.",
+          "severity": "warning",
+          "source": "REV:S5-S8",
+          "refs": [],
+          "data": {
+            "label": "B",
+            "direction": "up",
+            "mainTrend": "down",
+            "close": 3386.225,
+            "referenceOpen": 3385.585,
+            "referenceStartIndex": 26,
+            "referenceEndIndex": 26,
+            "waveStartIndex": 26,
+            "confirmed": false,
+            "tolerance": 0
+          }
+        }
+      ],
       "confirmedPivots": []
     },
     {
@@ -1529,25 +1958,51 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": null,
+        "last": {
+          "at": 29,
+          "label": "B",
+          "eventId": "cisd:29:1",
+          "referenceOpen": 3385.585,
+          "referenceStartIndex": 26,
+          "majorDirectionUnchanged": true
+        }
+      },
       "eventsAt": [
         {
-          "id": "major_reversal:30:1",
+          "id": "major_reversal:30:2",
           "at": 30,
           "kind": "major_reversal",
           "layer": "external",
           "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
           "detail": "Giá đóng 3388.845 cao hơn Major High 3388.205; giữ Major Low 3375.248, Major High mới chờ xác nhận.",
           "severity": "success",
-          "source": "ADV:S3,S7,S14",
+          "source": "ADV:S3,S7,S14;REV:S3,S8",
           "refs": [
             "SH-12",
             "SL-19"
           ],
           "data": {
+            "label": "S+",
             "direction": "up",
             "close": 3388.845,
             "brokenLevel": 3388.205,
-            "retainedLevel": 3375.248
+            "retainedLevel": 3375.248,
+            "majorPivotId": "SH-12",
+            "confirmed": true,
+            "tolerance": 0
           }
         }
       ],
@@ -1582,6 +2037,35 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 30,
+          "endIndex": 30,
+          "open": 3386.375,
+          "waveStartIndex": 30,
+          "opposingSwingId": "SL-19"
+        },
+        "last": {
+          "at": 29,
+          "label": "B",
+          "eventId": "cisd:29:1",
+          "referenceOpen": 3385.585,
+          "referenceStartIndex": 26,
+          "majorDirectionUnchanged": true
+        }
       },
       "eventsAt": [],
       "confirmedPivots": [
@@ -1624,9 +2108,38 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 30,
+          "endIndex": 30,
+          "open": 3386.375,
+          "waveStartIndex": 30,
+          "opposingSwingId": "SL-27"
+        },
+        "last": {
+          "at": 29,
+          "label": "B",
+          "eventId": "cisd:29:1",
+          "referenceOpen": 3385.585,
+          "referenceStartIndex": 26,
+          "majorDirectionUnchanged": true
+        }
+      },
       "eventsAt": [
         {
-          "id": "major_updated:32:2",
+          "id": "major_updated:32:3",
           "at": 32,
           "kind": "major_updated",
           "layer": "external",
@@ -1688,6 +2201,35 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 32,
+          "endIndex": 32,
+          "open": 3386.505,
+          "waveStartIndex": 30,
+          "opposingSwingId": "SL-27"
+        },
+        "last": {
+          "at": 29,
+          "label": "B",
+          "eventId": "cisd:29:1",
+          "referenceOpen": 3385.585,
+          "referenceStartIndex": 26,
+          "majorDirectionUnchanged": true
+        }
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1726,6 +2268,35 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 32,
+          "endIndex": 33,
+          "open": 3386.505,
+          "waveStartIndex": 30,
+          "opposingSwingId": "SL-27"
+        },
+        "last": {
+          "at": 29,
+          "label": "B",
+          "eventId": "cisd:29:1",
+          "referenceOpen": 3385.585,
+          "referenceStartIndex": 26,
+          "majorDirectionUnchanged": true
+        }
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -1771,6 +2342,35 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 32,
+          "endIndex": 33,
+          "open": 3386.505,
+          "waveStartIndex": 30,
+          "opposingSwingId": "SL-27"
+        },
+        "last": {
+          "at": 29,
+          "label": "B",
+          "eventId": "cisd:29:1",
+          "referenceOpen": 3385.585,
+          "referenceStartIndex": 26,
+          "majorDirectionUnchanged": true
+        }
       },
       "eventsAt": [],
       "confirmedPivots": [
@@ -1819,7 +2419,60 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
-      "eventsAt": [],
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": null
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 32,
+          "endIndex": 33,
+          "open": 3386.505,
+          "waveStartIndex": 31,
+          "opposingSwingId": "SL-31"
+        },
+        "last": {
+          "at": 36,
+          "label": "B",
+          "eventId": "cisd:36:4",
+          "referenceOpen": 3386.505,
+          "referenceStartIndex": 32,
+          "majorDirectionUnchanged": true
+        }
+      },
+      "eventsAt": [
+        {
+          "id": "cisd:36:4",
+          "at": 36,
+          "kind": "cisd",
+          "layer": "delivery",
+          "title": "CISD B · thay đổi hành vi giá",
+          "detail": "Close 3384.735 vượt Open 3386.505 của nến đầu cụm TĂNG cuối cùng. Đây chỉ là tín hiệu sớm; Major vẫn TĂNG.",
+          "severity": "warning",
+          "source": "REV:S5-S8",
+          "refs": [],
+          "data": {
+            "label": "B",
+            "direction": "down",
+            "mainTrend": "up",
+            "close": 3384.735,
+            "referenceOpen": 3386.505,
+            "referenceStartIndex": 32,
+            "referenceEndIndex": 33,
+            "waveStartIndex": 31,
+            "confirmed": false,
+            "tolerance": 0
+          }
+        }
+      ],
       "confirmedPivots": []
     },
     {
@@ -1864,7 +2517,66 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
-      "eventsAt": [],
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": {
+          "at": 37,
+          "label": "C",
+          "eventId": "mss_weak:37:5",
+          "majorPivotId": "SL-27"
+        }
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 32,
+          "endIndex": 33,
+          "open": 3386.505,
+          "waveStartIndex": 31,
+          "opposingSwingId": "SL-31"
+        },
+        "last": {
+          "at": 36,
+          "label": "B",
+          "eventId": "cisd:36:4",
+          "referenceOpen": 3386.505,
+          "referenceStartIndex": 32,
+          "majorDirectionUnchanged": true
+        }
+      },
+      "eventsAt": [
+        {
+          "id": "mss_weak:37:5",
+          "at": 37,
+          "kind": "mss_weak",
+          "layer": "external",
+          "title": "MSS C · nỗ lực đảo chiều yếu",
+          "detail": "Râu nến vượt Major Low 3378.745, nhưng Close 3382.348 trở lại biên. Main TĂNG giữ nguyên.",
+          "severity": "warning",
+          "source": "REV:S4,S8",
+          "refs": [
+            "SL-27"
+          ],
+          "data": {
+            "label": "C",
+            "direction": "down",
+            "mainTrend": "up",
+            "close": 3382.348,
+            "wick": 3373.545,
+            "brokenLevel": 3378.745,
+            "majorPivotId": "SL-27",
+            "confirmed": false,
+            "tolerance": 0
+          }
+        }
+      ],
       "confirmedPivots": []
     },
     {
@@ -1908,6 +2620,40 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": {
+          "at": 37,
+          "label": "C",
+          "eventId": "mss_weak:37:5",
+          "majorPivotId": "SL-27"
+        }
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 32,
+          "endIndex": 33,
+          "open": 3386.505,
+          "waveStartIndex": 31,
+          "opposingSwingId": "SL-31"
+        },
+        "last": {
+          "at": 36,
+          "label": "B",
+          "eventId": "cisd:36:4",
+          "referenceOpen": 3386.505,
+          "referenceStartIndex": 32,
+          "majorDirectionUnchanged": true
+        }
       },
       "eventsAt": [],
       "confirmedPivots": [
@@ -1956,6 +2702,40 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": {
+          "at": 37,
+          "label": "C",
+          "eventId": "mss_weak:37:5",
+          "majorPivotId": "SL-27"
+        }
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 38,
+          "endIndex": 38,
+          "open": 3382.255,
+          "waveStartIndex": 31,
+          "opposingSwingId": "SL-31"
+        },
+        "last": {
+          "at": 36,
+          "label": "B",
+          "eventId": "cisd:36:4",
+          "referenceOpen": 3386.505,
+          "referenceStartIndex": 32,
+          "majorDirectionUnchanged": true
+        }
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -2000,6 +2780,40 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": {
+          "at": 37,
+          "label": "C",
+          "eventId": "mss_weak:37:5",
+          "majorPivotId": "SL-27"
+        }
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 38,
+          "endIndex": 38,
+          "open": 3382.255,
+          "waveStartIndex": 31,
+          "opposingSwingId": "SL-31"
+        },
+        "last": {
+          "at": 36,
+          "label": "B",
+          "eventId": "cisd:36:4",
+          "referenceOpen": 3386.505,
+          "referenceStartIndex": 32,
+          "majorDirectionUnchanged": true
+        }
       },
       "eventsAt": [],
       "confirmedPivots": [
@@ -2048,6 +2862,40 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": {
+          "at": 37,
+          "label": "C",
+          "eventId": "mss_weak:37:5",
+          "majorPivotId": "SL-27"
+        }
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 38,
+          "endIndex": 38,
+          "open": 3382.255,
+          "waveStartIndex": 37,
+          "opposingSwingId": "SL-37"
+        },
+        "last": {
+          "at": 36,
+          "label": "B",
+          "eventId": "cisd:36:4",
+          "referenceOpen": 3386.505,
+          "referenceStartIndex": 32,
+          "majorDirectionUnchanged": true
+        }
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -2092,6 +2940,40 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": {
+          "at": 37,
+          "label": "C",
+          "eventId": "mss_weak:37:5",
+          "majorPivotId": "SL-27"
+        }
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 41,
+          "endIndex": 41,
+          "open": 3385.515,
+          "waveStartIndex": 37,
+          "opposingSwingId": "SL-37"
+        },
+        "last": {
+          "at": 36,
+          "label": "B",
+          "eventId": "cisd:36:4",
+          "referenceOpen": 3386.505,
+          "referenceStartIndex": 32,
+          "majorDirectionUnchanged": true
+        }
       },
       "eventsAt": [],
       "confirmedPivots": [
@@ -2146,9 +3028,43 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": {
+          "at": 37,
+          "label": "C",
+          "eventId": "mss_weak:37:5",
+          "majorPivotId": "SL-27"
+        }
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 41,
+          "endIndex": 42,
+          "open": 3385.515,
+          "waveStartIndex": 37,
+          "opposingSwingId": "SL-37"
+        },
+        "last": {
+          "at": 36,
+          "label": "B",
+          "eventId": "cisd:36:4",
+          "referenceOpen": 3386.505,
+          "referenceStartIndex": 32,
+          "majorDirectionUnchanged": true
+        }
+      },
       "eventsAt": [
         {
-          "id": "major_continuation:43:3",
+          "id": "major_continuation:43:6",
           "at": 43,
           "kind": "major_continuation",
           "layer": "external",
@@ -2166,7 +3082,7 @@
           }
         },
         {
-          "id": "major_updated:43:4",
+          "id": "major_updated:43:7",
           "at": 43,
           "kind": "major_updated",
           "layer": "external",
@@ -2238,6 +3154,40 @@
         "pendingBreakAt": null,
         "confirmed": false
       },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": {
+          "at": 37,
+          "label": "C",
+          "eventId": "mss_weak:37:5",
+          "majorPivotId": "SL-27"
+        }
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 41,
+          "endIndex": 43,
+          "open": 3385.515,
+          "waveStartIndex": 37,
+          "opposingSwingId": "SL-37"
+        },
+        "last": {
+          "at": 36,
+          "label": "B",
+          "eventId": "cisd:36:4",
+          "referenceOpen": 3386.505,
+          "referenceStartIndex": 32,
+          "majorDirectionUnchanged": true
+        }
+      },
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -2288,6 +3238,40 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": false
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": {
+          "at": 37,
+          "label": "C",
+          "eventId": "mss_weak:37:5",
+          "majorPivotId": "SL-27"
+        }
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 41,
+          "endIndex": 43,
+          "open": 3385.515,
+          "waveStartIndex": 37,
+          "opposingSwingId": "SL-37"
+        },
+        "last": {
+          "at": 36,
+          "label": "B",
+          "eventId": "cisd:36:4",
+          "referenceOpen": 3386.505,
+          "referenceStartIndex": 32,
+          "majorDirectionUnchanged": true
+        }
       },
       "eventsAt": [],
       "confirmedPivots": [
@@ -2348,9 +3332,43 @@
         "pendingBreakAt": null,
         "confirmed": true
       },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": {
+          "at": 37,
+          "label": "C",
+          "eventId": "mss_weak:37:5",
+          "majorPivotId": "SL-27"
+        }
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 45,
+          "endIndex": 45,
+          "open": 3390.348,
+          "waveStartIndex": 41,
+          "opposingSwingId": "SL-41"
+        },
+        "last": {
+          "at": 36,
+          "label": "B",
+          "eventId": "cisd:36:4",
+          "referenceOpen": 3386.505,
+          "referenceStartIndex": 32,
+          "majorDirectionUnchanged": true
+        }
+      },
       "eventsAt": [
         {
-          "id": "internal_established:46:5",
+          "id": "internal_established:46:8",
           "at": 46,
           "kind": "internal_established",
           "layer": "internal",
@@ -2424,6 +3442,40 @@
         "pendingDirection": null,
         "pendingBreakAt": null,
         "confirmed": true
+      },
+      "mss": {
+        "tolerance": 0,
+        "last": {
+          "at": 30,
+          "label": "S+",
+          "direction": "up",
+          "eventId": "major_reversal:30:2",
+          "brokenLevel": 3388.205
+        },
+        "lastWeak": {
+          "at": 37,
+          "label": "C",
+          "eventId": "mss_weak:37:5",
+          "majorPivotId": "SL-27"
+        }
+      },
+      "cisd": {
+        "reference": {
+          "direction": "up",
+          "startIndex": 45,
+          "endIndex": 45,
+          "open": 3390.348,
+          "waveStartIndex": 41,
+          "opposingSwingId": "SL-41"
+        },
+        "last": {
+          "at": 36,
+          "label": "B",
+          "eventId": "cisd:36:4",
+          "referenceOpen": 3386.505,
+          "referenceStartIndex": 32,
+          "majorDirectionUnchanged": true
+        }
       },
       "eventsAt": [],
       "confirmedPivots": [

@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="dark" name="color-scheme"/>
+<meta content="no-referrer" name="referrer"/>
+<!-- Local MSAS UI; native offline single-file build is generated separately. -->
+<title>MSAS — Market Structure Replay</title>
+<style>
+:root { color-scheme:dark; --bg:#080e14;--panel:#0d1720;--panel2:#101d27;--line:#263846;--line2:#1b2c39;--text:#f1f7fa;--sub:#9db0be;--dim:#6d8999;--teal:#42dec2;--red:#fb7787;--gold:#eac183;--violet:#a3b5ff;--font:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif }
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;min-width:320px;background:radial-gradient(1000px 460px at 50% -260px,#26445a77,transparent),var(--bg);color:var(--text);font:13px/1.5 var(--font);-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:default}button:focus-visible,select:focus-visible,input:focus-visible,label:focus-within{outline:2px solid #68d6d0;outline-offset:3px}button,select{touch-action:manipulation}
+button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mono{font-family:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;font-variant-numeric:tabular-nums}
+.app{max-width:1840px;padding:0 13px;margin:0 auto}
+.viewport{padding-top:22px;padding-bottom:24px}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:stretch}
+.chart-panel,.stream{min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:17px;background:var(--panel);box-shadow:0 22px 58px #0004}
+.chart-panel{display:flex;flex-direction:column;height:min(830px, calc(100vh - 44px));min-height:660px}
+.chart-heading{min-height:98px;padding:22px 25px 17px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.eyebrow{font-size:9px;text-transform:uppercase;letter-spacing:.155em;font-weight:790;color:#7896a7}
+.chart-heading h2{margin:5px 0 0;line-height:1.22;font-size:23px;letter-spacing:-.045em;font-weight:740}
+.quote{display:flex;flex-direction:column;align-items:flex-end;gap:7px;min-width:175px}
+.last-price{display:flex;align-items:baseline;gap:10px;justify-content:flex-end}
+.last-price strong{font-size:25px;letter-spacing:-.05em;line-height:1;font-weight:780}
+.last-price span{font-size:11px;font-weight:730;color:var(--teal)}.last-price span.negative{color:var(--red)}
+.overlaybar{padding:9px 24px;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);background:#0c151d;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;min-height:45px}
+.ohlc{display:flex;align-items:center;gap:13px;flex-wrap:wrap;font-size:10px;color:#7690a2}.ohlc b{color:#d2e6ec;font-weight:710}.ohlc em{font-style:normal;margin-right:4px}
+.layers{display:flex;align-items:center;gap:6px}
+.layers>span{font-size:9px;letter-spacing:.15em;color:#677f91;font-weight:770;margin-right:4px}
+.layer{border:1px solid #294151;background:#10202b;color:#8ca8b8;border-radius:7px;padding:5px 9px;min-height:27px;white-space:nowrap;font-size:10px;font-weight:750}
+.layer[aria-pressed=true]{background:#1b3543;color:#e0f4fa;border-color:#406578}.layer:hover{border-color:#638b9b}
+.layer i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#59788b;margin-right:6px;vertical-align:1px}.layer[aria-pressed=true] i{background:#8daeff}.layer[data-color=gold][aria-pressed=true] i{background:var(--gold)}
+.error{display:none;margin:12px 24px 0;border-radius:8px;padding:9px 12px;border:1px solid #88505b;color:#ffc1c6;background:#38272f}.error.show{display:block}
+.graph{height:auto;flex:1;min-height:450px;position:relative;min-width:0;background:#c6d2df;overflow:hidden;user-select:none}
+.graph canvas{display:block;width:100%;height:100%;touch-action:pan-y;cursor:crosshair}
+.axis-legend{position:absolute;left:25px;bottom:12px;font:10px ui-monospace,monospace;letter-spacing:.035em;color:#647f90;pointer-events:none}
+.tooltip{position:absolute;min-width:180px;z-index:6;pointer-events:none;border:1px solid #41677a;border-radius:10px;padding:11px 12px;background:#152735f2;box-shadow:0 12px 28px #000b;color:#a6bfcb;font-size:11px}
+.tooltip.hidden{display:none}.tooltip header{font-weight:760;color:#ecf7ff;margin-bottom:8px}.tip-rows{display:grid;grid-template-columns:50px 1fr;gap:2px 12px}.tip-rows b{color:#edf6fa}
+.controls{border-top:1px solid #233542;padding:15px 23px 16px;background:#0b141c}
+.transportline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.transport{display:flex;align-items:center;gap:7px}
+.ibtn{border-radius:10px;height:37px;width:37px;display:grid;place-items:center;color:#a7bdcc;border:1px solid #344b5b;background:#152734;transition:background .15s,border-color .15s,transform .15s}
+.ibtn:hover{background:#234050;border-color:#548091}.ibtn:active{transform:scale(.96)}
+.mainbtn{height:38px;border:1px solid #309782;color:#052921;background:#54e0bb;border-radius:10px;padding:0 20px;min-width:110px;font-size:12px;font-weight:790;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,transform .15s}
+.mainbtn:hover{background:#79f0cf}.mainbtn:active{transform:scale(.98)}.mainbtn.running{background:#1f4d4a;color:#9bffe3;border-color:#438f82}
+.speedbox{display:flex;align-items:center;gap:7px;margin-left:9px}
+.speedbox label{font-size:10px;color:#839eae;white-space:nowrap;font-weight:710;letter-spacing:.03em}
+.speedbox select{height:36px;min-width:76px;padding:0 9px;background:#152935;color:#d6ecf4;border:1px solid #3a5262;border-radius:8px;font-size:12px;font-weight:740}
+.readout{display:flex;align-items:center;gap:12px;white-space:nowrap}.readout .index{color:#7794a5;font-size:11px}.readout strong{font-size:15px;letter-spacing:-.018em;color:#e4f5fa}
+.timeline{display:flex;gap:12px;align-items:center}.timeline span{color:#7793a4;font-size:10px}
+.scrubber{-webkit-appearance:none;appearance:none;flex:1;min-width:80px;height:5px;border-radius:30px;background:linear-gradient(90deg,#49d8ba 0%,#49d8ba var(--pct,100%),#304754 var(--pct,100%),#304754 100%);cursor:pointer;outline-offset:7px}
+.scrubber::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:17px;height:17px;border-radius:50%;background:#edfdf8;border:4px solid #32bd9f;box-shadow:0 1px 10px #000b}
+.scrubber::-moz-range-thumb{width:9px;height:9px;border-radius:50%;background:#edfdf8;border:4px solid #32bd9f}
+.stream{display:flex;flex-direction:column;height:min(830px, calc(100vh - 44px));min-height:660px}
+.stream-top{padding:24px 22px 19px;display:flex;align-items:start;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line2)}
+.stream-heading{display:flex;align-items:center;gap:9px}.beacon{height:8px;width:8px;border-radius:50%;background:#46dfbb;box-shadow:0 0 0 4px #3bdbb31f;flex:none}.beacon.running{animation:glow 1.2s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 0 8px #3bdbb30a;opacity:.55}}
+.stream-top h2{margin:0;font-size:16px;letter-spacing:-.028em}.stream-top p{margin:6px 0 0;font-size:11px;color:#8098a8}
+.mode{border:1px solid #354d5a;padding:3px 7px;border-radius:6px;font-size:9px;font-weight:820;color:#9db1bc;letter-spacing:.1em}
+.asof{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:13px 22px;background:#0e1d27;border-bottom:1px solid #263947;color:#7795a7;font-size:10px;font-weight:750;letter-spacing:.1em}
+.asof b{color:#e0eff5;font-size:12px;letter-spacing:0;font-weight:680}
+.live-hero{position:relative;padding:22px 22px 23px 24px;border-bottom:1px solid var(--line2);background:linear-gradient(115deg,#142631 0%,#0f1b25 96%);--accent:#8ca8b7}
+.live-hero:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);box-shadow:0 0 15px color-mix(in srgb,var(--accent) 35%,transparent)}
+.live-hero.event-in{animation:appear .36s cubic-bezier(.21,.65,.28,1)}
+@keyframes appear{from{opacity:.45;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.signal-type{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--accent);letter-spacing:.115em;font-weight:850}
+.signal-type b{font-size:9px;padding:2px 6px;border-radius:4px;border:1px solid color-mix(in srgb,var(--accent) 50%,transparent)}
+.live-hero h3{font-size:18px;line-height:1.27;font-weight:780;letter-spacing:-.035em;margin:14px 0 9px}
+.live-hero p{color:#a4bcc9;font-size:12px;line-height:1.7;margin:0}
+.hero-time{margin-top:15px;display:flex;align-items:center;gap:8px;color:#708fa0;font:10px ui-monospace,monospace}
+.hero-time:before{content:"";height:1px;flex:1;background:#2b414f;order:2}.hero-time span{order:1}
+.history-header{padding:19px 22px 8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.history-header b{font-size:9px;letter-spacing:.16em;color:#7893a3}.history-header span{font-size:10px;color:#68879a}
+.signal-list{min-height:155px;flex:1;overflow:auto;overscroll-behavior:contain;padding:1px 10px 15px 22px;scrollbar-color:#395565 transparent;scrollbar-width:thin}
+.signal-row{position:relative;display:flex;gap:11px;width:100%;text-align:left;color:inherit;background:transparent;border:0;border-bottom:1px solid #203340;padding:13px 10px 14px 3px;transition:background .16s}
+.signal-row:hover{background:#152833}.signal-row .mark{flex:none;width:7px;height:7px;border-radius:50%;margin-top:6px;background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
+.signal-row .rowbody{flex:1;min-width:0}.signal-row .minor{display:flex;justify-content:space-between;gap:8px;font-size:9px;font-weight:790;color:var(--accent);letter-spacing:.075em}.signal-row time{color:#7d99a9;letter-spacing:0;font-weight:560}
+.signal-row h4{font-size:12px;margin:5px 0 4px;color:#d8e9f0;line-height:1.45;font-weight:730}
+.signal-row p{color:#809cac;font-size:11px;line-height:1.5;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.empty{padding:24px 15px 30px;color:#8fa6b4;font-size:12px;line-height:1.75}
+@media (max-width:1120px){.workspace{grid-template-columns:minmax(0,1fr) 303px}.app{padding:0 18px}.graph{height:535px}.chart-heading{padding:20px 19px}.overlaybar{padding:10px 18px}.controls{padding:15px 18px}.stream-top{padding:20px 17px}}
+@media (max-width:840px){.workspace{grid-template-columns:1fr}.chart-panel{height:auto}.graph{height:480px;flex:none;min-height:0}.signal-list{max-height:335px}.stream{height:625px;min-height:0}.app{padding:0 14px}}
+@media (max-width:550px){.viewport{padding-top:11px}.workspace{gap:10px}.chart-panel,.stream{border-radius:12px}.chart-heading{padding:18px 15px 14px;min-height:99px}.chart-heading h2{font-size:19px}.quote{min-width:130px}.last-price{flex-direction:column;align-items:flex-end;gap:2px}.last-price strong{font-size:19px}.regime{font-size:8px;padding:4px 6px}.ohlc{gap:8px}.ohlc .field{white-space:nowrap}.overlaybar{padding:9px 12px}.layers>span{display:none}.layer{padding:4px 6px;font-size:9px}.graph{height:430px;flex:none;min-height:0}.controls{padding:13px 12px}.transportline{gap:6px}.transport{gap:4px}.ibtn{width:32px;height:34px}.mainbtn{height:35px;min-width:88px;padding:0 10px}.speedbox{margin-left:3px;gap:4px}.speedbox label{display:none}.speedbox select{height:34px;min-width:65px;padding:0 5px}.readout{gap:6px}.readout strong{font-size:12px}.stream-top{padding:18px 15px}.asof{padding:12px 15px}.live-hero{padding:19px}.signal-list{padding-left:14px}.history-header{padding:16px 15px 7px}.axis-legend{left:12px}}
+@media (max-width:375px){.chart-heading h2{font-size:17px}.chart-heading{gap:5px}.quote{min-width:112px}.layers{gap:4px}.layer{font-size:8px}.stream{height:590px}}
+@media (prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* V4 -> Docker data connection: quiet controls, no extra cards or logos. */
+.chart-heading{min-height:116px}
+.chart-source{min-width:0}
+.source-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:9px}
+.source-prefix{font-size:9px;font-weight:780;color:#7998ab;letter-spacing:.14em}
+.source-tools select{height:29px;max-width:260px;min-width:120px;min-height:29px;background:#132530;border:1px solid #324b59;border-radius:7px;color:#ddebf0;font-size:11px;font-weight:710;padding:3px 8px;text-overflow:ellipsis}
+.upload-btn{height:29px;border:1px solid #38685f;background:#19342f;color:#9df5dd;border-radius:7px;padding:0 10px;font-size:11px;font-weight:750;white-space:nowrap}
+.upload-btn:hover{background:#235144;border-color:#58ab94}
+.delete-btn{height:29px;width:29px;border:1px solid #5d4048;background:#34222c;color:#fb97a4;border-radius:7px;font-size:18px}
+.delete-btn[hidden]{display:none}
+.data-details{font-size:10px;line-height:1.5;color:#849cab;letter-spacing:.015em;margin-top:6px}
+.graph.dropping:after{content:attr(data-drop-hint);position:absolute;inset:10px;display:grid;place-items:center;background:#1a3f3bdc;border:2px dashed #56dabc;border-radius:12px;color:#e7fff6;font-size:20px;font-weight:700;pointer-events:none;z-index:7}
+.import-toast{position:fixed;z-index:50;right:24px;bottom:20px;padding:13px 17px;border:1px solid #2e8e7c;border-radius:10px;max-width:min(420px,calc(100% - 30px));background:#19362e;color:#befbe8;box-shadow:0 16px 55px #0009;pointer-events:none;opacity:0;transform:translateY(9px);transition:opacity .2s,transform .2s;font-size:12px;font-weight:690}
+.import-toast.visible{opacity:1;transform:translateY(0)}.import-toast[data-kind=warning]{border-color:#aa8752;background:#382c1f;color:#f7d9a8}.import-toast[data-kind=error]{border-color:#ae5964;background:#352229;color:#ffd0d8}
+.column-modal{width:min(680px,calc(100vw - 28px));max-height:min(700px,92vh);overflow:auto;border:1px solid #446373;border-radius:16px;background:#101d27;color:#e6f5fa;box-shadow:0 30px 120px #000d;padding:24px}
+.column-modal::backdrop{background:#030810d8;backdrop-filter:blur(4px)}
+.modal-head h2{margin:0 0 6px;font-size:19px}.modal-head p{margin:0 0 20px;font-size:12px;color:#a3b7c1;line-height:1.6}
+.mapping-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.mapping-grid label,.date-order{font-size:11px;font-weight:750;color:#b3c7d0;display:flex;flex-direction:column;gap:5px}
+.mapping-grid select,.date-order select{width:100%;height:36px;background:#172c38;color:#e8f7ff;border:1px solid #3c5869;border-radius:8px;padding:0 10px}
+.date-order{margin-top:15px;max-width:300px}.preview-caption{font-size:10px;margin:19px 0 5px;color:#90aabd}.column-preview{overflow:auto;max-height:160px}
+.column-preview td{border-bottom:1px solid #2c404b;color:#c4d9e4;padding:6px 10px;white-space:nowrap;font:11px ui-monospace,monospace}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:19px}.modal-actions button{border-radius:8px;padding:9px 15px;border:1px solid #42616f;color:#d0e1e8;background:#1d303b;font-weight:720}.modal-actions .modal-primary{background:#48d8b7;color:#082b24;border-color:#48d8b7}
+@media (max-width:550px){.chart-heading{padding:15px;align-items:flex-start;min-height:130px}.source-prefix{display:none}.source-tools{gap:5px}.source-tools select{max-width:160px;min-width:95px;font-size:10px}.upload-btn{font-size:10px;padding:0 7px}.chart-heading h2{font-size:18px}.quote{min-width:95px}.last-price strong{font-size:18px}.mapping-grid{grid-template-columns:1fr}}
+
+/* V5 visual contract: solid canvas with light surface; header/panels remain dark. */
+.graph{background:#c6d2df}
+.graph canvas{background:#c6d2df}
+.lang-control{display:inline-flex;align-items:center;margin-left:1px}
+.lang-control select{height:29px;min-width:58px;padding:2px 6px;border:1px solid #476577;border-radius:7px;background:#182b38;color:#eaf8ff;font-size:11px;font-weight:760;cursor:pointer}
+.lang-control select:hover{border-color:#76a8bb}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media (max-width:550px){.lang-control{margin-left:auto}.lang-control select{min-width:53px;height:28px}.source-tools{gap:5px}.source-tools select#datasetSelect{max-width:139px}}
+
+/* V5 structural state: single thin status rail inside the chart + one stream. */
+.structure-statusbar{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line);background:#0d202b;gap:1px}
+.structure-strip{min-width:0;padding:9px 17px;display:flex;align-items:center;flex-wrap:wrap;column-gap:10px;row-gap:3px;border-left:3px solid #62798a}
+.structure-strip[data-trend=up]{border-left-color:#4ed7af}
+.structure-strip[data-trend=down]{border-left-color:#f08b7f}
+.structure-kicker{font-size:9px;letter-spacing:.1em;font-weight:800;color:#94b0c0;white-space:nowrap}
+.structure-direction{font-size:12px;color:#d5e9f0;white-space:nowrap}
+.structure-strip[data-trend=up] .structure-direction{color:#68e2c1}
+.structure-strip[data-trend=down] .structure-direction{color:#ff9ba3}
+.structure-pivots{display:flex;flex-wrap:wrap;gap:5px 12px;margin-left:auto;font-size:10px;color:#acc3ce;white-space:nowrap}
+.structure-pivots span{display:inline-flex;gap:5px;align-items:center}.structure-pivots b{font-size:9px;color:#758f9e}
+.structure-pivots em{font-style:normal;color:#f2f7fb;font-weight:740}
+.structure-snapshot{padding:12px 17px 13px;background:#10202c;border-bottom:1px solid var(--line2);display:flex;flex-direction:column;gap:7px}
+.snapshot-title{font-size:9px;letter-spacing:.13em;font-weight:800;color:#7f9eaf}
+.snapshot-row{display:flex;align-items:center;justify-content:space-between;font-size:11px;gap:10px}
+.snapshot-row>b{font-size:10px;color:#bfd5df;letter-spacing:.035em}
+.snapshot-row strong{font-size:11px;color:#a6becc}
+.snapshot-row strong[data-trend=up]{color:#65e2bd}
+.snapshot-row strong[data-trend=down]{color:#fd999e}
+.snapshot-internal{margin-top:6px;padding-top:7px;border-top:1px solid #243945}
+.snapshot-pivots{display:grid;grid-template-columns:1fr 1fr;column-gap:8px}
+.snapshot-pivots>div{min-width:0;display:flex;flex-direction:column;gap:1px}
+.snapshot-pivots span{font-size:9px;color:#7794a5}
+.snapshot-pivots b{font-size:10px;color:#e0eff4;font-weight:620;line-height:1.5;overflow-wrap:anywhere}
+@media(max-width:840px){.structure-strip{padding:8px 12px}.structure-pivots{margin-left:0}}
+@media(max-width:550px){.structure-statusbar{grid-template-columns:1fr}.structure-strip{padding:7px 11px}.structure-pivots{margin-left:auto}}
+
+/* Standalone help modal: compact, no extra dashboard panels. */
+.help-body{padding:0 22px 10px;color:#c4d8e2;font-size:13px;line-height:1.6;display:flex;flex-direction:column;gap:10px}
+.help-body pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1c25;border:1px solid #345063;color:#c9f3e5;padding:12px;border-radius:7px;font-size:11px;line-height:1.6}
+#exportAudit{padding:0 10px}
+#helpData{width:31px;height:29px;flex:0 0 auto;font-weight:900;justify-content:center}
+@media(max-width:550px){#exportAudit{font-size:10px;padding:0 8px}}
+
+</style>
+</head>
+<body>
+<input accept=".csv,.tsv,.txt,.json,.jsonl,.xlsx" aria-label="Import price dataset" data-i18n-aria="uploadTitle" hidden="" id="csvFile" type="file"/>
+<main class="app viewport">
+<div class="workspace">
+<section aria-label="Candlestick chart and market-structure overlays" class="chart-panel" data-i18n-aria="chartAria">
+<div class="chart-heading">
+<div class="chart-source">
+<div class="source-tools"><span class="source-prefix" data-i18n="data">DATA</span>
+<select aria-label="Select dataset" data-i18n-aria="chooseDataset" id="datasetSelect"><option>Connecting…</option></select>
+<button class="upload-btn" data-i18n="upload" data-i18n-title="uploadTitle" id="uploadData" title="Import CSV, TSV, TXT, JSON or XLSX" type="button">+ Import</button>
+<button class="upload-btn" data-i18n="exportSnapshot" data-i18n-title="exportTitle" id="exportAudit" title="Export current analysis JSON" type="button">↓ JSON</button>
+<button aria-label="Help" class="delete-btn" data-i18n-title="helpTitle" id="helpData" style="display:inline-flex!important" title="Data format and privacy" type="button">?</button>
+<button aria-label="Remove imported dataset" class="delete-btn" data-i18n-aria="removeTitle" data-i18n-title="removeTitle" hidden="" id="removeData" title="Remove imported dataset" type="button">×</button>
+<label class="lang-control" for="languageSelect"><span class="sr-only">Language / Ngôn ngữ</span><select aria-label="Language / Ngôn ngữ" id="languageSelect"><option value="en" selected>EN</option><option value="vi">VI</option></select></label>
+</div>
+<h2 data-i18n="chartTitle">Market structure</h2><div class="data-details" data-i18n="loading" id="dataDetails">Loading data…</div>
+</div>
+<div class="quote"><div class="last-price"><strong class="mono" id="lastClose">--</strong><span class="mono" id="lastDelta">--</span></div></div>
+</div>
+<div class="overlaybar"><div class="ohlc mono"><span class="field"><em>O</em><b id="openVal">--</b></span><span class="field"><em>H</em><b id="highVal">--</b></span><span class="field"><em>L</em><b id="lowVal">--</b></span><span class="field"><em>C</em><b id="closeVal">--</b></span></div><div class="layers"><span data-i18n="indicators">INDICATORS</span><button aria-pressed="true" class="layer" id="toggleStructure" type="button"><i></i><span data-i18n="structure">Structure</span></button><button aria-pressed="true" class="layer" data-color="gold" id="toggleInside" type="button"><i></i><span data-i18n="inside">Inside bar</span></button><button aria-pressed="false" class="layer" id="toggleRaw" type="button"><i></i><span data-i18n="candidates">Candidates</span></button></div></div>
+<div aria-label="Structure at the current closed candle" aria-live="polite" class="structure-statusbar" id="chartStructureSummary">
+<div class="structure-strip major-strip" data-trend="unknown" id="majorStrip">
+<span class="structure-kicker" data-i18n="majorLabel">MAIN / MAJOR</span>
+<strong class="structure-direction" id="majorDirection">UNKNOWN</strong>
+<div class="structure-pivots"><span><b>MH</b> <em class="mono" id="majorHighValue">—</em></span><span><b>ML</b> <em class="mono" id="majorLowValue">—</em></span></div>
+</div>
+<div class="structure-strip internal-strip" data-trend="unknown" id="internalStrip">
+<span class="structure-kicker" data-i18n="internalLabel">INTERNAL</span>
+<strong class="structure-direction" id="internalDirection">UNKNOWN</strong>
+<div class="structure-pivots"><span><b>iSH</b> <em class="mono" id="internalHighValue">—</em></span><span><b>iSL</b> <em class="mono" id="internalLowValue">—</em></span></div>
+</div>
+</div>
+<div class="error" id="errorbox" role="alert"></div><div aria-live="polite" class="import-toast" id="importToast" role="status"></div>
+<div class="graph" id="chartBox"><canvas aria-label="Candlestick chart and market-structure overlays" data-i18n-aria="chartAria" id="chart" role="img"></canvas><div class="axis-legend mono" id="canvasTimeframe">M15 / CLOSED CANDLES</div><div class="tooltip hidden" id="tooltip"></div></div>
+<div class="controls">
+<div class="transportline"><div class="transport">
+<button aria-label="First candle" class="ibtn" data-i18n-aria="firstCandle" data-i18n-title="firstCandle" id="restart" title="First candle"><svg viewbox="0 0 24 24"><path d="M5 4v16M20 12H8m0 0 6-6m-6 6 6 6"></path></svg></button>
+<button aria-label="Previous candle" class="ibtn" data-i18n-aria="previousCandle" data-i18n-title="previousCandle" id="prev" title="Previous candle"><svg viewbox="0 0 24 24"><path d="m15 6-6 6 6 6"></path></svg></button>
+<button aria-label="Play" class="mainbtn" id="play"><svg id="playIcon" viewbox="0 0 24 24"><path d="m8 5 11 7-11 7z"></path></svg><span id="playText">Play</span></button>
+<button aria-label="Next candle" class="ibtn" data-i18n-aria="nextCandle" data-i18n-title="nextCandle" id="next" title="Next candle"><svg viewbox="0 0 24 24"><path d="m9 6 6 6-6 6"></path></svg></button>
+<div class="speedbox"><label data-i18n="replaySpeed" for="speed">SPEED</label><select aria-label="Replay speed" id="speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option selected="" value="1">1×</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option></select></div>
+</div><div class="readout mono"><span class="index" id="progressCount">-- / --</span><strong id="timeLabel">--:--</strong></div></div>
+<div class="timeline"><span class="mono" id="firstTime">--:--</span><input aria-label="Replay timeline" class="scrubber" data-i18n-aria="timeline" id="scrubber" max="39" min="0" step="1" type="range" value="39"/><span class="mono" id="lastTime">--:--</span></div>
+</div>
+</section>
+<aside aria-label="Replay event notifications" class="stream" data-i18n-aria="feedAria">
+<div class="stream-top"><div><div class="stream-heading"><i class="beacon" id="livePulse"></i><h2 data-i18n="notifications">Notifications</h2></div><p data-i18n="updatedOnClose">Updated after each candle closes</p></div><span class="mode">OFFLINE REPLAY</span></div>
+<div class="asof"><span data-i18n="candleClose">LAST CLOSED CANDLE</span><b class="mono" id="feedTime">--</b></div>
+<div aria-live="polite" class="structure-snapshot" id="structureSnapshot">
+<div class="snapshot-title" data-i18n="currentStatus">STRUCTURE AT THIS CANDLE CLOSE</div>
+<div class="snapshot-row"><b data-i18n="majorLabel">MAIN / MAJOR</b><strong data-trend="unknown" id="feedMajorTrend">UNKNOWN</strong></div>
+<div class="snapshot-pivots"><div><span data-i18n="majorHighLabel">Major High</span><b class="mono" id="feedMajorHigh">Not confirmed</b></div><div><span data-i18n="majorLowLabel">Major Low</span><b class="mono" id="feedMajorLow">Not confirmed</b></div></div>
+<div class="snapshot-row snapshot-internal"><b data-i18n="internalLabel">INTERNAL</b><strong data-trend="unknown" id="feedInternalTrend">UNKNOWN</strong></div>
+<div class="snapshot-pivots"><div><span>iSH</span><b class="mono" id="feedInternalHigh">Not confirmed</b></div><div><span>iSL</span><b class="mono" id="feedInternalLow">Not confirmed</b></div></div>
+</div>
+<div class="live-hero" id="hero"><div class="signal-type" id="heroCategory">AWAITING DATA</div><h3 id="heroTitle">--</h3><p id="heroDetail">--</p><div class="hero-time"><span id="heroMeta">--</span></div></div>
+<div class="history-header"><b data-i18n="latestEvents">RECENT EVENTS</b><span id="eventCount">0 events</span></div>
+<div aria-live="off" class="signal-list" id="events"></div>
+</aside>
+</div>
+</main>
+<dialog aria-labelledby="helpTitle" class="column-modal" id="helpDialog">
+<div class="modal-head"><h2 data-i18n="helpTitle" id="helpTitle">How to use MSAS Offline</h2><p data-i18n="helpIntro">Use a local Python server or Docker. Imported files are stored by your selected local service.</p></div>
+<div class="help-body">
+<p data-i18n="helpFiles">Import CSV, TSV, TXT, JSON, JSONL or XLSX. Volume is optional. Use one closed OHLC candle per row.</p>
+<pre>Timestamp,Open,High,Low,Close,Volume
+2025-06-18 06:00:00,3380,3385,3378,3383,
+2025-06-18 06:15:00,3383,3388,3382,3386,</pre>
+<p data-i18n="helpMapping">If the source headers or date order are unclear, confirm column mapping and DMY/MDY in the dialog. Duplicate or invalid OHLC rows are rejected.</p>
+<p data-i18n="helpSession">Uploaded datasets are stored by your local MSAS server. Export an audit snapshot to share the current analysis.</p>
+<p data-i18n="helpRule">Major/Internal levels follow provisional PPT interpretation; uncertain trend remains UNKNOWN, not SIDEWAYS. Events use closed candles only.</p>
+</div><div class="modal-actions"><button class="modal-primary" data-i18n="closeHelp" id="closeHelp" type="button">Close</button></div>
+</dialog>
+<dialog aria-labelledby="modalTitle" class="column-modal" id="columnDialog">
+<form id="mappingForm" method="dialog">
+<div class="modal-head"><h2 data-i18n="mappingTitle" id="modalTitle">Confirm column mapping</h2><p data-i18n="mappingReason" id="mappingReason">Could not identify the source columns with confidence.</p></div>
+<div class="mapping-grid">
+<label><span data-i18n="timestamp">Timestamp</span><select id="col_timestamp" required=""></select></label>
+<label>Open<select id="col_open" required=""></select></label>
+<label>High<select id="col_high" required=""></select></label>
+<label>Low<select id="col_low" required=""></select></label>
+<label>Close<select id="col_close" required=""></select></label>
+<label><span data-i18n="volumeOptional">Volume (optional)</span><select id="col_volume"></select></label>
+</div>
+<label class="date-order"><span data-i18n="dateOrder">Date format</span><select id="dateOrder"><option data-i18n="dateAuto" value="auto">Auto-detect</option><option value="DMY">DD/MM/YYYY</option><option value="MDY">MM/DD/YYYY</option></select></label>
+<div class="preview-caption" data-i18n="mappingPreview">Preview of the first three rows · verify column assignments before applying</div><div class="column-preview"><table id="columnPreview"></table></div>
+<div class="modal-actions"><button class="modal-secondary" data-i18n="cancel" id="cancelMap" type="button">Cancel</button><button class="modal-primary" data-i18n="applyMapping" type="submit">Apply mapping</button></div>
+</form>
+</dialog>
+
+
+
+
+
+
+
+<script>window.MSAS_BUNDLED_DATASETS=[{"id":"btcusd-sample","name":"BTCUSD · M15 (mẫu)","filename":"BTCUSD_M15_sample.csv","payload":{"candles":[{"time":"2026-11-11 00:00:00","source_time":"2026-11-11 00:00:00","open":73697.87,"high":73715.0,"low":73550.2,"close":73570.17,"volume":142.54,"index":0},{"time":"2026-11-11 00:15:00","source_time":"2026-11-11 00:15:00","open":73570.17,"high":73605.4,"low":73480.1,"close":73560.93,"volume":189.12,"index":1},{"time":"2026-11-11 00:30:00","source_time":"2026-11-11 00:30:00","open":73560.93,"high":73640.0,"low":73475.5,"close":73490.44,"volume":165.8,"index":2},{"time":"2026-11-11 00:45:00","source_time":"2026-11-11 00:45:00","open":73490.44,"high":73510.25,"low":73420.0,"close":73438.45,"volume":130.45,"index":3},{"time":"2026-11-11 01:00:00","source_time":"2026-11-11 01:00:00","open":73438.45,"high":73450.0,"low":73255.8,"close":73308.57,"volume":245.9,"index":4},{"time":"2026-11-11 01:15:00","source_time":"2026-11-11 01:15:00","open":73308.57,"high":73690.0,"low":73300.15,"close":73681.46,"volume":312.67,"index":5},{"time":"2026-11-11 01:30:00","source_time":"2026-11-11 01:30:00","open":73681.46,"high":73775.3,"low":73670.0,"close":73756.28,"volume":278.34,"index":6},{"time":"2026-11-11 01:45:00","source_time":"2026-11-11 01:45:00","open":73756.28,"high":73760.0,"low":73485.0,"close":73496.52,"volume":210.18,"index":7},{"time":"2026-11-11 02:00:00","source_time":"2026-11-11 02:00:00","open":73496.52,"high":73505.1,"low":73330.4,"close":73343.7,"volume":195.4,"index":8},{"time":"2026-11-11 02:15:00","source_time":"2026-11-11 02:15:00","open":73343.7,"high":73360.8,"low":73245.0,"close":73258.46,"volume":220.75,"index":9},{"time":"2026-11-11 02:30:00","source_time":"2026-11-11 02:30:00","open":73258.46,"high":73655.0,"low":73250.2,"close":73639.15,"volume":298.11,"index":10},{"time":"2026-11-11 02:45:00","source_time":"2026-11-11 02:45:00","open":73639.15,"high":73645.9,"low":73520.0,"close":73540.6,"volume":154.62,"index":11},{"time":"2026-11-11 03:00:00","source_time":"2026-11-11 03:00:00","open":73540.6,"high":73735.0,"low":73535.1,"close":73721.75,"volume":188.9,"index":12},{"time":"2026-11-11 03:15:00","source_time":"2026-11-11 03:15:00","open":73721.75,"high":73730.4,"low":73695.0,"close":73704.5,"volume":112.35,"index":13},{"time":"2026-11-11 03:30:00","source_time":"2026-11-11 03:30:00","open":73704.5,"high":73728.6,"low":73645.2,"close":73657.7,"volume":128.49,"index":14},{"time":"2026-11-11 03:45:00","source_time":"2026-11-11 03:45:00","open":73657.7,"high":73680.0,"low":73635.8,"close":73669.5,"volume":105.7,"index":15},{"time":"2026-11-11 04:00:00","source_time":"2026-11-11 04:00:00","open":73669.5,"high":73795.4,"low":73600.1,"close":73609.7,"volume":264.82,"index":16},{"time":"2026-11-11 04:15:00","source_time":"2026-11-11 04:15:00","open":73609.7,"high":73615.0,"low":73440.5,"close":73575.8,"volume":231.19,"index":17},{"time":"2026-11-11 04:30:00","source_time":"2026-11-11 04:30:00","open":73575.8,"high":73750.25,"low":73570.0,"close":73693.57,"volume":192.44,"index":18},{"time":"2026-11-11 04:45:00","source_time":"2026-11-11 04:45:00","open":73693.57,"high":73705.0,"low":73625.1,"close":73633.28,"volume":140.88,"index":19},{"time":"2026-11-11 05:00:00","source_time":"2026-11-11 05:00:00","open":73633.28,"high":73710.5,"low":73615.0,"close":73685.4,"volume":158.23,"index":20},{"time":"2026-11-11 05:15:00","source_time":"2026-11-11 05:15:00","open":73685.4,"high":73820.0,"low":73680.1,"close":73795.15,"volume":240.6,"index":21},{"time":"2026-11-11 05:30:00","source_time":"2026-11-11 05:30:00","open":73795.15,"high":73845.8,"low":73740.25,"close":73760.9,"volume":175.32,"index":22},{"time":"2026-11-11 05:45:00","source_time":"2026-11-11 05:45:00","open":73760.9,"high":73780.0,"low":73690.4,"close":73712.3,"volume":149.1,"index":23},{"time":"2026-11-11 06:00:00","source_time":"2026-11-11 06:00:00","open":73712.3,"high":73740.6,"low":73580.0,"close":73605.85,"volume":205.77,"index":24},{"time":"2026-11-11 06:15:00","source_time":"2026-11-11 06:15:00","open":73605.85,"high":73630.2,"low":73510.5,"close":73545.1,"volume":188.45,"index":25},{"time":"2026-11-11 06:30:00","source_time":"2026-11-11 06:30:00","open":73545.1,"high":73680.9,"low":73530.0,"close":73662.4,"volume":212.9,"index":26},{"time":"2026-11-11 06:45:00","source_time":"2026-11-11 06:45:00","open":73662.4,"high":73750.0,"low":73655.3,"close":73738.75,"volume":194.15,"index":27},{"time":"2026-11-11 07:00:00","source_time":"2026-11-11 07:00:00","open":73738.75,"high":73890.5,"low":73730.0,"close":73865.2,"volume":310.48,"index":28},{"time":"2026-11-11 07:15:00","source_time":"2026-11-11 07:15:00","open":73865.2,"high":73950.0,"low":73840.15,"close":73918.6,"volume":342.19,"index":29},{"time":"2026-11-11 07:30:00","source_time":"2026-11-11 07:30:00","open":73918.6,"high":73940.8,"low":73810.4,"close":73830.0,"volume":267.55,"index":30},{"time":"2026-11-11 07:45:00","source_time":"2026-11-11 07:45:00","open":73830.0,"high":73885.25,"low":73795.0,"close":73872.45,"volume":198.3,"index":31},{"time":"2026-11-11 08:00:00","source_time":"2026-11-11 08:00:00","open":73872.45,"high":74020.0,"low":73860.5,"close":73995.8,"volume":385.62,"index":32},{"time":"2026-11-11 08:15:00","source_time":"2026-11-11 08:15:00","open":73995.8,"high":74085.4,"low":73960.0,"close":74042.1,"volume":410.25,"index":33},{"time":"2026-11-11 08:30:00","source_time":"2026-11-11 08:30:00","open":74042.1,"high":74060.0,"low":73910.2,"close":73935.75,"volume":295.8,"index":34},{"time":"2026-11-11 08:45:00","source_time":"2026-11-11 08:45:00","open":73935.75,"high":73980.6,"low":73890.0,"close":73958.9,"volume":224.14,"index":35},{"time":"2026-11-11 09:00:00","source_time":"2026-11-11 09:00:00","open":73958.9,"high":74015.3,"low":73880.45,"close":73902.15,"volume":251.9,"index":36},{"time":"2026-11-11 09:15:00","source_time":"2026-11-11 09:15:00","open":73902.15,"high":73925.0,"low":73785.6,"close":73810.4,"volume":278.65,"index":37},{"time":"2026-11-11 09:30:00","source_time":"2026-11-11 09:30:00","open":73810.4,"high":73860.75,"low":73770.0,"close":73845.2,"volume":190.33,"index":38},{"time":"2026-11-11 09:45:00","source_time":"2026-11-11 09:45:00","open":73845.2,"high":73910.0,"low":73830.5,"close":73894.6,"volume":215.72,"index":39}],"meta":{"source":"BTCUSD_M15_sample.csv","rows":40,"volume_present":true,"columns":["Timestamp","Open","High","Low","Close","Volume"],"mapping":{"timestamp":0,"open":1,"high":2,"low":3,"close":4,"volume":5},"mapping_mode":"header","timeframe":"M15","timezone":null,"interval_seconds":900,"gaps":0,"first_time":"2026-11-11 00:00:00","last_time":"2026-11-11 09:45:00"},"warnings":["Mã hóa utf-8-sig; phân cách ','."]}},{"id":"xauusd-sample","name":"XAUUSD · M15 (mẫu)","filename":"XAUUSD_M15_10Hours.csv","payload":{"candles":[{"time":"2026-11-11 15:00:00+00:00","source_time":"2026-11-11 15:00:00+00:00","open":4022.4,"high":4023.5,"low":4022.1,"close":4023.5,"volume":null,"index":0},{"time":"2026-11-11 15:15:00+00:00","source_time":"2026-11-11 15:15:00+00:00","open":4025.4,"high":4025.4,"low":4014.8,"close":4014.8,"volume":null,"index":1},{"time":"2026-11-11 15:30:00+00:00","source_time":"2026-11-11 15:30:00+00:00","open":4014.2,"high":4015.3,"low":4014.2,"close":4015.3,"volume":null,"index":2},{"time":"2026-11-11 15:45:00+00:00","source_time":"2026-11-11 15:45:00+00:00","open":4013.1,"high":4013.1,"low":4009.8,"close":4009.8,"volume":null,"index":3},{"time":"2026-11-11 16:00:00+00:00","source_time":"2026-11-11 16:00:00+00:00","open":4012.3,"high":4012.5,"low":4012.2,"close":4012.5,"volume":null,"index":4},{"time":"2026-11-11 16:15:00+00:00","source_time":"2026-11-11 16:15:00+00:00","open":4011.8,"high":4013.7,"low":4011.8,"close":4012.6,"volume":null,"index":5},{"time":"2026-11-11 16:30:00+00:00","source_time":"2026-11-11 16:30:00+00:00","open":4010.1,"high":4010.1,"low":4007.9,"close":4007.9,"volume":null,"index":6},{"time":"2026-11-11 16:45:00+00:00","source_time":"2026-11-11 16:45:00+00:00","open":4007.4,"high":4007.4,"low":4007.1,"close":4007.1,"volume":null,"index":7},{"time":"2026-11-11 17:00:00+00:00","source_time":"2026-11-11 17:00:00+00:00","open":4008.1,"high":4008.1,"low":4006.1,"close":4006.1,"volume":null,"index":8},{"time":"2026-11-11 17:15:00+00:00","source_time":"2026-11-11 17:15:00+00:00","open":4008.1,"high":4013.4,"low":4008.1,"close":4013.4,"volume":null,"index":9},{"time":"2026-11-11 17:30:00+00:00","source_time":"2026-11-11 17:30:00+00:00","open":4011.0,"high":4011.0,"low":4009.4,"close":4009.4,"volume":null,"index":10},{"time":"2026-11-11 17:45:00+00:00","source_time":"2026-11-11 17:45:00+00:00","open":4007.4,"high":4007.4,"low":4004.7,"close":4004.7,"volume":null,"index":11},{"time":"2026-11-11 18:00:00+00:00","source_time":"2026-11-11 18:00:00+00:00","open":3999.9,"high":3999.9,"low":3995.8,"close":3999.4,"volume":null,"index":12},{"time":"2026-11-11 18:15:00+00:00","source_time":"2026-11-11 18:15:00+00:00","open":4000.4,"high":4000.4,"low":3998.9,"close":3999.6,"volume":null,"index":13},{"time":"2026-11-11 18:30:00+00:00","source_time":"2026-11-11 18:30:00+00:00","open":3999.8,"high":4001.5,"low":3998.0,"close":3998.0,"volume":null,"index":14},{"time":"2026-11-11 18:45:00+00:00","source_time":"2026-11-11 18:45:00+00:00","open":3997.8,"high":3997.8,"low":3995.1,"close":3995.2,"volume":null,"index":15},{"time":"2026-11-11 19:00:00+00:00","source_time":"2026-11-11 19:00:00+00:00","open":3994.4,"high":3994.4,"low":3992.4,"close":3992.4,"volume":null,"index":16},{"time":"2026-11-11 19:15:00+00:00","source_time":"2026-11-11 19:15:00+00:00","open":3993.6,"high":3993.6,"low":3991.1,"close":3991.3,"volume":null,"index":17},{"time":"2026-11-11 19:30:00+00:00","source_time":"2026-11-11 19:30:00+00:00","open":3996.5,"high":3996.5,"low":3995.4,"close":3995.4,"volume":null,"index":18},{"time":"2026-11-11 19:45:00+00:00","source_time":"2026-11-11 19:45:00+00:00","open":3994.2,"high":3994.2,"low":3993.7,"close":3994.0,"volume":null,"index":19},{"time":"2026-11-11 20:00:00+00:00","source_time":"2026-11-11 20:00:00+00:00","open":3993.8,"high":3993.8,"low":3991.8,"close":3993.2,"volume":null,"index":20},{"time":"2026-11-11 20:15:00+00:00","source_time":"2026-11-11 20:15:00+00:00","open":3993.6,"high":3993.7,"low":3991.0,"close":3993.7,"volume":null,"index":21},{"time":"2026-11-11 20:30:00+00:00","source_time":"2026-11-11 20:30:00+00:00","open":3993.1,"high":3993.4,"low":3991.8,"close":3993.4,"volume":null,"index":22},{"time":"2026-11-11 20:45:00+00:00","source_time":"2026-11-11 20:45:00+00:00","open":3994.0,"high":3994.7,"low":3994.0,"close":3994.0,"volume":null,"index":23},{"time":"2026-11-11 21:00:00+00:00","source_time":"2026-11-11 21:00:00+00:00","open":3991.5,"high":3991.5,"low":3990.7,"close":3991.3,"volume":null,"index":24},{"time":"2026-11-11 21:15:00+00:00","source_time":"2026-11-11 21:15:00+00:00","open":3992.4,"high":3992.4,"low":3991.1,"close":3991.4,"volume":null,"index":25},{"time":"2026-11-11 21:30:00+00:00","source_time":"2026-11-11 21:30:00+00:00","open":3990.6,"high":3992.5,"low":3990.6,"close":3992.5,"volume":null,"index":26},{"time":"2026-11-11 21:45:00+00:00","source_time":"2026-11-11 21:45:00+00:00","open":3992.3,"high":3994.0,"low":3992.3,"close":3993.4,"volume":null,"index":27},{"time":"2026-11-11 22:00:00+00:00","source_time":"2026-11-11 22:00:00+00:00","open":3994.3,"high":3994.3,"low":3994.3,"close":3994.3,"volume":null,"index":28},{"time":"2026-11-11 23:00:00+00:00","source_time":"2026-11-11 23:00:00+00:00","open":3994.7,"high":3996.4,"low":3990.7,"close":3990.7,"volume":null,"index":29},{"time":"2026-11-11 23:15:00+00:00","source_time":"2026-11-11 23:15:00+00:00","open":3989.8,"high":3989.8,"low":3987.3,"close":3989.7,"volume":null,"index":30},{"time":"2026-11-11 23:30:00+00:00","source_time":"2026-11-11 23:30:00+00:00","open":3987.1,"high":3987.1,"low":3986.4,"close":3987.1,"volume":null,"index":31},{"time":"2026-11-11 23:45:00+00:00","source_time":"2026-11-11 23:45:00+00:00","open":3986.9,"high":3986.9,"low":3983.7,"close":3985.6,"volume":null,"index":32},{"time":"2026-11-12 00:00:00+00:00","source_time":"2026-11-12 00:00:00+00:00","open":3983.4,"high":3983.4,"low":3976.1,"close":3976.1,"volume":null,"index":33},{"time":"2026-11-12 00:15:00+00:00","source_time":"2026-11-12 00:15:00+00:00","open":3977.5,"high":3989.7,"low":3977.5,"close":3989.7,"volume":null,"index":34},{"time":"2026-11-12 00:30:00+00:00","source_time":"2026-11-12 00:30:00+00:00","open":3988.2,"high":3988.2,"low":3987.9,"close":3988.1,"volume":null,"index":35},{"time":"2026-11-12 00:45:00+00:00","source_time":"2026-11-12 00:45:00+00:00","open":3990.9,"high":3995.3,"low":3990.9,"close":3995.3,"volume":null,"index":36},{"time":"2026-11-12 01:00:00+00:00","source_time":"2026-11-12 01:00:00+00:00","open":3999.5,"high":4001.4,"low":3998.7,"close":3998.7,"volume":null,"index":37},{"time":"2026-11-12 01:15:00+00:00","source_time":"2026-11-12 01:15:00+00:00","open":4003.6,"high":4004.4,"low":4000.1,"close":4000.1,"volume":null,"index":38},{"time":"2026-11-12 01:30:00+00:00","source_time":"2026-11-12 01:30:00+00:00","open":4000.0,"high":4000.0,"low":3998.3,"close":3998.3,"volume":null,"index":39}],"meta":{"source":"XAUUSD_M15_10Hours.csv","rows":40,"volume_present":false,"columns":["Timestamp","open","high","low","close"],"mapping":{"timestamp":0,"open":1,"high":2,"low":3,"close":4},"mapping_mode":"header","timeframe":"M15","timezone":"UTC+00:00","interval_seconds":900,"gaps":1,"first_time":"2026-11-11 15:00:00+00:00","last_time":"2026-11-12 01:30:00+00:00"},"warnings":["Mã hóa utf-8-sig; phân cách ','.","Có 1 khoảng thời gian lệch nhịp chuẩn; giữ nguyên dữ liệu, không tạo nến giả.","Không có Volume: bỏ qua; nhận diện chỉ dùng OHLC."]}},{"id":"btcusd-20250618","name":"BTCUSD · M15 · 18/06/2025 UTC","filename":"BTCUSD_M15_12h_2025-06-18_UTC.csv","payload":{"candles":[{"time":"2025-06-18 06:00:00+00:00","source_time":"2025-06-18 06:00:00+00:00","open":105438.52,"high":105564.01,"low":105340.35,"close":105467.61,"volume":null,"index":0},{"time":"2025-06-18 06:15:00+00:00","source_time":"2025-06-18 06:15:00+00:00","open":105465.56,"high":105511.55,"low":105263.33,"close":105346.52,"volume":null,"index":1},{"time":"2025-06-18 06:30:00+00:00","source_time":"2025-06-18 06:30:00+00:00","open":105346.52,"high":105346.52,"low":105114.78,"close":105123.63,"volume":null,"index":2},{"time":"2025-06-18 06:45:00+00:00","source_time":"2025-06-18 06:45:00+00:00","open":105123.63,"high":105156.72,"low":104914.33,"close":104990.27,"volume":null,"index":3},{"time":"2025-06-18 07:00:00+00:00","source_time":"2025-06-18 07:00:00+00:00","open":104990.27,"high":105013.28,"low":104731.26,"close":104877.33,"volume":null,"index":4},{"time":"2025-06-18 07:15:00+00:00","source_time":"2025-06-18 07:15:00+00:00","open":104869.73,"high":105015.6,"low":104850.74,"close":104965.08,"volume":null,"index":5},{"time":"2025-06-18 07:30:00+00:00","source_time":"2025-06-18 07:30:00+00:00","open":104965.09,"high":105035.9,"low":104886.9,"close":104963.17,"volume":null,"index":6},{"time":"2025-06-18 07:45:00+00:00","source_time":"2025-06-18 07:45:00+00:00","open":104961.98,"high":105010.6,"low":104936.19,"close":104996.51,"volume":null,"index":7},{"time":"2025-06-18 08:00:00+00:00","source_time":"2025-06-18 08:00:00+00:00","open":104996.5,"high":105336.17,"low":104993.09,"close":105259.62,"volume":null,"index":8},{"time":"2025-06-18 08:15:00+00:00","source_time":"2025-06-18 08:15:00+00:00","open":105259.62,"high":105275.73,"low":105110.44,"close":105114.2,"volume":null,"index":9},{"time":"2025-06-18 08:30:00+00:00","source_time":"2025-06-18 08:30:00+00:00","open":105113.98,"high":105127.07,"low":104749.75,"close":104836.68,"volume":null,"index":10},{"time":"2025-06-18 08:45:00+00:00","source_time":"2025-06-18 08:45:00+00:00","open":104834.88,"high":105037.46,"low":104834.88,"close":104977.93,"volume":null,"index":11},{"time":"2025-06-18 09:00:00+00:00","source_time":"2025-06-18 09:00:00+00:00","open":104982.22,"high":105159.7,"low":104982.22,"close":105017.34,"volume":null,"index":12},{"time":"2025-06-18 09:15:00+00:00","source_time":"2025-06-18 09:15:00+00:00","open":105017.34,"high":105075.85,"low":104883.5,"close":104888.89,"volume":null,"index":13},{"time":"2025-06-18 09:30:00+00:00","source_time":"2025-06-18 09:30:00+00:00","open":104888.89,"high":104888.89,"low":104655.17,"close":104696.67,"volume":null,"index":14},{"time":"2025-06-18 09:45:00+00:00","source_time":"2025-06-18 09:45:00+00:00","open":104696.67,"high":104797.5,"low":104585.56,"close":104707.41,"volume":null,"index":15},{"time":"2025-06-18 10:00:00+00:00","source_time":"2025-06-18 10:00:00+00:00","open":104707.42,"high":104750.57,"low":104541.31,"close":104708.19,"volume":null,"index":16},{"time":"2025-06-18 10:15:00+00:00","source_time":"2025-06-18 10:15:00+00:00","open":104711.14,"high":104829.36,"low":104505.0,"close":104529.03,"volume":null,"index":17},{"time":"2025-06-18 10:30:00+00:00","source_time":"2025-06-18 10:30:00+00:00","open":104529.03,"high":104638.23,"low":104427.0,"close":104474.23,"volume":null,"index":18},{"time":"2025-06-18 10:45:00+00:00","source_time":"2025-06-18 10:45:00+00:00","open":104477.08,"high":104531.01,"low":104191.62,"close":104288.91,"volume":null,"index":19},{"time":"2025-06-18 11:00:00+00:00","source_time":"2025-06-18 11:00:00+00:00","open":104284.0,"high":104504.26,"low":104205.54,"close":104483.21,"volume":null,"index":20},{"time":"2025-06-18 11:15:00+00:00","source_time":"2025-06-18 11:15:00+00:00","open":104483.22,"high":104520.0,"low":104326.82,"close":104439.85,"volume":null,"index":21},{"time":"2025-06-18 11:30:00+00:00","source_time":"2025-06-18 11:30:00+00:00","open":104439.85,"high":104660.0,"low":104350.41,"close":104635.91,"volume":null,"index":22},{"time":"2025-06-18 11:45:00+00:00","source_time":"2025-06-18 11:45:00+00:00","open":104635.9,"high":104887.76,"low":104630.37,"close":104858.58,"volume":null,"index":23},{"time":"2025-06-18 12:00:00+00:00","source_time":"2025-06-18 12:00:00+00:00","open":104858.58,"high":104932.84,"low":104726.93,"close":104842.61,"volume":null,"index":24},{"time":"2025-06-18 12:15:00+00:00","source_time":"2025-06-18 12:15:00+00:00","open":104840.22,"high":104907.19,"low":104632.66,"close":104747.98,"volume":null,"index":25},{"time":"2025-06-18 12:30:00+00:00","source_time":"2025-06-18 12:30:00+00:00","open":104748.0,"high":104748.01,"low":104507.93,"close":104522.26,"volume":null,"index":26},{"time":"2025-06-18 12:45:00+00:00","source_time":"2025-06-18 12:45:00+00:00","open":104522.26,"high":104605.71,"low":104500.0,"close":104539.48,"volume":null,"index":27},{"time":"2025-06-18 13:00:00+00:00","source_time":"2025-06-18 13:00:00+00:00","open":104534.02,"high":104579.95,"low":104060.29,"close":104083.98,"volume":null,"index":28},{"time":"2025-06-18 13:15:00+00:00","source_time":"2025-06-18 13:15:00+00:00","open":104083.98,"high":104132.35,"low":103926.1,"close":103950.2,"volume":null,"index":29},{"time":"2025-06-18 13:30:00+00:00","source_time":"2025-06-18 13:30:00+00:00","open":103943.81,"high":104420.0,"low":103837.75,"close":104239.3,"volume":null,"index":30},{"time":"2025-06-18 13:45:00+00:00","source_time":"2025-06-18 13:45:00+00:00","open":104239.3,"high":104528.86,"low":103987.59,"close":104460.85,"volume":null,"index":31},{"time":"2025-06-18 14:00:00+00:00","source_time":"2025-06-18 14:00:00+00:00","open":104460.86,"high":105138.66,"low":104233.5,"close":105079.8,"volume":null,"index":32},{"time":"2025-06-18 14:15:00+00:00","source_time":"2025-06-18 14:15:00+00:00","open":105071.92,"high":105348.75,"low":104897.01,"close":105196.32,"volume":null,"index":33},{"time":"2025-06-18 14:30:00+00:00","source_time":"2025-06-18 14:30:00+00:00","open":105196.32,"high":105344.08,"low":104980.7,"close":105151.9,"volume":null,"index":34},{"time":"2025-06-18 14:45:00+00:00","source_time":"2025-06-18 14:45:00+00:00","open":105152.22,"high":105177.94,"low":104499.11,"close":104646.82,"volume":null,"index":35},{"time":"2025-06-18 15:00:00+00:00","source_time":"2025-06-18 15:00:00+00:00","open":104646.82,"high":104848.88,"low":104359.38,"close":104445.51,"volume":null,"index":36},{"time":"2025-06-18 15:15:00+00:00","source_time":"2025-06-18 15:15:00+00:00","open":104447.33,"high":104822.6,"low":104161.37,"close":104779.51,"volume":null,"index":37},{"time":"2025-06-18 15:30:00+00:00","source_time":"2025-06-18 15:30:00+00:00","open":104779.52,"high":104968.01,"low":104640.18,"close":104922.74,"volume":null,"index":38},{"time":"2025-06-18 15:45:00+00:00","source_time":"2025-06-18 15:45:00+00:00","open":104922.75,"high":105014.67,"low":104772.61,"close":104823.0,"volume":null,"index":39},{"time":"2025-06-18 16:00:00+00:00","source_time":"2025-06-18 16:00:00+00:00","open":104823.25,"high":104876.98,"low":104639.33,"close":104689.99,"volume":null,"index":40},{"time":"2025-06-18 16:15:00+00:00","source_time":"2025-06-18 16:15:00+00:00","open":104698.61,"high":104698.61,"low":104366.46,"close":104416.0,"volume":null,"index":41},{"time":"2025-06-18 16:30:00+00:00","source_time":"2025-06-18 16:30:00+00:00","open":104415.99,"high":104654.02,"low":104366.47,"close":104593.06,"volume":null,"index":42},{"time":"2025-06-18 16:45:00+00:00","source_time":"2025-06-18 16:45:00+00:00","open":104593.06,"high":104637.89,"low":104400.0,"close":104446.91,"volume":null,"index":43},{"time":"2025-06-18 17:00:00+00:00","source_time":"2025-06-18 17:00:00+00:00","open":104446.92,"high":104446.92,"low":104005.0,"close":104305.23,"volume":null,"index":44},{"time":"2025-06-18 17:15:00+00:00","source_time":"2025-06-18 17:15:00+00:00","open":104305.22,"high":104352.31,"low":104073.06,"close":104104.1,"volume":null,"index":45},{"time":"2025-06-18 17:30:00+00:00","source_time":"2025-06-18 17:30:00+00:00","open":104104.11,"high":104226.71,"low":103627.0,"close":104211.56,"volume":null,"index":46},{"time":"2025-06-18 17:45:00+00:00","source_time":"2025-06-18 17:45:00+00:00","open":104211.57,"high":104540.93,"low":104160.38,"close":104366.33,"volume":null,"index":47}],"meta":{"source":"BTCUSD_M15_12h_2025-06-18_UTC.csv","rows":48,"volume_present":false,"columns":["Timestamp","open","high","low","close"],"mapping":{"timestamp":0,"open":1,"high":2,"low":3,"close":4},"mapping_mode":"header","timeframe":"M15","timezone":"UTC+00:00","interval_seconds":900,"gaps":0,"first_time":"2025-06-18 06:00:00+00:00","last_time":"2025-06-18 17:45:00+00:00"},"warnings":["Mã hóa utf-8-sig; phân cách ','.","Không có Volume: bỏ qua; nhận diện chỉ dùng OHLC."]}},{"id":"xauusd-20250618","name":"XAUUSD · M15 · 18/06/2025 UTC","filename":"XAUUSD_M15_12h_2025-06-18_UTC.csv","payload":{"candles":[{"time":"2025-06-18 06:00:00+00:00","source_time":"2025-06-18 06:00:00+00:00","open":3394.995,"high":3395.445,"low":3392.265,"close":3393.205,"volume":null,"index":0},{"time":"2025-06-18 06:15:00+00:00","source_time":"2025-06-18 06:15:00+00:00","open":3393.198,"high":3394.398,"low":3391.445,"close":3392.045,"volume":null,"index":1},{"time":"2025-06-18 06:30:00+00:00","source_time":"2025-06-18 06:30:00+00:00","open":3392.065,"high":3392.375,"low":3383.965,"close":3387.425,"volume":null,"index":2},{"time":"2025-06-18 06:45:00+00:00","source_time":"2025-06-18 06:45:00+00:00","open":3387.398,"high":3388.495,"low":3385.028,"close":3386.215,"volume":null,"index":3},{"time":"2025-06-18 07:00:00+00:00","source_time":"2025-06-18 07:00:00+00:00","open":3386.215,"high":3386.515,"low":3383.238,"close":3383.998,"volume":null,"index":4},{"time":"2025-06-18 07:15:00+00:00","source_time":"2025-06-18 07:15:00+00:00","open":3384.098,"high":3385.255,"low":3381.695,"close":3382.225,"volume":null,"index":5},{"time":"2025-06-18 07:30:00+00:00","source_time":"2025-06-18 07:30:00+00:00","open":3382.225,"high":3383.548,"low":3380.0,"close":3380.0,"volume":null,"index":6},{"time":"2025-06-18 07:45:00+00:00","source_time":"2025-06-18 07:45:00+00:00","open":3380.0,"high":3385.348,"low":3379.148,"close":3382.148,"volume":null,"index":7},{"time":"2025-06-18 08:00:00+00:00","source_time":"2025-06-18 08:00:00+00:00","open":3382.075,"high":3383.848,"low":3379.865,"close":3381.365,"volume":null,"index":8},{"time":"2025-06-18 08:15:00+00:00","source_time":"2025-06-18 08:15:00+00:00","open":3381.348,"high":3383.065,"low":3377.625,"close":3378.135,"volume":null,"index":9},{"time":"2025-06-18 08:30:00+00:00","source_time":"2025-06-18 08:30:00+00:00","open":3378.115,"high":3384.285,"low":3376.865,"close":3383.745,"volume":null,"index":10},{"time":"2025-06-18 08:45:00+00:00","source_time":"2025-06-18 08:45:00+00:00","open":3383.745,"high":3385.898,"low":3382.835,"close":3385.695,"volume":null,"index":11},{"time":"2025-06-18 09:00:00+00:00","source_time":"2025-06-18 09:00:00+00:00","open":3385.648,"high":3388.205,"low":3384.748,"close":3385.948,"volume":null,"index":12},{"time":"2025-06-18 09:15:00+00:00","source_time":"2025-06-18 09:15:00+00:00","open":3385.948,"high":3387.905,"low":3384.485,"close":3386.895,"volume":null,"index":13},{"time":"2025-06-18 09:30:00+00:00","source_time":"2025-06-18 09:30:00+00:00","open":3386.895,"high":3387.265,"low":3383.098,"close":3383.798,"volume":null,"index":14},{"time":"2025-06-18 09:45:00+00:00","source_time":"2025-06-18 09:45:00+00:00","open":3383.798,"high":3385.398,"low":3382.355,"close":3383.348,"volume":null,"index":15},{"time":"2025-06-18 10:00:00+00:00","source_time":"2025-06-18 10:00:00+00:00","open":3383.348,"high":3385.348,"low":3382.548,"close":3382.548,"volume":null,"index":16},{"time":"2025-06-18 10:15:00+00:00","source_time":"2025-06-18 10:15:00+00:00","open":3382.548,"high":3384.148,"low":3381.455,"close":3381.755,"volume":null,"index":17},{"time":"2025-06-18 10:30:00+00:00","source_time":"2025-06-18 10:30:00+00:00","open":3381.715,"high":3382.348,"low":3379.795,"close":3381.248,"volume":null,"index":18},{"time":"2025-06-18 10:45:00+00:00","source_time":"2025-06-18 10:45:00+00:00","open":3381.175,"high":3381.448,"low":3375.248,"close":3377.915,"volume":null,"index":19},{"time":"2025-06-18 11:00:00+00:00","source_time":"2025-06-18 11:00:00+00:00","open":3377.998,"high":3379.348,"low":3376.898,"close":3378.765,"volume":null,"index":20},{"time":"2025-06-18 11:15:00+00:00","source_time":"2025-06-18 11:15:00+00:00","open":3378.765,"high":3379.175,"low":3376.148,"close":3376.385,"volume":null,"index":21},{"time":"2025-06-18 11:30:00+00:00","source_time":"2025-06-18 11:30:00+00:00","open":3376.435,"high":3382.148,"low":3375.435,"close":3378.198,"volume":null,"index":22},{"time":"2025-06-18 11:45:00+00:00","source_time":"2025-06-18 11:45:00+00:00","open":3378.198,"high":3380.648,"low":3375.715,"close":3380.048,"volume":null,"index":23},{"time":"2025-06-18 12:00:00+00:00","source_time":"2025-06-18 12:00:00+00:00","open":3380.048,"high":3382.348,"low":3379.658,"close":3381.448,"volume":null,"index":24},{"time":"2025-06-18 12:15:00+00:00","source_time":"2025-06-18 12:15:00+00:00","open":3381.328,"high":3385.655,"low":3380.548,"close":3385.565,"volume":null,"index":25},{"time":"2025-06-18 12:30:00+00:00","source_time":"2025-06-18 12:30:00+00:00","open":3385.585,"high":3386.905,"low":3381.325,"close":3381.335,"volume":null,"index":26},{"time":"2025-06-18 12:45:00+00:00","source_time":"2025-06-18 12:45:00+00:00","open":3381.315,"high":3385.665,"low":3378.745,"close":3381.915,"volume":null,"index":27},{"time":"2025-06-18 13:00:00+00:00","source_time":"2025-06-18 13:00:00+00:00","open":3381.885,"high":3385.635,"low":3381.505,"close":3384.115,"volume":null,"index":28},{"time":"2025-06-18 13:15:00+00:00","source_time":"2025-06-18 13:15:00+00:00","open":3384.145,"high":3387.755,"low":3382.805,"close":3386.225,"volume":null,"index":29},{"time":"2025-06-18 13:30:00+00:00","source_time":"2025-06-18 13:30:00+00:00","open":3386.375,"high":3389.645,"low":3385.215,"close":3388.845,"volume":null,"index":30},{"time":"2025-06-18 13:45:00+00:00","source_time":"2025-06-18 13:45:00+00:00","open":3388.815,"high":3388.815,"low":3384.648,"close":3386.485,"volume":null,"index":31},{"time":"2025-06-18 14:00:00+00:00","source_time":"2025-06-18 14:00:00+00:00","open":3386.505,"high":3391.698,"low":3385.368,"close":3390.898,"volume":null,"index":32},{"time":"2025-06-18 14:15:00+00:00","source_time":"2025-06-18 14:15:00+00:00","open":3390.865,"high":3395.225,"low":3390.385,"close":3394.995,"volume":null,"index":33},{"time":"2025-06-18 14:30:00+00:00","source_time":"2025-06-18 14:30:00+00:00","open":3395.035,"high":3396.648,"low":3391.615,"close":3392.548,"volume":null,"index":34},{"time":"2025-06-18 14:45:00+00:00","source_time":"2025-06-18 14:45:00+00:00","open":3392.465,"high":3393.475,"low":3389.545,"close":3391.998,"volume":null,"index":35},{"time":"2025-06-18 15:00:00+00:00","source_time":"2025-06-18 15:00:00+00:00","open":3391.998,"high":3392.198,"low":3383.575,"close":3384.735,"volume":null,"index":36},{"time":"2025-06-18 15:15:00+00:00","source_time":"2025-06-18 15:15:00+00:00","open":3384.885,"high":3386.848,"low":3373.545,"close":3382.348,"volume":null,"index":37},{"time":"2025-06-18 15:30:00+00:00","source_time":"2025-06-18 15:30:00+00:00","open":3382.255,"high":3388.655,"low":3382.255,"close":3387.355,"volume":null,"index":38},{"time":"2025-06-18 15:45:00+00:00","source_time":"2025-06-18 15:45:00+00:00","open":3387.355,"high":3389.948,"low":3385.005,"close":3386.635,"volume":null,"index":39},{"time":"2025-06-18 16:00:00+00:00","source_time":"2025-06-18 16:00:00+00:00","open":3386.645,"high":3389.135,"low":3385.198,"close":3385.455,"volume":null,"index":40},{"time":"2025-06-18 16:15:00+00:00","source_time":"2025-06-18 16:15:00+00:00","open":3385.515,"high":3388.848,"low":3381.085,"close":3387.155,"volume":null,"index":41},{"time":"2025-06-18 16:30:00+00:00","source_time":"2025-06-18 16:30:00+00:00","open":3387.035,"high":3388.735,"low":3386.298,"close":3387.798,"volume":null,"index":42},{"time":"2025-06-18 16:45:00+00:00","source_time":"2025-06-18 16:45:00+00:00","open":3387.798,"high":3392.648,"low":3387.525,"close":3392.535,"volume":null,"index":43},{"time":"2025-06-18 17:00:00+00:00","source_time":"2025-06-18 17:00:00+00:00","open":3392.485,"high":3394.498,"low":3390.225,"close":3390.348,"volume":null,"index":44},{"time":"2025-06-18 17:15:00+00:00","source_time":"2025-06-18 17:15:00+00:00","open":3390.348,"high":3392.445,"low":3389.735,"close":3392.085,"volume":null,"index":45},{"time":"2025-06-18 17:30:00+00:00","source_time":"2025-06-18 17:30:00+00:00","open":3392.135,"high":3393.015,"low":3390.898,"close":3391.525,"volume":null,"index":46},{"time":"2025-06-18 17:45:00+00:00","source_time":"2025-06-18 17:45:00+00:00","open":3391.525,"high":3392.255,"low":3390.605,"close":3390.745,"volume":null,"index":47}],"meta":{"source":"XAUUSD_M15_12h_2025-06-18_UTC.csv","rows":48,"volume_present":false,"columns":["Timestamp","open","high","low","close"],"mapping":{"timestamp":0,"open":1,"high":2,"low":3,"close":4},"mapping_mode":"header","timeframe":"M15","timezone":"UTC+00:00","interval_seconds":900,"gaps":0,"first_time":"2025-06-18 06:00:00+00:00","last_time":"2025-06-18 17:45:00+00:00"},"warnings":["Mã hóa utf-8-sig; phân cách ','.","Không có Volume: bỏ qua; nhận diện chỉ dùng OHLC."]}}];</script>
+<script>
+/*
+ * MSAS Standalone — local-only API adapter.
+ * Retains the source-locked structure engines; replaces Python storage/ingestion
+ * only. No network, eval, third-party analytics or persistent file access.
+ * Date-order/mapping ambiguity results in a user-facing mapping dialog.
+ */
+(function(root){
+'use strict';
+const MAX_BYTES=12*1024*1024, MAX_ROWS=25000;
+const SUPPORTED=new Set(['.csv','.tsv','.txt','.json','.jsonl','.xlsx']);
+const aliases={
+ timestamp:'timestamp time datetime datetimestamp dateandtime opentime candleopentime starttime unixtime epochtime timeutc timestamputc datetimeutc dateutc t timeopen timeopenutc',
+ date:'date day tradedate tradingdate ngay',clock:'clock hourofday timeofday hour gio',
+ open:'open o opening openprice priceopen openingprice op giamo giamocua',
+ high:'high h max highest highprice pricehigh highestprice hi giacao giacaonhat',
+ low:'low l min lowest lowprice pricelow lowestprice lo giathap giathapnhat',
+ close:'close c closing last closeprice priceclose closingprice lastprice cl giadong giadongcua',
+ volume:'volume vol v volumes tickvol tickvolume tickvolumes realvolume tradevolume tradingvolume qty quantity khoiluong'
+};
+const aliasLookup=new Map();for(const [kind,names] of Object.entries(aliases))for(const name of names.split(' '))aliasLookup.set(name,kind);
+const canonical=s=>String(s??'').normalize('NFKD').toLowerCase().replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+const alias=name=>{const key=canonical(name);if(aliasLookup.has(key))return aliasLookup.get(key);for(const k of ['open','high','low','close','volume'])if(key.startsWith(k)&&['usd','usdt','price','value'].includes(key.slice(k.length)))return k;return null;};
+const error=(message,code='INVALID_DATA',props={})=>Object.assign(new Error(message),{code,...props});
+function decode(bytes){if(!bytes.length)throw error('Empty file.');if(bytes[0]===0xff&&bytes[1]===0xfe)return new TextDecoder('utf-16le').decode(bytes.subarray(2));if(bytes[0]===0xfe&&bytes[1]===0xff)return new TextDecoder('utf-16be').decode(bytes.subarray(2));let str;try{str=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch(_){str=new TextDecoder('windows-1252').decode(bytes);}return str.charCodeAt(0)===65279?str.slice(1):str;}
+function chooseDelimiter(text){const lines=text.split(/\r?\n/).filter(Boolean).slice(0,12);const chars=[',',';','\t','|'];let scores=chars.map(ch=>{const parts=lines.map(line=>{let n=0,q=false;for(let i=0;i<line.length;i++){if(line[i]==='"'){if(q&&line[i+1]==='"')i++;else q=!q;}else if(!q&&line[i]===ch)n++;}return n;});const nonzero=parts.filter(n=>n>0);return nonzero.length?nonzero.length*100 + nonzero.reduce((a,b)=>a+b,0) - (Math.max(...nonzero)-Math.min(...nonzero))*10:-Infinity;});const i=scores.indexOf(Math.max(...scores));return chars[i];}
+function delimited(text){if(text.includes('\0'))throw error('Binary content is not a supported delimited file.');const delim=chooseDelimiter(text),out=[];let row=[],cell='',quoted=false;
+ for(let i=0;i<text.length;i++){const ch=text[i];if(ch==='"'){if(quoted&&text[i+1]==='"'){cell+='"';i++;}else quoted=!quoted;}
+ else if(ch===delim&&!quoted){row.push(cell.trim());cell='';}
+ else if((ch==='\r'||ch==='\n')&&!quoted){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(cell.trim());if(row.some(v=>v!==''))out.push(row);row=[];cell='';}
+ else cell+=ch;
+ }
+ if(quoted)throw error('Unclosed quoted CSV cell.');row.push(cell.trim());if(row.some(v=>v!==''))out.push(row);
+ if(!out.length)throw error('No data rows found.');return {rows:out,warnings:['Delimiter: '+(delim==='\t'?'TAB':delim)]};
+}
+function jsonTable(text,ext){let body;try{body=ext==='.jsonl'?text.split(/\r?\n/).filter(s=>s.trim()).map(s=>JSON.parse(s)):JSON.parse(text);}catch(e){throw error('Invalid JSON: '+e.message);}
+ if(body&&!Array.isArray(body)&&typeof body==='object')for(const k of ['candles','data','rows','result','prices','history'])if(Array.isArray(body[k])){body=body[k];break;}
+ if(!Array.isArray(body)||!body.length||!body.every(x=>x&&typeof x==='object'&&!Array.isArray(x)))throw error('JSON must be an array of candle objects, or an object with data/candles/rows[].');
+ const fields=[...new Set(body.flatMap(x=>Object.keys(x)))];return {rows:[fields,...body.map(o=>fields.map(k=>o[k]??''))],warnings:['JSON records: '+body.length]};
+}
+const dataView=(bytes)=>new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+async function unzipXlsx(bytes){
+ const dv=dataView(bytes);let eocd=-1;
+ for(let i=bytes.length-22;i>=Math.max(0,bytes.length-66000);i--)if(dv.getUint32(i,true)===0x06054b50){eocd=i;break;}
+ if(eocd<0)throw error('Invalid XLSX ZIP archive.');const total=dv.getUint16(eocd+10,true),offset=dv.getUint32(eocd+16,true);
+ const files=new Map();let ptr=offset;
+ for(let i=0;i<total;i++){
+  if(ptr+46>bytes.length||dv.getUint32(ptr,true)!==0x02014b50)throw error('Corrupted XLSX directory.');
+  const method=dv.getUint16(ptr+10,true),size=dv.getUint32(ptr+20,true),uncompressed=dv.getUint32(ptr+24,true),nameLen=dv.getUint16(ptr+28,true),extraLen=dv.getUint16(ptr+30,true),commentLen=dv.getUint16(ptr+32,true),local=dv.getUint32(ptr+42,true);
+  const name=new TextDecoder().decode(bytes.subarray(ptr+46,ptr+46+nameLen));files.set(name,{method,size,uncompressed,local});ptr+=46+nameLen+extraLen+commentLen;
+ }
+ async function read(name){const f=files.get(name);if(!f)return null;if(f.uncompressed>35*1024*1024)throw error('XLSX sheet/sharedStrings exceeds 35 MB limit.','TOO_LARGE');
+  const l=f.local;if(dv.getUint32(l,true)!==0x04034b50)throw error('Invalid ZIP entry.');const start=l+30+dv.getUint16(l+26,true)+dv.getUint16(l+28,true);
+  const compressed=bytes.slice(start,start+f.size);if(f.method===0)return new TextDecoder().decode(compressed);
+  if(f.method!==8||!('DecompressionStream' in root))throw error('XLSX decompression is not supported by this browser. Try current Chrome/Edge or export CSV.','UNSUPPORTED');
+  try{return new TextDecoder().decode(await new Response(new Blob([compressed]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());}catch(e){throw error('Cannot decompress XLSX: '+e.message);}
+ }
+ const sheets=[...files.keys()].filter(k=>/^xl\/worksheets\/sheet\d+\.xml$/.test(k)).sort((a,b)=>Number(a.match(/sheet(\d+)/)[1])-Number(b.match(/sheet(\d+)/)[1]));
+ if(!sheets.length)throw error('XLSX has no supported worksheet.');
+ const xml=new DOMParser(),parse=s=>{const d=xml.parseFromString(s,'application/xml');if(d.getElementsByTagName('parsererror').length)throw error('Invalid XLSX XML.');return d;};
+ const strings=[];const shared=await read('xl/sharedStrings.xml');if(shared){const d=parse(shared);for(const si of d.getElementsByTagName('si'))strings.push([...si.getElementsByTagName('t')].map(t=>t.textContent).join(''));}
+ const doc=parse(await read(sheets[0]));const rows=[];
+ for(const r of doc.getElementsByTagName('row')){
+  const v=[];for(const c of r.children){if(c.localName!=='c')continue;const m=(c.getAttribute('r')||'').match(/^([A-Z]+)/i);if(!m)continue;let col=0;for(const letter of m[1].toUpperCase())col=col*26+letter.charCodeAt(0)-64;col--;if(col>255)continue;
+   let val='';const type=c.getAttribute('t'),value=[...c.children].find(x=>x.localName==='v');
+   if(type==='inlineStr')val=[...c.getElementsByTagName('t')].map(t=>t.textContent||'').join('');
+   else {val=value?.textContent??'';if(type==='s')val=strings[Number(val)]??val;}
+   v[col]=val;
+  }
+  if(v.some(x=>x!==undefined&&String(x).trim()))rows.push(Array.from({length:v.length},(_,i)=>v[i]??''));
+  if(rows.length>MAX_ROWS+25)throw error('XLSX exceeds 25,000 candle limit.','TOO_MANY_ROWS');
+ }
+ if(!rows.length)throw error('XLSX worksheet is empty.');return {rows,warnings:['XLSX first worksheet: '+sheets[0]+'. Formula cells use cached values only.']};
+}
+function num(value){if(typeof value==='boolean'||value===null||value===undefined)throw Error('Empty/invalid number');let s=String(value).trim().replace(/[\u00a0 '\u202f]/g,'');if(!s||/^(null|none|n\/a|nan|-)$/i.test(s))throw Error('Empty/NA numeric field');if(s.includes('.')&&s.includes(',')){s=s.lastIndexOf(',')>s.lastIndexOf('.')?s.replace(/\./g,'').replace(',','.'):s.replace(/,/g,'');}else if(s.includes(','))s=s.replace(',','.');const n=Number(s);if(!Number.isFinite(n))throw Error('Non-finite number '+String(value));return n;}
+const pad=(n,l=2)=>String(n).padStart(l,'0');
+function parseTimestamp(raw,dateOrder='auto'){
+ const s=String(raw??'').trim();if(!s)throw Error('Empty timestamp');let shown,epoch,zone=null;
+ if(/^\d{13}$/.test(s)||/^\d{10}(?:\.\d+)?$/.test(s)){epoch=Number(s)*(s.length===13?1:1000);const d=new Date(epoch);if(!Number.isFinite(d.getTime()))throw Error('Invalid UNIX timestamp');shown=d.toISOString().replace('T',' ').replace('Z','+00:00');zone='UTC+00:00';}
+ else if(/^\d{14}$/.test(s)){shown=s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8)+' '+s.slice(8,10)+':'+s.slice(10,12)+':'+s.slice(12,14);}
+ else if(/^\d{8}$/.test(s)){shown=s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6)+' 00:00:00';}
+ else if(/^\d{5}(?:\.\d+)?$/.test(s)&&Number(s)>20000&&Number(s)<100000){shown=new Date(Date.UTC(1899,11,30)+Number(s)*86400000).toISOString().replace('T',' ').replace('Z','');}
+ else {let m=s.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})(.*)$/);if(m){const a=Number(m[1]),b=Number(m[2]),y=m[3];let dayfirst;
+   if(a>12&&b<=12)dayfirst=true;else if(b>12&&a<=12)dayfirst=false;else if(dateOrder==='DMY')dayfirst=true;else if(dateOrder==='MDY')dayfirst=false;else throw error('Ambiguous day/month. Choose DMY or MDY.','DATE_ORDER_REQUIRED');
+   shown=y+'-'+pad(dayfirst?b:a)+'-'+pad(dayfirst?a:b)+(m[4]||'');
+  }else shown=s.replace(/^(\d{4})[./](\d\d?)[./](\d\d?)/,(_,y,mo,da)=>`${y}-${pad(mo)}-${pad(da)}`);
+  shown=shown.replace(/ UTC$/i,'+00:00').replace(/Z$/,'+00:00').replace('T',' ');
+ }
+ // JS Date.parse() treats naive ISO strings as local time; here they must
+ // remain timezone-unassigned. Use UTC only as a neutral ordering coordinate.
+ const m=shown.match(/^(\d{4})-(\d\d?)-(\d\d?)(?:[ T](\d\d?):(\d\d)(?::(\d\d)(?:\.(\d+))?)?)?([+-]\d\d:\d\d)?$/);
+ if(!m)throw Error('Unsupported timestamp '+s.slice(0,50));
+ const y=Number(m[1]),month=Number(m[2]),day=Number(m[3]),h=Number(m[4]||0),minute=Number(m[5]||0),second=Number(m[6]||0),ms=Number(('0.'+(m[7]||'0')))*1000;
+ if(y<1970||y>2200||month<1||month>12||day<1||day>31||h>23||minute>59||second>59)throw Error('Timestamp outside valid ranges');
+ const utc=Date.UTC(y,month-1,day,h,minute,second,ms);const check=new Date(utc);if(check.getUTCFullYear()!==y||check.getUTCMonth()!==month-1||check.getUTCDate()!==day)throw Error('Invalid calendar date');
+ let absolute=utc;const tail=m[8];if(tail){const sign=tail[0]==='+'?1:-1;const offH=Number(tail.slice(1,3)),offM=Number(tail.slice(4));if(offH>23||offM>59)throw Error('Invalid time offset');absolute-=(sign*(offH*60+offM))*60000;zone='UTC'+tail;}
+ return {absolute,shown:shown.replace(/^(\d{4}-\d{2}-\d{2})$/, '$1 00:00:00'),zone};
+}
+function chooseColumns(rows,mapping){let header=-1,start=-1;const warnings=[];
+ for(let i=0;i<Math.min(rows.length,24);i++){const row=rows[i];if(row.length<5)continue;const known=new Set(row.map(alias).filter(Boolean));if(['open','high','low','close'].filter(v=>known.has(v)).length>=2||(known.has('timestamp')||known.has('date'))&&known.size>=3){header=i;break;}
+  try{parseTimestamp(row[0]);if(row.slice(1,6).filter(x=>{try{num(x);return true;}catch(e){return false;}}).length>=4){start=i;break;}}catch(e){if(/^\d{1,2}[./-]\d{1,2}[./-]\d{4}/.test(String(row[0]))&&row.slice(1,6).filter(x=>{try{num(x);return true}catch(e){return false}}).length>=4){start=i;break;}}
+  if(row.length>=6 && /^\d{4}[./-]\d{1,2}[./-]\d{1,2}$/.test(String(row[0])) && /^\d{1,2}:\d{2}/.test(String(row[1]))) {start=i;break;}
+ }
+ let cols,data,hasHeader;
+ if(header>=0){cols=rows[header].map(String);data=rows.slice(header+1);hasHeader=true;if(header)warnings.push('Skipped '+header+' metadata rows.');}
+ else if(start>=0){cols=Array.from({length:Math.max(...rows.slice(start,start+5).map(r=>r.length))},(_,i)=>'Column '+(i+1));data=rows.slice(start);hasHeader=false;if(start)warnings.push('Skipped '+start+' metadata rows.');}
+ else {const i=rows.slice(0,24).findIndex(row=>row.length>=5);if(i<0)throw error('No OHLC table (need at least 5 columns).');cols=rows[i].map(String);data=rows.slice(i+1);hasHeader=true;warnings.push('Unrecognized headers: confirm mapping.');}
+ if(!data.length)throw error('No candle rows below header.');
+ let detected={};if(hasHeader)cols.forEach((name,i)=>{const field=alias(name);if(field&&detected[field]===undefined)detected[field]=i;});
+ if(detected.date!==undefined&&detected.clock!==undefined)detected.timestamp=detected.date+'+'+detected.clock;
+ else if(detected.date!==undefined&&detected.timestamp!==undefined){const sample=data[0]?.[detected.timestamp];if(/^\d{1,2}:\d\d/.test(String(sample)))detected.timestamp=detected.date+'+'+detected.timestamp;}
+ else if(detected.timestamp===undefined&&detected.date!==undefined)detected.timestamp=detected.date;
+ const required=['timestamp','open','high','low','close'];
+ const missing=required.filter(x=>detected[x]===undefined);
+ if(missing.length>=4&&!mapping){const n=cols.length,first=data[0];const split=(n===6||n===7)&&/^\d{4}[./-]\d\d[./-]\d\d$/.test(String(first[0]))&&/^\d{1,2}:\d{2}/.test(String(first[1]));const base=split?2:1;
+  if((split&&[6,7].includes(n))||(!split&&[5,6].includes(n))){detected={timestamp:split?'0+1':0,open:base,high:base+1,low:base+2,close:base+3};if(n>base+4)detected.volume=base+4;warnings.push('Positional mapping (Time-O-H-L-C); verify provider order.');}
+ }
+ if(mapping){const newMap={};for(const k of ['timestamp','open','high','low','close','volume'])if(mapping[k]!==undefined&&mapping[k]!==null&&mapping[k]!=='')newMap[k]=String(mapping[k]);if(required.every(k=>newMap[k]!==undefined)){detected=newMap;warnings.push('User-confirmed mapping.');}}
+ const preview=data.slice(0,3).map(row=>row.map(String));const props={columns:cols,preview,suggested:detected};
+ if(required.some(k=>detected[k]===undefined))throw error('Column mapping required.','NEEDS_MAPPING',props);
+ const ids=[];for(const key of [...required,'volume'])if(detected[key]!==undefined){for(const id of String(detected[key]).split('+')){if(!/^\d+$/.test(id)||Number(id)>=cols.length)throw error('Invalid mapping index.','NEEDS_MAPPING',props);ids.push(Number(id));}}
+ if(new Set(ids).size!==ids.length)throw error('OHLC fields cannot share a column.','NEEDS_MAPPING',props);
+ return {cols,data,detected,hasHeader,warnings};
+}
+function normalize(rows,filename,mapping,dateOrder,warnings=[]){
+ const {cols,data,detected,hasHeader,warnings:mapWarnings}=chooseColumns(rows,mapping);warnings=[...warnings,...mapWarnings];if(data.length>MAX_ROWS)throw error('Dataset contains more than 25,000 candles.','TOO_MANY_ROWS');
+ const candles=[],times=[];
+ for(let i=0;i<data.length;i++){
+  const row=data[i];if(!row.some(v=>String(v??'').trim()))continue;
+  const field=(key)=>row[Number(detected[key])];
+  let ts,parsed;try{ts=String(detected.timestamp).split('+').map(k=>String(row[Number(k)]??'')).join(' ').trim();parsed=parseTimestamp(ts,dateOrder);}catch(e){if(e.code==='DATE_ORDER_REQUIRED')throw error('Ambiguous day/month at row '+(i+1)+'. Choose DMY or MDY.','DATE_ORDER_REQUIRED',{columns:cols,preview:data.slice(0,3),suggested:detected});throw error('Invalid timestamp at row '+(i+1)+': '+e.message);}
+  const price={};for(const k of ['open','high','low','close','volume']){if(detected[k]===undefined){price[k]=null;continue;}const value=field(k);if(k==='volume'&&(value===null||value===undefined||String(value).trim()===''||/^null$/i.test(String(value)))){price.volume=null;continue;}try{price[k]=num(value);}catch(e){throw error('Invalid '+k.toUpperCase()+' at row '+(i+1)+': '+e.message);}}
+  if(price.low>Math.min(price.open,price.close)||Math.max(price.open,price.close)>price.high)throw error('Invalid OHLC at row '+(i+1)+' (require Low <= Open/Close <= High).','INVALID_OHLC');
+  if(price.volume!==null&&price.volume<0)throw error('Negative volume at row '+(i+1));
+  candles.push({time:parsed.shown,source_time:ts,open:price.open,high:price.high,low:price.low,close:price.close,volume:price.volume,index:candles.length});times.push(parsed);
+ }
+ if(!candles.length)throw error('No valid candles.');
+ if(candles.length<3)warnings.push('Fewer than three candles: swings cannot yet be confirmed.');
+ let zone=times[0].zone;for(const tm of times)if((tm.zone===null)!==(zone===null))throw error('Mixed timezone-aware and naive timestamps; normalize your source.');
+ let deltas=times.slice(1).map((x,i)=>x.absolute-times[i].absolute);if(deltas.length&&deltas.every(x=>x<0)){candles.reverse();times.reverse();candles.forEach((c,i)=>c.index=i);warnings.push('Source was reverse chronological; rows reversed.');deltas=deltas.reverse().map(x=>-x);}
+ if(deltas.some(x=>x<=0))throw error('Duplicate/out-of-order timestamps; rows were not silently sorted.','INVALID_TIMESTAMPS');
+ const counts=new Map();for(const d of deltas){counts.set(d,(counts.get(d)||0)+1);}const period=[...counts.entries()].sort((a,b)=>b[1]-a[1])[0]?.[0]||0;
+ const gaps=deltas.filter(d=>period&&d!==period).length;if(gaps)warnings.push(gaps+' irregular time gaps; no synthetic candles added.');if(detected.volume===undefined)warnings.push('Volume absent: structure engine uses OHLC only.');if(candles.length>3000)warnings.push('Long dataset: replay analysis may be slow.');
+ const frame=period&&period%86400000===0?'D'+(period/86400000):period&&period%3600000===0?'H'+period/3600000:period&&period%60000===0?'M'+period/60000:'OHLC';
+ return {candles,meta:{source:filename,rows:candles.length,volume_present:candles.some(c=>c.volume!==null),columns:cols,mapping:detected,mapping_mode:mapping?'manual':warnings.some(x=>x.includes('Positional'))?'position':'header',timeframe:frame,timezone:zone,interval_seconds:period/1000,gaps,first_time:candles[0].time,last_time:candles[candles.length-1].time},warnings};
+}
+const originals=new Map(); // Raw files are never uploaded: storage stays inside this page session.
+const builtin=(root.MSAS_BUNDLED_DATASETS||[]).map(item=>{const payload=item.payload;payload.dataset={id:item.id,name:item.name,filename:item.filename,builtin:true};originals.set(item.id,payload);return payload.dataset;});
+let counter=0;
+async function loadFile(file,mapping,dateOrder){if(!file)throw error('Select a file first.');if(file.size>MAX_BYTES)throw error('File exceeds 12 MB.','TOO_LARGE');const ext=(file.name.match(/\.[^.]+$/)||[''])[0].toLowerCase();if(!SUPPORTED.has(ext))throw error('Only CSV, TSV, TXT, JSON, JSONL or XLSX are supported.','UNSUPPORTED');
+ const bytes=new Uint8Array(await file.arrayBuffer());let tab;if(ext==='.xlsx')tab=await unzipXlsx(bytes);else if(ext==='.json'||ext==='.jsonl')tab=jsonTable(decode(bytes),ext);else tab=delimited(decode(bytes));return normalize(tab.rows,file.name,mapping,dateOrder,tab.warnings);
+}
+const api={
+ async fetch(path,options={}){
+  try{
+   const url=new URL(path,'https://msas.invalid'),p=url.pathname,method=(options.method||'GET').toUpperCase();let result,status=200;
+   if(method==='GET'&&p==='/api/datasets'){result={datasets:[...builtin,...[...originals.entries()].filter(([id])=>!builtin.some(b=>b.id===id)).map(([id,data])=>data.dataset)]};}
+   else if(method==='GET'&&p.startsWith('/api/datasets/')){result=originals.get(decodeURIComponent(p.split('/').at(-1)));if(!result)throw error('Dataset not found.','NOT_FOUND');}
+   else if(method==='DELETE'&&p.startsWith('/api/datasets/')){const id=decodeURIComponent(p.split('/').at(-1));if(builtin.some(d=>d.id===id))throw error('Built-in sample cannot be deleted.');if(!originals.delete(id))throw error('Dataset not found.','NOT_FOUND');result={deleted:id};}
+   else if(method==='POST'&&p==='/api/import'){const file=options.body,mapping=url.searchParams.has('mapping')?JSON.parse(url.searchParams.get('mapping')):null,dateOrder=url.searchParams.get('date_order')||'auto';result=await loadFile(file,mapping,dateOrder);const id='local-'+Date.now().toString(36)+'-'+(++counter).toString(36);result.dataset={id,name:(url.searchParams.get('label')||file.name.replace(/\.[^.]+$/,'')).slice(0,90),filename:file.name,builtin:false};originals.set(id,result);status=201;}
+   else throw error('Unsupported local endpoint.','NOT_FOUND');
+   return {ok:true,status,json:async()=>result};
+  }catch(e){const status=e.code==='NOT_FOUND'?404:e.code==='TOO_LARGE'?413:422;return {ok:false,status,json:async()=>({error:e.message||String(e),code:e.code||'INVALID_DATA',columns:e.columns,preview:e.preview,suggested:e.suggested})};}
+ },
+ get datasetCount(){return originals.size},
+ info(){return {offline:true,persistent:false,version:'5.2.0-standalone'};}
+};
+root.MSASOfflineAPI=api;
+})(window);
+
+</script>
+<script data-module="chart-theme.js">
+/* MSAS canonical chart palette — independent of the surrounding dark UI.
+ * All opacity values use 0..1. Do not introduce canvas gridlines.
+ */
+(function(root,factory){
+ const theme=factory();
+ if(typeof module==='object' && module.exports)module.exports=theme;
+ root.MSASChartTheme=theme;
+})(typeof globalThis!=='undefined'?globalThis:this,function(){
+ 'use strict';
+ return Object.freeze({
+  background:'#c6d2df',
+  grid:false,
+  candles:Object.freeze({
+   up:Object.freeze({body:'#ffffff',bodyOpacity:1,border:'#000000',borderOpacity:.6,wick:'#000000',wickOpacity:1}),
+   down:Object.freeze({body:'#66bb6a',bodyOpacity:.9,border:'#000000',borderOpacity:.6,wick:'#000000',wickOpacity:1})
+  })
+ });
+});
+
+
+</script><script data-module="i18n.js">
+/* Bilingual display layer: numerical/structural calculations remain language-neutral.
+ * Default is EN, VI is selectable. Engines retain their legacy Vietnamese audit texts
+ * for compatibility and also emit structured data so English never parses Vietnamese.
+ */
+(function(root,factory){
+ const api=factory();
+ if(typeof module==='object'&&module.exports)module.exports=api;
+ root.MSASI18N=api;
+})(typeof globalThis!=='undefined'?globalThis:this,function(){
+'use strict';
+const UI={
+ en:{
+  data:'DATA',chooseDataset:'Select dataset',connecting:'Connecting…',upload:'+ Import',uploadTitle:'Import CSV, TSV, TXT, JSON or XLSX',removeTitle:'Remove imported dataset',chartTitle:'Market structure',loading:'Loading data…',indicators:'INDICATORS',structure:'Structure',inside:'Inside bar',candidates:'Candidates',timeline:'Replay timeline',replaySpeed:'SPEED',play:'Play',pause:'Pause',firstCandle:'First candle',previousCandle:'Previous candle',nextCandle:'Next candle',closed:'CLOSED CANDLES',notifications:'Notifications',updatedOnClose:'Updated after each candle closes',candleClose:'LAST CLOSED CANDLE',latestEvents:'RECENT EVENTS',awaiting:'AWAITING DATA',noneCategory:'CANDLE CLOSED',noneCount:'NO NEW SIGNAL',noSignal:'No new structural event',noSignalDetail:'The candle has closed. No new Swing or market-structure change has been confirmed.',closeMeta:'CLOSED CANDLE {time}',eventCount:'{count} events',atCandle:'{count} ON THIS CANDLE',emptyEvents:'No previous structural events. Move forward to see events when candles close.',jumpTo:'Jump to {time}',replay:'REPLAY',chartAria:'Candlestick chart and market-structure overlays',feedAria:'Replay event notifications',timeframeAria:'Replay timeline',mappingTitle:'Confirm column mapping',mappingReason:'Could not identify the source columns with confidence.',timestamp:'Timestamp',volumeOptional:'Volume (optional)',dateOrder:'Date format',dateAuto:'Auto-detect',dateDMY:'DD/MM/YYYY',dateMDY:'MM/DD/YYYY',mappingPreview:'Preview of the first three rows · verify column assignments before applying',cancel:'Cancel',applyMapping:'Apply mapping',noVolume:'(No volume)',chooseColumn:'-- Select a column --',unnamedColumn:'(unnamed)',dateAndTime:'Date + time',dragHint:'Drop a data file to import',loadingDataset:'Loading dataset',metaCandles:'{count} candles',metaGap:'{count} irregular interval(s)',metaMain:'Main',metaInternal:'Internal',metaPending:'pending confirmation',metaUp:'UP',metaDown:'DOWN',metaUnknown:'UNKNOWN',imported:'Imported {name} · {count} candles · {volume} volume.',volumeYes:'with',volumeNo:'without',gapsWarning:'Imported {count} candles. {gaps} irregular time interval(s); no synthetic candles were created.',loadFailed:'Could not open dataset: {message}',uploadFailed:'Could not import {name}: {message}',serverUnavailable:'Cannot connect to the application server: {message}',invalidServer:'The server returned an invalid response.',requestFailed:'The request failed.',invalidCandles:'No valid candles in this dataset.',invalidOHLC:'Invalid normalized OHLC data.',importRemoved:'Imported dataset removed.',confirmRemove:'Remove the selected imported dataset? The original file on your computer will not be affected.',mappingMissing:'Choose Timestamp, Open, High, Low and Close before continuing.',mappingHint:'Confirm the source columns to avoid incorrectly assigning prices.',fileNotRecognized:'Input could not be validated. Check the file, column mapping, timestamp or OHLC values.',errorMapping:'Column mapping is required.',errorDate:'Ambiguous date order. Select DMY or MDY.',errorOHLC:'OHLC values are inconsistent. Check the affected source row.',errorTimes:'Timestamps are duplicated or not in ascending order.',errorLarge:'File exceeds the allowed size or row limit.',errorUnsupported:'Unsupported input format.',errorGeneral:'Unable to process the input. Check source file and format.',tooltipOpen:'Open',tooltipHigh:'High',tooltipLow:'Low',tooltipClose:'Close',tooltipVolume:'Volume'
+ },
+ vi:{
+  data:'DỮ LIỆU',chooseDataset:'Chọn bộ dữ liệu',connecting:'Đang kết nối…',upload:'+ Nạp file',uploadTitle:'Nạp CSV, TSV, TXT, JSON hoặc XLSX',removeTitle:'Xóa bộ dữ liệu đã nhập',chartTitle:'Biểu đồ cấu trúc',loading:'Đang tải dữ liệu…',indicators:'CHỈ BÁO',structure:'Cấu trúc',inside:'Inside bar',candidates:'Ứng viên',timeline:'Thanh thời gian phát lại',replaySpeed:'TỐC ĐỘ',play:'Phát',pause:'Dừng',firstCandle:'Nến đầu tiên',previousCandle:'Nến trước',nextCandle:'Nến tiếp theo',closed:'NẾN ĐÃ ĐÓNG',notifications:'Thông báo',updatedOnClose:'Cập nhật khi nến đóng',candleClose:'MỐC NẾN ĐÃ ĐÓNG',latestEvents:'SỰ KIỆN GẦN ĐÂY',awaiting:'ĐANG CHỜ DỮ LIỆU',noneCategory:'NẾN ĐÃ ĐÓNG',noneCount:'CHƯA CÓ TÍN HIỆU',noSignal:'Chưa có tín hiệu cấu trúc mới',noSignalDetail:'Nến đã đóng. Không phát sinh Swing hoặc thay đổi cấu trúc mới tại thời điểm này.',closeMeta:'NẾN {time} ĐÃ ĐÓNG',eventCount:'{count} sự kiện',atCandle:'{count} TẠI NẾN NÀY',emptyEvents:'Chưa có sự kiện cấu trúc trước đó. Tiến thêm nến để quan sát diễn biến.',jumpTo:'Chuyển đến {time}',replay:'PHÁT LẠI',chartAria:'Biểu đồ nến và cấu trúc thị trường',feedAria:'Thông báo sự kiện phát lại',timeframeAria:'Thanh thời gian phát lại',mappingTitle:'Xác nhận ánh xạ cột',mappingReason:'Không thể tự nhận diện tên cột một cách chắc chắn.',timestamp:'Thời gian',volumeOptional:'Volume (tùy chọn)',dateOrder:'Thứ tự ngày/tháng',dateAuto:'Tự nhận diện',dateDMY:'DD/MM/YYYY',dateMDY:'MM/DD/YYYY',mappingPreview:'Xem trước ba hàng đầu · đối chiếu cột trước khi áp dụng',cancel:'Hủy',applyMapping:'Áp dụng ánh xạ',noVolume:'(Không có Volume)',chooseColumn:'-- Chọn cột --',unnamedColumn:'(không tên)',dateAndTime:'Ngày + giờ',dragHint:'Thả file dữ liệu để nạp',loadingDataset:'Đang tải dữ liệu',metaCandles:'{count} nến',metaGap:'{count} khoảng lệch nhịp',metaMain:'Chính',metaInternal:'Phụ',metaPending:'chờ xác nhận',metaUp:'TĂNG',metaDown:'GIẢM',metaUnknown:'CHƯA RÕ',imported:'Đã nạp {name} · {count} nến · {volume} Volume.',volumeYes:'có',volumeNo:'không có',gapsWarning:'Đã nạp {count} nến. Có {gaps} khoảng lệch nhịp; không tạo nến giả.',loadFailed:'Không thể mở dữ liệu: {message}',uploadFailed:'Không thể nạp {name}: {message}',serverUnavailable:'Không kết nối được máy chủ: {message}',invalidServer:'Máy chủ trả về dữ liệu không hợp lệ.',requestFailed:'Yêu cầu thất bại.',invalidCandles:'Nguồn dữ liệu không có nến hợp lệ.',invalidOHLC:'OHLC không hợp lệ sau chuẩn hóa.',importRemoved:'Đã xóa bộ dữ liệu đã nạp.',confirmRemove:'Xóa bộ dữ liệu đã chọn? File gốc trên máy không bị ảnh hưởng.',mappingMissing:'Cần chọn đủ Timestamp, Open, High, Low và Close.',mappingHint:'Hãy xác nhận ánh xạ cột để tránh chọn nhầm giá.',fileNotRecognized:'Không thể kiểm tra dữ liệu. Hãy kiểm tra file, ánh xạ cột, timestamp hoặc OHLC.',errorMapping:'Cần xác nhận ánh xạ cột.',errorDate:'Ngày tháng không rõ thứ tự. Chọn DMY hoặc MDY.',errorOHLC:'Dữ liệu OHLC không nhất quán. Kiểm tra dòng nguồn.',errorTimes:'Timestamp bị trùng hoặc không tăng.',errorLarge:'File vượt giới hạn dung lượng hoặc số nến.',errorUnsupported:'Định dạng chưa hỗ trợ.',errorGeneral:'Không thể xử lý dữ liệu. Kiểm tra nguồn và định dạng.',tooltipOpen:'Open',tooltipHigh:'High',tooltipLow:'Low',tooltipClose:'Close',tooltipVolume:'Volume'
+ }
+};
+// Current-state labels live outside the event translator, so a candle without
+// an event still reports both structure layers and the exact active pivots.
+Object.assign(UI.en,{
+ majorLabel:'MAIN / MAJOR',internalLabel:'INTERNAL',currentStatus:'STRUCTURE AT THIS CANDLE CLOSE',
+ majorHighLabel:'Major High',majorLowLabel:'Major Low',notConfirmed:'Not confirmed',
+ statePending:'Pending new Major pivot',stateConfirmed:'Confirmed',statusAt:'at {time}',
+});
+Object.assign(UI.vi,{
+ majorLabel:'CẤU TRÚC CHÍNH',internalLabel:'CẤU TRÚC PHỤ',currentStatus:'TRẠNG THÁI SAU NẾN ĐÃ ĐÓNG',
+ majorHighLabel:'Đỉnh quan trọng',majorLowLabel:'Đáy quan trọng',notConfirmed:'Chưa xác nhận',
+ statePending:'Chờ Major mới',stateConfirmed:'Đã xác nhận',statusAt:'lúc {time}',
+});
+Object.assign(UI.en,{
+ exportSnapshot:'↓ JSON',exportTitle:'Export current closed-candle analysis and visible history',exportDone:'Analysis snapshot exported.',
+ helpTitle:'Using MSAS Offline',helpIntro:'All price files stay inside this browser tab. No server, accounts or network requests.',
+ helpFiles:'Supported formats: CSV, TSV, TXT, JSON, JSONL and XLSX. Volume is optional. Each row represents one CLOSED candle.',
+ helpMapping:'If columns or dates are unclear, confirm their mapping and DMY/MDY in the dialog. Duplicated timestamps and invalid OHLC are rejected.',
+ helpSession:'Imported files are held in this tab only. Export a JSON analysis snapshot before closing. This is REPLAY, not live exchange data.',
+ helpRule:'Major/Internal logic is provisional based on the PPT examples. Unknown trend stays UNKNOWN; no lookahead or trading advice.',closeHelp:'Close'
+});
+Object.assign(UI.vi,{
+ exportSnapshot:'↓ JSON',exportTitle:'Xuất kết quả cấu trúc tại nến hiện tại cùng lịch sử đã xem',exportDone:'Đã xuất kết quả phân tích.',
+ helpTitle:'Hướng dẫn MSAS Offline',helpIntro:'Dữ liệu giá chỉ ở trong tab trình duyệt này. Không gửi lên máy chủ, không cần mạng.',
+ helpFiles:'Hỗ trợ CSV, TSV, TXT, JSON, JSONL và XLSX. Volume có thể không có. Mỗi dòng là một nến ĐÃ ĐÓNG.',
+ helpMapping:'Nếu tên cột hoặc ngày tháng chưa rõ, hãy chọn ánh xạ và DMY/MDY. Dữ liệu trùng thời gian hoặc OHLC sai sẽ bị từ chối.',
+ helpSession:'Dữ liệu nhập chỉ lưu trong tab đang mở. Hãy xuất JSON trước khi đóng. Đây là phát lại, KHÔNG phải dữ liệu trực tiếp.',
+ helpRule:'Major/Internal dùng quy tắc PPT đang ở mức tạm thời. Không xác định là UNKNOWN, không tự gọi sideway; không nhìn trước nến.',closeHelp:'Đóng'
+});
+// Source-locked MSS/CISD labels; VI is authored, not machine-translated.
+Object.assign(UI.en,{
+ noSignal:'No new major structure signal',
+ noSignalDetail:'No S+, C, B or structural level update on this closed candle. Current Main/Internal states remain visible above.',
+ noneCount:'NO MAJOR SIGNAL',latestEvents:'KEY STRUCTURAL EVENTS'
+});
+Object.assign(UI.vi,{
+ noSignal:'Không có tín hiệu cấu trúc quan trọng mới',
+ noSignalDetail:'Nến này không có S+, C, B hoặc cập nhật Major. Xem trạng thái cấu trúc chính/phụ đang hiệu lực phía trên.',
+ noneCount:'KHÔNG CÓ TÍN HIỆU CHÍNH',latestEvents:'SỰ KIỆN CẤU TRÚC CHÍNH'
+});
+const KIND={
+ en:{major_established:'MAIN · ESTABLISHED',major_continuation:'MAIN · CONTINUATION',major_reversal:'MSS · S+ STRONG',major_updated:'MAIN · LEVELS UPDATED',internal_established:'INTERNAL · IDENTIFIED',internal_reversal:'INTERNAL · REVERSAL',internal_confirmed:'INTERNAL · CONFIRMED',mss_weak:'MSS · C WEAK',cisd:'CISD · B EARLY',start:'REPLAY STARTED',inside:'INSIDE BAR',breakout:'MOTHER RANGE BREAK',swing:'LOCAL SWING',replace:'SWING REPLACEMENT',pair:'OPPOSITE SWING',classification:'STRUCTURE',trend:'TREND CHANGE'},
+ vi:{major_established:'CHÍNH · KHỞI TẠO',major_continuation:'CHÍNH · TIẾP DIỄN',major_reversal:'MSS · S+ MẠNH',major_updated:'CHÍNH · MAJOR CẬP NHẬT',internal_established:'PHỤ · NHẬN DIỆN',internal_reversal:'PHỤ · ĐẢO CHIỀU',internal_confirmed:'PHỤ · XÁC NHẬN',mss_weak:'MSS · C YẾU',cisd:'CISD · B SỚM',start:'KHỞI TẠO',inside:'INSIDE BAR',breakout:'PHÁ BIÊN',swing:'SWING CỤC BỘ',replace:'DỜI SWING',pair:'XÁC NHẬN CẶP',classification:'CẤU TRÚC',trend:'ĐỔI XU HƯỚNG'}
+};
+function text(key,lang='en',params={}){
+ let tmpl=(UI[lang]||UI.en)[key]??UI.en[key]??key;
+ return tmpl.replace(/\{([a-zA-Z][a-zA-Z0-9_]*)\}/g,(_,k)=>String(params[k]??''));
+}
+function fmt(num){return Number(num).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6});}
+function dir(d){return d==='up'?'UP':d==='down'?'DOWN':'UNKNOWN';}
+function eventLabel(kind,lang='en'){return (KIND[lang]||KIND.en)[kind]||'EVENT';}
+function eventText(e,lang='en'){
+ if(lang==='vi')return {title:e.title,detail:e.detail};
+ const d=e.data||{}, price=x=>x==null?'pending':fmt(x),up=d.direction==='up',direction=dir(d.direction);
+ switch(e.kind){
+ case 'start':return {title:'Replay initialized',detail:'The first candle has closed. Three candles are required to identify the first local swing.'};
+ case 'inside':return d.phase==='continue'?
+  {title:'Inside bar continues',detail:`Original mother range at ${d.motherTime}: ${price(d.low)}–${price(d.high)} remains active.`}:
+  {title:'Inside bar detected',detail:`Candle ${d.candleTime} is within the ${d.motherTime} mother range [${price(d.low)}, ${price(d.high)}].`};
+ case 'breakout':return {title:`Mother range broken ${d.direction==='up'?'↑':d.direction==='down'?'↓':'↕'}`,detail:`Candle ${d.candleTime} crossed the ${d.direction==='up'?'upper':d.direction==='down'?'lower':'upper and lower'} boundary of the ${d.motherTime} mother candle. Previously rejected swings stay invalid.`};
+ case 'swing':return {title:`Local Swing ${d.type==='SH'?'High':'Low'} · ${d.pivotTime}`,detail:`Price ${price(d.price)}; candidate known when the ${d.confirmationTime} candle closed. ${d.status==='inside_rejected'?`REJECTED: the pivot lies inside the ${d.motherTime} mother range.`:d.status==='ambiguous'?'AMBIGUOUS: the same bar qualifies as SH and SL; OHLC does not reveal intrabar order.':'Inside-bar filter passed; waiting for an eligible opposing pivot.'}`};
+ case 'replace':return d.action==='ignore'?
+  {title:`Skipped competing ${d.type}`,detail:`A stronger ${d.type} already exists at ${d.previousTime}; no eligible opposing swing has appeared.`}:
+  {title:`Replaced ${d.type} candidate`,detail:`The ${d.previousTime} pivot was replaced by the ${d.newTime} pivot with a more extreme ${d.type==='SH'?'high':'low'}, before an eligible opposing swing.`};
+ case 'pair':return {title:`${d.previousType} confirmed by opposite swing`,detail:`${d.previousType} at ${d.previousTime} was structurally accepted when the opposing ${d.oppositeType} at ${d.oppositeTime} was identified.`};
+ case 'classification':return {title:`Classified ${d.classification} · ${d.pivotTime}`,detail:`${d.type} ${price(d.price)} compared against ${price(d.previousPrice)} at ${d.previousTime}.`};
+ case 'trend':return {title:d.direction==='up'?'UP structure confirmed':d.direction==='down'?'DOWN structure confirmed':'Structure returned to UNKNOWN',detail:d.direction==='up'?'Latest accepted pivots satisfy HH + HL.':d.direction==='down'?'Latest accepted pivots satisfy LH + LL.':'The latest pivot pairs are not aligned; do not infer a sideways market.'};
+ case 'major_established':return {title:`Main ${direction} structure established`,detail:`Major High ${price(d.majorHigh)}; Major Low ${price(d.majorLow)}. Based on accepted alternating swings and HH+HL / LH+LL.`};
+ case 'major_continuation':return {title:`Main ${direction} continuation`,detail:`Close ${price(d.close)} crossed ${up?'above Major High':'below Major Low'} ${price(d.brokenLevel)}. Waiting for an eligible new swing before updating the Major pair.`};
+ case 'major_reversal':return {title:`S+ · Strong MSS: Main shifts to ${direction}`,detail:`Close ${price(d.close)} ${up?'exceeds Major High':'breaks below Major Low'} ${price(d.brokenLevel)} (tolerance 0). Opposite Major retained at ${price(d.retainedLevel)}; new pivot waits for an eligible swing.`};
+ case 'mss_weak':return {title:'C · Weak MSS attempt (wick only)',detail:`Wick ${price(d.wick)} crossed ${up?'Major High':'Major Low'} ${price(d.brokenLevel)}, but the candle body closed back inside at ${price(d.close)}. Main ${dir(d.mainTrend)} is unchanged.`};
+ case 'cisd':return {title:'B · CISD (early delivery shift)',detail:`Close ${price(d.close)} crossed the first Open ${price(d.referenceOpen)} of the last ${d.mainTrend==='down'?'bearish':'bullish'} candle cluster (bar ${d.referenceStartIndex}). Main ${dir(d.mainTrend)} is NOT reversed.`};
+ case 'major_updated':return {title:'Major High / Low updated',detail:`Major High ${price(d.majorHigh)}; Major Low ${price(d.majorLow)}. Levels use the strongest already confirmed eligible swing of the break wave and its confirmed corrective or preceding opposite pivot.`};
+ case 'internal_established':return {title:`Internal ${direction} structure identified`,detail:`Accepted internal pivots satisfy ${up?'HH + HL':'LH + LL'} inside the Major range; main trend is unchanged.`};
+ case 'internal_reversal':return {title:`Internal reversal to ${direction} · pending`,detail:`Close ${price(d.close)} crossed ${up?'Internal SH':'Internal SL'} ${price(d.brokenLevel)}. Main ${dir(d.majorDirection)} is unchanged; waiting for ${up?'HH + HL':'LH + LL'} confirmation.`};
+ case 'internal_confirmed':return {title:`Internal ${direction} structure confirmed`,detail:'An eligible sequence of internal pivots confirms HH + HL or LH + LL in the new direction.'};
+ default:return {title:'Structural event',detail:`Event recorded at closed candle ${e.at}. See the event audit for technical details.`};
+ }
+}
+function serverError(error,lang='en'){
+ const code=error?.payload?.code;
+ const known={NEEDS_MAPPING:'errorMapping',DATE_ORDER_REQUIRED:'errorDate',INVALID_OHLC:'errorOHLC',INVALID_TIMESTAMPS:'errorTimes',TOO_LARGE:'errorLarge',TOO_MANY_ROWS:'errorLarge',UNSUPPORTED:'errorUnsupported'};
+ if(lang==='en')return text(known[code]||'errorGeneral','en')+(code?` [${code}]`:'');
+ return error?.message||text(known[code]||'errorGeneral','vi');
+}
+return {UI,KIND,text,eventLabel,eventText,serverError};
+});
+
+
+</script><script data-module="engine.js">
+/* Market-structure learning engine v1.0 — offline, deterministic, no dependencies.
+ * Based on supplied training slides; see docs for strict scope/ambiguities.
+ * All logic works on a closed-candle prefix. Never use future candles.
+ */
+(function(root,factory){
+  const api=factory();
+  if(typeof module==='object' && module.exports) module.exports=api;
+  root.MarketStructureEngine=api;
+})(typeof globalThis !== 'undefined' ? globalThis : this,function(){
+  'use strict';
+
+  const round2=v=>Math.round((v+Number.EPSILON)*100)/100;
+  const hhmm=t=>String(t).slice(11,16);
+  // Parsing is handled by the adaptive Python adapter (app/importer.py).
+  // This analysis engine receives normalized CLOSED OHLC bars only.
+
+  function analyzePrefix(candles,upto){
+    if(!Array.isArray(candles) || !candles.length) throw Error('Không có nến.');
+    const end=upto===undefined?candles.length-1:Math.max(0,Math.min(upto,candles.length-1));
+    const c=candles.slice(0,end+1),n=c.length;
+    const events=[];
+    const emit=(at,kind,title,detail,severity='info',pivotIndex=null,data=null)=>events.push({at,kind,title,detail,severity,pivotIndex,data});
+    const insideByIndex=Array(n).fill(null);
+    const zones=[];
+    let active=null;
+    emit(0,'start','Khởi động mô hình','Nến đầu tiên đã đóng. Chưa đủ bộ 3 nến để xác định swing.','neutral',null,{});
+    for(let j=1;j<n;j++){
+      const now=c[j],prev=c[j-1];
+      if(active){
+        const mother=c[active.mother];
+        if(now.high<=mother.high && now.low>=mother.low){
+          insideByIndex[j]=zones.length-1;
+          active.last=j;
+          zones[zones.length-1].last=j;
+          emit(j,'inside','Tiếp diễn Inside Bar','Giữ nguyên biên nến mẹ '+hhmm(mother.time)+': '+mother.low.toFixed(2)+' – '+mother.high.toFixed(2)+'.','warning',null,{phase:'continue',motherTime:hhmm(mother.time),low:mother.low,high:mother.high});
+          continue;
+        }
+        const dir=now.high>mother.high && now.low<mother.low?'hai phía':now.high>mother.high?'trên':'dưới';
+        zones[zones.length-1].brokenAt=j;
+        zones[zones.length-1].breakDirection=dir;
+        emit(j,'breakout','Phá biên nến mẹ '+(dir==='trên'?'↑':dir==='dưới'?'↓':'↕'),
+          'Nến '+hhmm(now.time)+' xuyên biên '+dir+' của nến mẹ '+hhmm(mother.time)+'. Các swing đã vô hiệu không được phục hồi.','success',null,{direction:dir==='trên'?'up':dir==='dưới'?'down':'both',candleTime:hhmm(now.time),motherTime:hhmm(mother.time)});
+        active=null;
+      }
+      if(now.high<=prev.high && now.low>=prev.low){
+        active={mother:j-1,first:j,last:j};
+        zones.push({mother:j-1,first:j,last:j,brokenAt:null,breakDirection:null});
+        insideByIndex[j]=zones.length-1;
+        emit(j,'inside','Khởi tạo Inside Bar','Nến '+hhmm(now.time)+' nằm trong biên nến mẹ '+hhmm(prev.time)+' ['+prev.low.toFixed(2)+'; '+prev.high.toFixed(2)+'].','warning',null,{phase:'start',candleTime:hhmm(now.time),motherTime:hhmm(prev.time),low:prev.low,high:prev.high});
+      }
+    }
+
+    const swings=[];
+    for(let i=1;i<n-1;i++){
+      const a=c[i-1],b=c[i],z=c[i+1];
+      const isHigh=b.high>a.high && b.high>z.high;
+      const isLow=b.low<a.low && b.low<z.low;
+      if(!isHigh&&!isLow) continue;
+      const ambiguous=isHigh && isLow;
+      for(const type of ['SH','SL']){
+        if((type==='SH'&&!isHigh)||(type==='SL'&&!isLow)) continue;
+        const value=type==='SH'?b.high:b.low;
+        const zIndex=insideByIndex[i];
+        const status=ambiguous?'ambiguous':zIndex!==null?'inside_rejected':'eligible';
+        const swing={id:type+'-'+i,index:i,confirmedAt:i+1,type,price:value,status,
+          structStatus:status==='eligible'?'pending':'rejected',structConfirmedAt:null,comp:'',
+          zoneId:zIndex};
+        swings.push(swing);
+        emit(i+1,'swing',(type==='SH'?'Swing High':'Swing Low')+' cục bộ · '+hhmm(b.time),
+          'Giá '+value.toFixed(2)+'; xác nhận khi nến '+hhmm(z.time)+' đóng. '+
+          (ambiguous?'Cùng nến hình thành SH và SL: OHLC không biết thứ tự biến động, loại khỏi cấu trúc.':
+           zIndex!==null?'VÔ HIỆU: điểm nằm trong biên nến mẹ '+hhmm(c[zones[zIndex].mother].time)+'.':
+           'Qua bộ lọc Inside Bar; chờ kiểm tra đỉnh–đáy luân phiên.'),
+          ambiguous?'neutral':zIndex!==null?'error':'info',i,{type,pivotTime:hhmm(b.time),confirmationTime:hhmm(z.time),price:value,status,motherTime:zIndex!==null?hhmm(c[zones[zIndex].mother].time):null});
+      }
+    }
+
+    // Project interpretation: a structurally confirmed turn must be followed by
+    // an opposite eligible turn. Consecutive same-type turns retain only the
+    // more extreme one; the last turn remains pending (never backdated).
+    const eligible=swings.filter(s=>s.status==='eligible').sort((x,y)=>x.index-y.index);
+    const path=[];
+    for(const p of eligible){
+      if(!path.length){path.push(p);continue;}
+      const last=path[path.length-1];
+      if(p.type===last.type){
+        const extreme=p.type==='SH'?p.price>last.price:p.price<last.price;
+        if(extreme){
+          last.structStatus='superseded';
+          p.structStatus='pending';
+          path[path.length-1]=p;
+          emit(p.confirmedAt,'replace','Dời '+p.type+' sang mốc mới',
+            'Mốc '+hhmm(c[last.index].time)+' bị thay bằng '+hhmm(c[p.index].time)+' do cực trị '+
+            (p.type==='SH'?'cao hơn':'thấp hơn')+' trước khi xuất hiện swing đối ứng hợp lệ.','warning',p.index,{type:p.type,action:'replace',previousTime:hhmm(c[last.index].time),newTime:hhmm(c[p.index].time)});
+        }else{
+          p.structStatus='superseded';
+          emit(p.confirmedAt,'replace','Không dùng '+p.type+' trùng loại',
+            'Đã có '+p.type+' cực trị mạnh hơn tại '+hhmm(c[last.index].time)+'; chưa có swing đối ứng hợp lệ.','warning',p.index,{type:p.type,action:'ignore',previousTime:hhmm(c[last.index].time),newTime:hhmm(c[p.index].time)});
+        }
+      }else{
+        last.structStatus='confirmed';
+        last.structConfirmedAt=p.confirmedAt;
+        p.structStatus='pending';
+        path.push(p);
+        emit(p.confirmedAt,'pair','Xác thực '+last.type+' bằng swing đối ứng',
+          last.type+' '+hhmm(c[last.index].time)+' được xác thực cấu trúc khi '+p.type+' '+hhmm(c[p.index].time)+' được nhận diện.','success',last.index,{previousType:last.type,previousTime:hhmm(c[last.index].time),oppositeType:p.type,oppositeTime:hhmm(c[p.index].time)});
+      }
+    }
+    const confirmed=path.filter(p=>p.structStatus==='confirmed');
+    let priorHigh=null,priorLow=null;
+    for(const p of confirmed){
+      if(p.type==='SH'){
+        p.comp=priorHigh?(p.price>priorHigh.price?'HH':p.price<priorHigh.price?'LH':'EQH'):'SH';
+        priorHigh=p;
+      }else{
+        p.comp=priorLow?(p.price>priorLow.price?'HL':p.price<priorLow.price?'LL':'EQL'):'SL';
+        priorLow=p;
+      }
+    }
+    // Explanatory notifications for classification and causal trend changes.
+    for(let i=0;i<confirmed.length;i++){
+      const p=confirmed[i];
+      const prior=confirmed.slice(0,i).reverse().find(x=>x.type===p.type);
+      if(prior){
+        const short=p.comp,kind=(short==='HH'||short==='HL')?'success':(short==='LH'||short==='LL')?'warning':'neutral';
+        emit(p.structConfirmedAt,'classification','Nhận diện '+short+' · '+hhmm(c[p.index].time),
+          p.type+' '+p.price.toFixed(2)+' so với '+prior.price.toFixed(2)+' tại '+hhmm(c[prior.index].time)+'.',kind,p.index,{type:p.type,classification:short,pivotTime:hhmm(c[p.index].time),price:p.price,previousPrice:prior.price,previousTime:hhmm(c[prior.index].time)});
+      }
+    }
+    let previousTrend='unknown',checked=[];
+    for(const p of confirmed){
+      checked.push(p);
+      const vH=checked.filter(x=>x.type==='SH'),vL=checked.filter(x=>x.type==='SL');
+      const curH=vH.at(-1)?.comp,curL=vL.at(-1)?.comp;
+      const next=vH.length>=2&&vL.length>=2 ?
+          (curH==='HH'&&curL==='HL'?'up':curH==='LH'&&curL==='LL'?'down':'unknown') : 'unknown';
+      if(next!==previousTrend){
+        emit(p.structConfirmedAt,'trend',next==='up'?'Cấu trúc TĂNG được xác nhận':next==='down'?'Cấu trúc GIẢM được xác nhận':'Trở lại VÙNG XÁM',
+          next==='up'?'Các cặp mới nhất đáp ứng HH + HL.':next==='down'?'Các cặp mới nhất đáp ứng LH + LL.':'Các cặp HH/HL/LH/LL không còn đồng thuận. Không tự gán đi ngang.',
+          next==='unknown'?'warning':'success',p.index,{direction:next});
+        previousTrend=next;
+      }
+    }
+    const hs=confirmed.filter(p=>p.type==='SH');
+    const ls=confirmed.filter(p=>p.type==='SL');
+    const lastH=hs.at(-1)?.comp||null,lastL=ls.at(-1)?.comp||null;
+    let trend='unknown',reason='Chưa đủ hai Swing High và hai Swing Low đã xác thực luân phiên.';
+    if(hs.length>=2 && ls.length>=2){
+      if(lastH==='HH' && lastL==='HL'){
+        trend='up'; reason='Hai đỉnh hợp lệ nâng cao (HH) và hai đáy hợp lệ nâng cao (HL).';
+      }else if(lastH==='LH' && lastL==='LL'){
+        trend='down'; reason='Hai đỉnh hợp lệ hạ thấp (LH) và hai đáy hợp lệ hạ thấp (LL).';
+      }else{
+        trend='unknown'; reason='Các cặp SH/SL không đồng thuận theo HH+HL hoặc LH+LL; không tự gán đi ngang.';
+      }
+    }
+    events.sort((a,b)=>a.at-b.at||['breakout','inside','swing','replace','pair','start'].indexOf(a.kind)-['breakout','inside','swing','replace','pair','start'].indexOf(b.kind));
+    const summary={raw:swings.length,insideRejected:swings.filter(s=>s.status==='inside_rejected').length,
+      ambiguous:swings.filter(s=>s.status==='ambiguous').length,
+      superseded:swings.filter(s=>s.structStatus==='superseded').length,
+      confirmed:confirmed.length,pending:swings.filter(s=>s.structStatus==='pending').length,
+      insideCandles:insideByIndex.filter(x=>x!==null).length};
+    return {candles:c,zones,insideByIndex,swings,path,confirmed,events,trend,reason,summary,lastH,lastL,end};
+  }
+
+  return {analyzePrefix};
+});
+
+
+</script><script data-module="advanced_engine.js">
+/* Advanced structure overlay V1: major/external and minor/internal structural roles.
+ * Sources: Cau_truc_nang_cao_-_Final.pptx slides 3-14.
+ * This module consumes pre-confirmed alternating pivots from engine.js and CLOSED candles.
+ * It does not alter raw 3-bar pivot detection, mother zones, or their audit semantics.
+ * Assumptions which are not fully specified by slides are documented in docs/advanced/.
+ */
+(function(root,factory){
+  const api=factory();
+  if(typeof module==='object'&&module.exports)module.exports=api;
+  root.AdvancedStructureEngine=api;
+})(typeof globalThis!=='undefined'?globalThis:this,function(){
+'use strict';
+const VALID_TRENDS=new Set(['unknown','up','down']);
+// PPT 'Mau_hinh_xac_nhan_ao_chieu_-_Final' slide 8: zero tolerance.
+// A wick only is a weak MSS attempt (C); only a CLOSE strictly beyond the
+// active Major confirms MSS S+ and reverses the main trend.
+const MSS_TOLERANCE=0;
+const level=p=>p?{id:p.id,index:p.index,type:p.type,price:p.price,confirmedAt:p.structConfirmedAt??p.confirmedAt??null}:null;
+const latest=(pivots,type)=>{for(let i=pivots.length-1;i>=0;i--)if(pivots[i].type===type)return pivots[i];return null;};
+const earlierOpposite=(pivots,p)=>{for(let i=pivots.length-1;i>=0;i--){const q=pivots[i];if(q.type!==p.type&&q.index<p.index)return q;}return null;};
+function pairTrend(pivots){
+ const hs=pivots.filter(p=>p.type==='SH'),ls=pivots.filter(p=>p.type==='SL');
+ if(hs.length<2||ls.length<2)return 'unknown';
+ const H=hs.at(-1).price-hs.at(-2).price,L=ls.at(-1).price-ls.at(-2).price;
+ if(H>0&&L>0)return 'up';if(H<0&&L<0)return 'down';return 'unknown';
+}
+function makeState(){return {
+ at:-1,previousClose:null,history:[],events:[],roleChanges:[],closed:[],
+ mss:{tolerance:MSS_TOLERANCE,last:null,lastWeak:null,weakAttempt:null},
+ cisd:{reference:null,last:null,emitted:[]},
+ external:{trend:'unknown',phase:'uninitialized',majorHigh:null,majorLow:null,breakAt:null,breakLevel:null},
+ internal:{trend:'unknown',phase:'uninitialized',internalHigh:null,internalLow:null,protectedHigh:null,protectedLow:null,pendingDirection:null,pendingBreakAt:null,confirmed:false},
+ segmentStart:-1
+};}
+function log(s,at,kind,layer,title,detail,refs=[],source='ADV:S14',severity='info',data=null){
+ const ev={id:`${kind}:${at}:${s.events.length}`,at,kind,layer,title,detail,severity,source,refs,data};
+ s.events.push(ev);return ev;
+}
+function changeRole(s,at,p,from,to,reason){if(!p)return; s.roleChanges.push({at,pivot_id:p.id,pivot_index:p.index,from,to,reason});}
+function clearInternal(s){s.internal={trend:'unknown',phase:'collecting',internalHigh:null,internalLow:null,protectedHigh:null,protectedLow:null,pendingDirection:null,pendingBreakAt:null,confirmed:false};}
+function validInternalPivots(s){
+ const ext=s.external;
+ if(!ext.majorHigh||!ext.majorLow)return [];
+ const lo=ext.majorLow.price,hi=ext.majorHigh.price;
+ return s.history.filter(p=>p.index>s.segmentStart && p.price>=lo && p.price<=hi);
+}
+function protectedLevel(pivots,direction){
+ // A local downtrend reverses against the HIGH preceding the latest genuine LL.
+ // It is not necessarily the latest SH (slide 13: point 12 must break 8, not 10).
+ // Symmetric for an uptrend: use the low preceding its latest HH.
+ const kind=direction==='down'?'SL':'SH',reverse=direction==='down'?'SH':'SL';
+ const same=pivots.filter(p=>p.type===kind);
+ if(same.length<2)return null;
+ for(let i=same.length-1;i>0;i--){
+  const progressed=direction==='down'?same[i].price<same[i-1].price:same[i].price>same[i-1].price;
+  if(!progressed)continue;
+  const before=pivots.filter(p=>p.type===reverse && p.index<same[i].index).at(-1);
+  if(before)return level(before);
+ }
+ return null;
+}
+function refreshInternal(s,at){
+ const set=validInternalPivots(s),prevHigh=s.internal.internalHigh,prevLow=s.internal.internalLow;
+ s.internal.internalHigh=level(latest(set,'SH'));
+ s.internal.internalLow=level(latest(set,'SL'));
+ if(prevHigh?.id!==s.internal.internalHigh?.id){
+  if(prevHigh)changeRole(s,at,prevHigh,'internal_sh','historical_swing','newer_internal_high');
+  if(s.internal.internalHigh)changeRole(s,at,s.internal.internalHigh,'confirmed_swing','internal_sh','latest_internal_high');
+ }
+ if(prevLow?.id!==s.internal.internalLow?.id){
+  if(prevLow)changeRole(s,at,prevLow,'internal_sl','historical_swing','newer_internal_low');
+  if(s.internal.internalLow)changeRole(s,at,s.internal.internalLow,'confirmed_swing','internal_sl','latest_internal_low');
+ }
+ const direction=pairTrend(set);
+ // Protected levels are retained through a pullback. A weaker intermediate high
+ // does not supersede the high protecting the last lower low (ADV slide 13).
+ if(s.internal.trend==='down')s.internal.protectedHigh=protectedLevel(set,'down');
+ if(s.internal.trend==='up')s.internal.protectedLow=protectedLevel(set,'up');
+ if(s.internal.pendingDirection){
+  const newHigh=latest(set,'SH'),newLow=latest(set,'SL');
+  const confirmedSequence=s.internal.pendingDirection==='up' ?
+    (newHigh && newLow && newHigh.index>=s.internal.pendingBreakAt && newLow.index>newHigh.index) :
+    (newLow && newHigh && newLow.index>=s.internal.pendingBreakAt && newHigh.index>newLow.index);
+  if(direction===s.internal.pendingDirection && confirmedSequence){
+   s.internal.trend=direction;s.internal.confirmed=true;s.internal.phase='confirmed';
+   s.internal.protectedHigh=protectedLevel(set,'down');s.internal.protectedLow=protectedLevel(set,'up');
+   s.internal.pendingDirection=null;s.internal.pendingBreakAt=null;
+   log(s,at,'internal_confirmed','internal','Internal '+(direction==='up'?'TĂNG':'GIẢM')+' đã xác nhận',
+      'Cặp HH+HL hoặc LH+LL của các Swing Internal đã xác nhận hướng mới.',
+      [s.internal.internalHigh?.id,s.internal.internalLow?.id].filter(Boolean),'ADV:S13-14','success',{direction});
+  }
+ }else if(s.internal.trend==='unknown'&&direction!=='unknown'){
+  s.internal.trend=direction;s.internal.confirmed=true;s.internal.phase='confirmed';
+  s.internal.protectedHigh=protectedLevel(set,'down');s.internal.protectedLow=protectedLevel(set,'up');
+  log(s,at,'internal_established','internal','Nhận diện Internal '+(direction==='up'?'TĂNG':'GIẢM'),
+      'Các Swing nằm trong biên Major đáp ứng '+(direction==='up'?'HH+HL':'LH+LL')+'; không thay đổi xu hướng Major.',
+      [s.internal.internalHigh?.id,s.internal.internalLow?.id].filter(Boolean),'ADV:S6-7','info',{direction});
+ }
+}
+function setMajor(s,at,trend,high,low,reason){
+ const e=s.external;
+ if(e.majorHigh&&e.majorHigh.id!==high?.id)changeRole(s,at,e.majorHigh,'major_high','historical_major','major_rolled');
+ if(e.majorLow&&e.majorLow.id!==low?.id)changeRole(s,at,e.majorLow,'major_low','historical_major','major_rolled');
+ e.trend=trend;e.phase='confirmed';e.majorHigh=level(high);e.majorLow=level(low);e.breakAt=null;e.breakLevel=null;
+ if(high)changeRole(s,at,high,'confirmed_swing','major_high',reason);
+ if(low)changeRole(s,at,low,'confirmed_swing','major_low',reason);
+ s.segmentStart=trend==='up'?high.index:low.index;
+ clearInternal(s);
+}
+function initialize(s,at){
+ if(s.external.phase!=='uninitialized')return;
+ const trend=pairTrend(s.history);
+ if(trend==='unknown')return;
+ const edge=latest(s.history,trend==='up'?'SH':'SL');
+ const opposite=earlierOpposite(s.history,edge);
+ if(!opposite)return;
+ const H=trend==='up'?edge:opposite,L=trend==='up'?opposite:edge;
+ setMajor(s,at,trend,H,L,'initial_major_pair');
+ log(s,at,'major_established','external','Khởi tạo cấu trúc chính '+(trend==='up'?'TĂNG':'GIẢM'),
+     `Major High ${H.price}; Major Low ${L.price}. Xác định từ Swing đã được chấp nhận theo HH+HL / LH+LL.`,
+     [H.id,L.id],'ADV:S5,S14','success',{direction:trend,majorHigh:H.price,majorLow:L.price});
+}
+/** Choose the strongest ALREADY CONFIRMED structural extreme of the pending
+ * break wave, not the last swing to happen to confirm after a Close breakout.
+ * A major role is assigned only at `at`, never at the historical pivot time.
+ * Slide 11/13: major expansion 10/9 or 14/13; source does not fully specify
+ * competing pivot tie-breaks, so this remains an explicit provisional policy.
+ */
+function pendingMajorPair(s,direction){
+ const e=s.external,kind=direction==='up'?'SH':'SL';
+ if(e.breakAt===null||e.breakLevel===null)return null;
+ const anchor=direction==='up'?(e.majorHigh?.index??s.segmentStart-1):(e.majorLow?.index??s.segmentStart-1);
+ const eligible=s.history.filter(p=>p.type===kind&&p.index>anchor&&
+  (direction==='up'?p.price>e.breakLevel:p.price<e.breakLevel));
+ // An accepted extreme may be known BEFORE the Close crosses the old Major
+ // boundary. Prefer the strongest price across the wave, not the latest pivot.
+ eligible.sort((a,b)=>direction==='up'?b.price-a.price||a.index-b.index:a.price-b.price||a.index-b.index);
+ for(const extreme of eligible){
+  // If the new extreme was already confirmed BEFORE the closing breakout,
+  // the protected counter-extreme can form AFTER it but BEFORE the breakout.
+  // XAU source user annotation: MH SH-34 followed by corrective ML SL-37.
+  // Otherwise use the latest preceding opposite pivot (PPT 14/13 case).
+  const opposites=s.history.filter(p=>p.type!==kind && p.index>anchor);
+  const follow=opposites.filter(p=>p.index>extreme.index && p.index<=e.breakAt);
+  follow.sort((a,b)=>direction==='up'?a.price-b.price||a.index-b.index:b.price-a.price||a.index-b.index);
+  const opposite=follow[0]||earlierOpposite(s.history,extreme);
+  if(opposite){
+   return direction==='up'?{high:extreme,low:opposite}:{high:opposite,low:extreme};
+  }
+ }
+ return null;
+}
+/** Most recent candle cluster moving in the OLD main trend, within the latest
+ * eligible swing wave. The Open of its FIRST candle is the CISD reference.
+ * The wave boundary uses confirmed opposite swing evidence only, never future
+ * pivots. See REV slides 5-8; the exact wave-boundary tie-break is provisional.
+ */
+function lastOldDirectionCluster(s,at,trend){
+ const oldBearish=trend==='down';
+ const oppositeType=oldBearish?'SH':'SL';
+ const opposite=s.history.filter(p=>p.type===oppositeType).at(-1);
+ const waveStart=Math.max(0,s.segmentStart,opposite?.index??0);
+ const oldDirection=c=>c && Number.isFinite(c.open)&&
+    (oldBearish?c.close<c.open:c.close>c.open);
+ let end=-1;
+ for(let i=at-1;i>=waveStart;i--){if(oldDirection(s.closed[i])){end=i;break;}}
+ if(end<0)return null;
+ let start=end;
+ while(start-1>=waveStart&&oldDirection(s.closed[start-1]))start--;
+ return {direction:trend,startIndex:start,endIndex:end,open:s.closed[start].open,
+         waveStartIndex:waveStart,opposingSwingId:opposite?.id??null};
+}
+function scanReversalSignals(s,at,bar,previousMajor){
+ const {trend,majorHigh,majorLow}=previousMajor;
+ if(!['up','down'].includes(trend)||!Number.isFinite(bar.open))return;
+ const isDown=trend==='down';
+ const threshold=isDown?majorHigh:majorLow;
+ if(threshold&&Number.isFinite(isDown?bar.high:bar.low)){
+  // C: only wick crosses the Major boundary; the body stays inside it.
+  const wickBreak=isDown?bar.high>threshold.price+MSS_TOLERANCE:bar.low<threshold.price-MSS_TOLERANCE;
+  const bodyInside=isDown?bar.open<=threshold.price && bar.close<threshold.price:
+                           bar.open>=threshold.price && bar.close>threshold.price;
+  const weak=wickBreak&&bodyInside;
+  const key=trend+':'+threshold.id;
+  if(weak&&s.mss.weakAttempt!==key){
+   const direction=isDown?'up':'down';
+   const ev=log(s,at,'mss_weak','external','MSS C · nỗ lực đảo chiều yếu',
+      `Râu nến vượt ${isDown?'Major High':'Major Low'} ${threshold.price}, nhưng Close ${bar.close} trở lại biên. Main ${trend==='up'?'TĂNG':'GIẢM'} giữ nguyên.`,
+      [threshold.id],'REV:S4,S8','warning',
+      {label:'C',direction,mainTrend:trend,close:bar.close,wick:isDown?bar.high:bar.low,
+       brokenLevel:threshold.price,majorPivotId:threshold.id,confirmed:false,tolerance:MSS_TOLERANCE});
+   s.mss.lastWeak={at,label:'C',eventId:ev.id,majorPivotId:threshold.id};
+  }
+  s.mss.weakAttempt=weak?key:null;
+ }else s.mss.weakAttempt=null;
+ // B: this candle must oppose the old direction; a close through the FIRST
+ // old-direction candle's Open of the LAST contiguous group is required.
+ const ref=lastOldDirectionCluster(s,at,trend);
+ s.cisd.reference=ref;
+ if(!ref)return;
+ const reversesDelivery=isDown?bar.close>bar.open:bar.close<bar.open;
+ const crossed=isDown?bar.close>ref.open+MSS_TOLERANCE:bar.close<ref.open-MSS_TOLERANCE;
+ const key=trend+':'+ref.startIndex;
+ if(reversesDelivery&&crossed&&!s.cisd.emitted.includes(key)){
+  const direction=isDown?'up':'down';
+  const ev=log(s,at,'cisd','delivery','CISD B · thay đổi hành vi giá',
+    `Close ${bar.close} vượt Open ${ref.open} của nến đầu cụm ${trend==='down'?'GIẢM':'TĂNG'} cuối cùng. Đây chỉ là tín hiệu sớm; Major vẫn ${trend==='up'?'TĂNG':'GIẢM'}.`,
+    [],'REV:S5-S8','warning',
+    {label:'B',direction,mainTrend:trend,close:bar.close,referenceOpen:ref.open,
+     referenceStartIndex:ref.startIndex,referenceEndIndex:ref.endIndex,
+     waveStartIndex:ref.waveStartIndex,confirmed:false,tolerance:MSS_TOLERANCE});
+  s.cisd.emitted.push(key);
+  s.cisd.last={at,label:'B',eventId:ev.id,referenceOpen:ref.open,
+                referenceStartIndex:ref.startIndex,majorDirectionUnchanged:true};
+ }
+}
+function cross(prev,now,threshold,direction){
+ if(threshold===null||threshold===undefined)return false;
+ return direction==='up'?(now>threshold&&(prev===null||prev<=threshold)):(now<threshold&&(prev===null||prev>=threshold));
+}
+function advance(s,at,candleOrClose,newlyConfirmed=[]){
+ // Numeric close-only synthetic fixtures are supported for structural tests.
+ // They cannot generate candle-shape (C) or Open/Close (B) labels.
+ const raw=typeof candleOrClose==='number'?{close:candleOrClose}:candleOrClose;
+ const close=raw?.close;
+ if(!Number.isFinite(close))throw Error('Giá đóng cửa phải hữu hạn.');
+ const bar={open:Number.isFinite(raw.open)?raw.open:null,
+            high:Number.isFinite(raw.high)?raw.high:null,
+            low:Number.isFinite(raw.low)?raw.low:null,close};
+ s.closed.push(bar);
+ if(at!==s.at+1)throw Error('Phải xử lý từng nến đã đóng theo thứ tự, không bỏ qua hoặc quay ngược.');
+ const prev=s.previousClose,external=s.external,internal=s.internal;
+ const majorBefore={trend:external.trend,majorHigh:external.majorHigh,majorLow:external.majorLow};
+ // Price breaches are evaluated against levels known BEFORE the current candle closed.
+ if(external.trend!=='unknown'){
+  const h=external.majorHigh,l=external.majorLow;
+  if(external.trend==='up'&&l&&cross(prev,close,l.price,'down')){
+   const oldLow=l;
+   changeRole(s,at,l,'major_low','broken_major_low','external_reversal');
+   external.trend='down';external.phase='awaiting_major_low';external.majorLow=null;
+   external.breakAt=at;external.breakLevel=oldLow.price;
+   s.segmentStart=at;clearInternal(s);
+   log(s,at,'major_reversal','external','Cấu trúc chính đảo chiều TĂNG → GIẢM',
+       `Giá đóng ${close} thấp hơn Major Low ${oldLow.price}; giữ Major High ${h?.price??'chưa có'}, Major Low mới chờ xác nhận.`,
+       [h?.id,oldLow.id].filter(Boolean),'ADV:S3,S7,S13-14;REV:S3,S8','error',
+       {label:'S+',direction:'down',close,brokenLevel:oldLow.price,retainedLevel:h?.price??null,
+        majorPivotId:oldLow.id,confirmed:true,tolerance:MSS_TOLERANCE});
+  }else if(external.trend==='down'&&h&&cross(prev,close,h.price,'up')){
+   const oldHigh=h;
+   changeRole(s,at,h,'major_high','broken_major_high','external_reversal');
+   external.trend='up';external.phase='awaiting_major_high';external.majorHigh=null;
+   external.breakAt=at;external.breakLevel=oldHigh.price;
+   s.segmentStart=at;clearInternal(s);
+   log(s,at,'major_reversal','external','Cấu trúc chính đảo chiều GIẢM → TĂNG',
+       `Giá đóng ${close} cao hơn Major High ${oldHigh.price}; giữ Major Low ${l?.price??'chưa có'}, Major High mới chờ xác nhận.`,
+       [oldHigh.id,l?.id].filter(Boolean),'ADV:S3,S7,S14;REV:S3,S8','success',
+       {label:'S+',direction:'up',close,brokenLevel:oldHigh.price,retainedLevel:l?.price??null,
+        majorPivotId:oldHigh.id,confirmed:true,tolerance:MSS_TOLERANCE});
+  }else if(external.phase==='confirmed'&&h&&l){
+   if(external.trend==='up'&&cross(prev,close,h.price,'up')){
+    external.phase='awaiting_major_high';external.breakAt=at;external.breakLevel=h.price;
+    clearInternal(s);
+    log(s,at,'major_continuation','external','Cấu trúc chính tiếp diễn TĂNG',
+        `Close ${close} > Major High ${h.price}. Chờ Swing High mới hợp lệ để cập nhật cặp Major.`,[h.id],'ADV:S7,S11,S14','success',{direction:'up',close,brokenLevel:h.price});
+   }else if(external.trend==='down'&&cross(prev,close,l.price,'down')){
+    external.phase='awaiting_major_low';external.breakAt=at;external.breakLevel=l.price;
+    clearInternal(s);
+    log(s,at,'major_continuation','external','Cấu trúc chính tiếp diễn GIẢM',
+        `Close ${close} < Major Low ${l.price}. Chờ Swing Low mới hợp lệ để cập nhật cặp Major.`,[l.id],'ADV:S7,S14','success',{direction:'down',close,brokenLevel:l.price});
+   }else if(internal.confirmed && internal.internalHigh && internal.internalLow){
+    if(internal.trend==='down'&&cross(prev,close,(internal.protectedHigh||internal.internalHigh).price,'up')){
+     const threshold=internal.protectedHigh||internal.internalHigh;
+     internal.trend='up';internal.pendingDirection='up';internal.pendingBreakAt=at;internal.confirmed=false;internal.phase='pending_confirmation';
+     log(s,at,'internal_reversal','internal','Internal GIẢM → TĂNG (chờ xác nhận)',
+         `Giá đóng ${close} phá Internal SH ${threshold.price}. Major ${external.trend==='up'?'TĂNG':'GIẢM'} chưa thay đổi; chờ HH+HL xác nhận.`,
+         [threshold.id],'ADV:S7,S13-14','warning',{direction:'up',majorDirection:external.trend,close,brokenLevel:threshold.price});
+    }else if(internal.trend==='up'&&cross(prev,close,(internal.protectedLow||internal.internalLow).price,'down')){
+     const threshold=internal.protectedLow||internal.internalLow;
+     internal.trend='down';internal.pendingDirection='down';internal.pendingBreakAt=at;internal.confirmed=false;internal.phase='pending_confirmation';
+     log(s,at,'internal_reversal','internal','Internal TĂNG → GIẢM (chờ xác nhận)',
+         `Giá đóng ${close} phá Internal SL ${threshold.price}. Major ${external.trend==='up'?'TĂNG':'GIẢM'} chưa thay đổi; chờ LH+LL xác nhận.`,
+         [threshold.id],'ADV:S7,S14','warning',{direction:'down',majorDirection:external.trend,close,brokenLevel:threshold.price});
+    }
+   }
+  }
+ }
+ // A confirmed S+ takes priority over weak C / early B on this same candle.
+ // C and B never switch external.trend and never create Major pivots.
+ if(majorBefore.trend!=='unknown'&&external.trend!==majorBefore.trend){
+  const ev=s.events.find(e=>e.at===at&&e.kind==='major_reversal');
+  s.mss.last={at,label:'S+',direction:external.trend,eventId:ev?.id??null,
+              brokenLevel:ev?.data?.brokenLevel??null};
+  s.mss.weakAttempt=null;s.cisd.reference=null;
+ }else{
+  scanReversalSignals(s,at,bar,majorBefore);
+ }
+ // Only pivots which are structurally confirmed by THIS closed candle may enter the ledger.
+ for(const p of newlyConfirmed){
+  if(p.structConfirmedAt!==at)throw Error(`Swing ${p.id} được cung cấp sai thời điểm xác nhận.`);
+  if(p.index>=at)throw Error('Swing chỉ hợp lệ khi nến phía sau đã đóng.');
+  if(!['SH','SL'].includes(p.type)||!Number.isFinite(p.price))throw Error('Swing không hợp lệ.');
+  if(s.history.some(x=>x.id===p.id))throw Error('Pivot ID đã tồn tại.');
+  s.history.push({id:p.id,index:p.index,type:p.type,price:p.price,structConfirmedAt:at});
+ }
+ // Init when the local accepted swing history is sufficient.
+ initialize(s,at);
+ if(external.phase==='awaiting_major_high'&&external.breakAt!==null){
+  const pair=pendingMajorPair(s,'up');
+  if(pair){
+   setMajor(s,at,'up',pair.high,pair.low,'strongest_confirmed_major_break_wave');
+   log(s,at,'major_updated','external','Đã cập nhật Major High / Major Low',
+       `Major High ${pair.high.price}; Major Low ${pair.low.price}. Cặp đỉnh/đáy mạnh nhất đã xác nhận cho nhịp phá Major; không chọn cực trị chỉ vì xuất hiện gần nhất.`,
+       [pair.high.id,pair.low.id],'ADV:S11,S13-14','success',{direction:'up',majorHigh:pair.high.price,majorLow:pair.low.price,
+        majorHighIndex:pair.high.index,majorLowIndex:pair.low.index,selection:'strongest_confirmed_wave_provisional'});
+  }
+ }else if(external.phase==='awaiting_major_low'&&external.breakAt!==null){
+  const pair=pendingMajorPair(s,'down');
+  if(pair){
+   setMajor(s,at,'down',pair.high,pair.low,'strongest_confirmed_major_break_wave');
+   log(s,at,'major_updated','external','Đã cập nhật Major High / Major Low',
+       `Major High ${pair.high.price}; Major Low ${pair.low.price}. Cặp đỉnh/đáy mạnh nhất đã xác nhận cho nhịp phá Major; không chọn cực trị chỉ vì xuất hiện gần nhất.`,
+       [pair.high.id,pair.low.id],'ADV:S11,S13-14','success',{direction:'down',majorHigh:pair.high.price,majorLow:pair.low.price,
+        majorHighIndex:pair.high.index,majorLowIndex:pair.low.index,selection:'strongest_confirmed_wave_provisional'});
+  }
+ }
+ if(external.phase==='confirmed')refreshInternal(s,at);
+ s.at=at;s.previousClose=close;
+ if(!VALID_TRENDS.has(external.trend)||!VALID_TRENDS.has(s.internal.trend))throw Error('Xu hướng không hợp lệ.');
+ return s;
+}
+function analysisFromAccepted(candles,accepted,upto){
+ if(!Array.isArray(candles)||!candles.length)throw Error('Không có nến đã đóng.');
+ const end=upto===undefined?candles.length-1:Math.min(candles.length-1,Math.max(0,upto));
+ const grouped=new Map();
+ for(const p of accepted){
+  const at=p.structConfirmedAt;
+  if(at===null||at===undefined||at>end)continue;
+  if(!Number.isInteger(at)||at<=p.index||at<0)throw Error('Thời điểm xác nhận Swing không hợp lệ.');
+  if(!grouped.has(at))grouped.set(at,[]);
+  grouped.get(at).push(p);
+ }
+ const state=makeState();
+ for(let t=0;t<=end;t++)advance(state,t,candles[t],grouped.get(t)||[]);
+ return {end,external:state.external,internal:state.internal,
+         mss:{tolerance:MSS_TOLERANCE,last:state.mss.last,lastWeak:state.mss.lastWeak},
+         cisd:{reference:state.cisd.reference,last:state.cisd.last},
+         events:state.events,roleChanges:state.roleChanges,
+         acceptedCount:state.history.length,policy:{source:'ADV PPT S3-S14',majorSelection:'strongest-confirmed-extreme-in-closed-break-wave (provisional)',
+            initialMajor:'latest confirmed trend pair',closeBreak:'strict',tolerance:0,
+            mssSource:'REV S3-S4,S8',cisdSource:'REV S5-S8',
+            cisdWaveBoundary:'latest eligible opposite pivot (provisional)',noLookahead:true},
+         _state:state};
+}
+function analyzeAdvancedPrefix(candles,upto,base){
+ const end=upto===undefined?candles.length-1:Math.min(candles.length-1,Math.max(0,upto));
+ if(!base){
+  const L=(typeof require==='function' ? require('./engine.js') :
+    (typeof globalThis!=='undefined'?globalThis.MarketStructureEngine:null));
+  if(!L)throw Error('Yêu cầu MarketStructureEngine để tính Swing nguồn.');
+  base=L.analyzePrefix(candles,end);
+ }
+ return analysisFromAccepted(candles,base.confirmed,end);
+}
+return {makeState,advance,analysisFromAccepted,analyzeAdvancedPrefix,pairTrend,lastOldDirectionCluster,MSS_TOLERANCE};
+});
+
+
+</script><script data-module="studio.js">
+(function(){
+'use strict';
+const E=window.MarketStructureEngine;
+const ADV=window.AdvancedStructureEngine;
+const I=window.MSASI18N;
+const THEME=window.MSASChartTheme;
+if(!I||!THEME)throw Error('Missing MSAS UI localization or chart theme module.');
+const $=id=>document.getElementById(id);
+// Data is imported using the local MSAS API; offline standalone installs a same-origin browser adapter.
+let datasetId='btcusd-sample', datasetDetails=null, fileWaiting=null;
+const number=n=>Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const pivotPrice=n=>Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6});
+const compact=n=>Math.round(n).toLocaleString('en-US');
+const time=t=>String(t).slice(11,16);
+const escaped=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const PALETTE={up:THEME.candles.up.body,down:THEME.candles.down.body,line:'#285ba6',mother:'#9e7134',raw:'#475d70'};
+let lang='en';
+try{if(localStorage.getItem('msas-ui-language')==='vi')lang='vi';}catch(_){}
+const t=(key,params={})=>I.text(key,lang,params);
+const eventText=ev=>I.eventText(ev,lang);
+const eventLabel=kind=>I.eventLabel(kind,lang);
+function refreshStaticLocale(){
+ document.documentElement.lang=lang;
+ for(const el of document.querySelectorAll('[data-i18n]'))el.textContent=t(el.dataset.i18n);
+ for(const el of document.querySelectorAll('[data-i18n-title]'))el.title=t(el.dataset.i18nTitle);
+ for(const el of document.querySelectorAll('[data-i18n-aria]'))el.setAttribute('aria-label',t(el.dataset.i18nAria));
+ $('languageSelect').value=lang;
+ $('chartBox').dataset.dropHint=t('dragHint');
+ if(datasetDetails)$('canvasTimeframe').textContent=inferFrame()+' / '+t('closed');
+ $('playText').textContent=t(playing?'pause':'play');
+ $('play').setAttribute('aria-label',t(playing?'pause':'play'));
+ if(datasetDetails){updateTop();updateFeed(false);}
+ if(hover!==null)$('tooltip').classList.add('hidden');
+ schedule();
+}
+function setLanguage(value){
+ if(value!=='en'&&value!=='vi')return;
+ lang=value;try{localStorage.setItem('msas-ui-language',value);}catch(_){}
+ refreshStaticLocale();
+ const select=$('datasetSelect');for(const option of select.options){
+  option.textContent=option.dataset.rawName?.replace(/\(mẫu\)/i,lang==='en'?'(sample)':'(mẫu)')||option.textContent;
+ }
+}
+// Notifications intentionally show only material structural decisions and
+// user-defined confirmation signals. Raw local pivots and Inside Bars remain
+// available on the chart/JSON audit; they do not flood the event feed.
+const IMPORTANT_KINDS=new Set(['major_reversal','major_updated','major_continuation',
+  'major_established','internal_reversal','internal_confirmed','mss_weak','cisd']);
+const PRIORITY={major_reversal:100,mss_weak:90,cisd:80,major_updated:65,
+  major_continuation:55,internal_reversal:48,internal_confirmed:42,
+  major_established:35,internal_established:0};
+const PLAY_ICON='<path d="m8 5 11 7-11 7z"/>';
+const PAUSE_ICON='<rect x="6.5" y="5" width="3.5" height="14" rx="1"/><rect x="14" y="5" width="3.5" height="14" rx="1"/>';
+const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+let candles=[],analysis=null,current=0,playing=false,source='',speed=1,acc=0,lastFrame=0,request=null;
+let cache=new Map(),hover=null,geo=null,transition=null;
+let layers={structure:true,inside:true,raw:false};
+let feedSignature='',sourceMetaLine='';
+const ease=x=>1-Math.pow(1-Math.max(0,Math.min(1,x)),3);
+const lerp=(a,b,t)=>a+(b-a)*t;
+function severity(ev){
+ if(ev.kind==='swing'&&ev.severity==='error')return '#f87988';
+ if(ev.kind==='swing'&&ev.severity==='neutral')return '#9cabb8';
+ if(ev.kind==='major_reversal')return ev.data?.direction==='up'?'#55e4be':'#fa7989';
+ if(ev.kind==='mss_weak')return '#ecc17f';
+ if(ev.kind==='cisd')return '#9bb6ff';
+ if(ev.kind.startsWith('major_'))return '#80b7ff';
+ if(ev.kind.startsWith('internal_'))return '#e8bc82';
+ if(ev.kind==='trend')return ev.data?.direction==='down'?'#f87988':ev.data?.direction==='up'?'#46e2bd':'#a7b4d6';
+ if(ev.kind==='inside'||ev.kind==='replace'||ev.kind==='breakout')return '#edc185';
+ if(ev.kind==='pair'||ev.kind==='classification')return '#55dfc3';
+ if(ev.kind==='swing')return '#95b5ff';
+ return '#95afc0';
+}
+function materialEvents(){
+ return analysis?.advanced?.events.filter(ev=>IMPORTANT_KINDS.has(ev.kind))||[];
+}
+function currentEventList(){
+ return materialEvents().filter(ev=>ev.at===current)
+   .sort((a,b)=>(PRIORITY[b.kind]||0)-(PRIORITY[a.kind]||0));
+}
+function getAnalysis(i){
+ if(cache.has(i))return cache.get(i);
+ const result=E.analyzePrefix(candles,i);
+ const advanced=ADV.analyzeAdvancedPrefix(candles,i,result);
+ result.advanced=advanced;
+ result.events=[...result.events,...advanced.events].sort((a,b)=>a.at-b.at);
+ cache.set(i,result);if(cache.size>140)cache.delete(cache.keys().next().value);
+ return result;
+}
+function setError(message){$('errorbox').textContent=message||'';$('errorbox').classList.toggle('show',!!message);}
+function inferFrame(){return datasetDetails?.meta?.timeframe||'OHLC';}
+function rangeFor(index){let lo=Infinity,hi=-Infinity;const from=Math.max(0,index-79);for(let i=from;i<=index;i++){lo=Math.min(lo,candles[i].low);hi=Math.max(hi,candles[i].high);}const s=Math.max(1,hi-lo);return {min:lo-s*.14,max:hi+s*.14};}
+function scaleAt(now){if(!transition)return rangeFor(current);const f=reduced?1:ease((now-transition.started)/transition.duration);return {min:lerp(transition.from.min,transition.to.min,f),max:lerp(transition.from.max,transition.to.max,f)};}
+function schedule(){if(request===null)request=requestAnimationFrame(tick);}
+function setPlaying(value){playing=!!value;lastFrame=0;acc=0;$('play').classList.toggle('running',playing);$('playText').textContent=t(playing?'pause':'play');$('playIcon').innerHTML=playing?PAUSE_ICON:PLAY_ICON;$('play').setAttribute('aria-label',t(playing?'pause':'play'));$('livePulse').classList.toggle('running',playing);if(playing)schedule();}
+function stop(){setPlaying(false);}
+function stepTo(index,{animate=true,flash=false}={}){
+ if(!candles.length)return;
+ index=Math.max(0,Math.min(candles.length-1,Math.round(index)));
+ const changed=index!==current;
+ const now=performance.now();
+ const oldScale=scaleAt(now);
+ const oldConfirmed=new Set(analysis?.confirmed.map(p=>p.id)||[]);
+ const previous=current;
+ current=index;analysis=getAnalysis(current);
+ hover=null;$('tooltip').classList.add('hidden');
+ const per=1200/speed;
+ const d=animate&&!reduced?Math.min(480,Math.max(68,per*.52)):0;
+ transition=changed&&d>0?{
+  started:now,duration:d,from:oldScale,to:rangeFor(current),
+  added:new Set(analysis.confirmed.filter(p=>!oldConfirmed.has(p.id)).map(p=>p.id)),
+  newest:current,previous,flash
+ }:null;
+ $('scrubber').value=String(current);
+ $('scrubber').style.setProperty('--pct',((candles.length>1?current/(candles.length-1):1)*100)+'%');
+ updateTop();updateFeed(changed&&flash);
+ schedule();
+}
+function structureDirection(trend,phase){
+ let label=t(trend==='up'?'metaUp':trend==='down'?'metaDown':'metaUnknown');
+ if(phase==='pending_confirmation'||phase?.startsWith('awaiting_major_'))label+=' · '+t('metaPending');
+ return label;
+}
+function pivotValue(p){return p?pivotPrice(p.price):t('notConfirmed');}
+function pivotWithTime(p){
+ if(!p)return t('notConfirmed');
+ const raw=candles[p.index]?.time;
+ return pivotPrice(p.price)+(raw?' · '+raw.slice(0,16).replace('T',' ')+(datasetDetails?.meta?.timezone?' '+datasetDetails.meta.timezone:''):'');
+}
+function updateStructureSnapshot(){
+ const a=analysis?.advanced;if(!a)return;
+ const e=a.external,n=a.internal;
+ for(const [name,obj,phase] of [['major',e,e.phase],['internal',n,n.phase]]){
+  const strip=$(name+'Strip');strip.dataset.trend=obj.trend;
+  $(name+'Direction').textContent=structureDirection(obj.trend,phase);
+  const feed=name==='major'?'feedMajorTrend':'feedInternalTrend';
+  $(feed).textContent=structureDirection(obj.trend,phase);
+  $(feed).dataset.trend=obj.trend;
+ }
+ $('majorHighValue').textContent=pivotValue(e.majorHigh);
+ $('majorLowValue').textContent=pivotValue(e.majorLow);
+ $('internalHighValue').textContent=pivotValue(n.internalHigh);
+ $('internalLowValue').textContent=pivotValue(n.internalLow);
+ $('feedMajorHigh').textContent=pivotWithTime(e.majorHigh);
+ $('feedMajorLow').textContent=pivotWithTime(e.majorLow);
+ $('feedInternalHigh').textContent=pivotWithTime(n.internalHigh);
+ $('feedInternalLow').textContent=pivotWithTime(n.internalLow);
+}
+function updateTop(){
+ const c=candles[current],delta=c.close-c.open,pct=c.open?delta/c.open*100:0;
+ $('lastClose').textContent=number(c.close);$('lastDelta').textContent=(pct>=0?'+':'')+pct.toFixed(2)+'%';$('lastDelta').classList.toggle('negative',pct<0);
+ const inspected=hover!==null&&hover<=current?candles[hover]:c;
+ for(const [id,k] of [['openVal','open'],['highVal','high'],['lowVal','low'],['closeVal','close']])$(id).textContent=number(inspected[k]);
+ const ext=analysis.advanced.external,int=analysis.advanced.internal;
+ const titleDirection=x=>t(x==='up'?'metaUp':x==='down'?'metaDown':'metaUnknown');
+ const sourceLine=t('metaCandles',{count:candles.length.toLocaleString('en-US')})+' · '+inferFrame()+(datasetDetails?.meta?.timezone?' · '+datasetDetails.meta.timezone:'')+(datasetDetails?.meta?.gaps?' · '+t('metaGap',{count:datasetDetails.meta.gaps}):'');
+ $('dataDetails').textContent=sourceLine;
+ updateStructureSnapshot();
+ $('progressCount').textContent=(current+1)+' / '+candles.length;
+ $('timeLabel').textContent=time(c.time);$('feedTime').textContent=c.time.slice(0,16);
+}
+function updateFeed(animate){
+ const atNow=currentEventList(),lead=atNow[0]||null;
+ const her=$('hero');
+ const key=(lead?lead.kind+'|'+lead.title:'none')+'|'+current;
+ if(key!==feedSignature){
+  feedSignature=key;her.classList.remove('event-in');void her.offsetWidth;if(animate)her.classList.add('event-in');
+ }
+ const mainColor=lead?severity(lead):'#8fa7b5';her.style.setProperty('--accent',mainColor);
+ $('heroCategory').innerHTML=lead?(escaped(eventLabel(lead.kind))+' <b>'+escaped(t('atCandle',{count:atNow.length}))+'</b>'):escaped(t('noneCategory'))+' <b>'+escaped(t('noneCount'))+'</b>';
+ const leadTranslated=lead?eventText(lead):null;
+ $('heroTitle').textContent=leadTranslated?.title||t('noSignal');
+ $('heroDetail').textContent=leadTranslated?.detail||t('noSignalDetail');
+ $('heroMeta').textContent=t('closeMeta',{time:time(candles[lead?lead.at:current].time)});
+ const important=materialEvents();
+ const history=important.filter(ev=>ev!==lead).sort((a,b)=>b.at-a.at || (PRIORITY[b.kind]||0)-(PRIORITY[a.kind]||0)).slice(0,4);
+ $('eventCount').textContent=t('eventCount',{count:important.length});
+ const root=$('events');
+ if(!history.length){root.innerHTML='<div class="empty">'+escaped(t('emptyEvents'))+'</div>';return;}
+ root.innerHTML=history.map(ev=>{
+  const color=severity(ev);
+  const localized=eventText(ev);
+  return '<button type="button" class="signal-row" data-candle="'+ev.at+'" style="--accent:'+color+'" title="'+escaped(t('jumpTo',{time:time(candles[ev.at].time)}))+'">'+
+   '<span class="mark"></span><span class="rowbody"><span class="minor"><span>'+escaped(eventLabel(ev.kind))+'</span><time class="mono">'+escaped(time(candles[ev.at].time))+'</time></span>'+
+   '<h4>'+escaped(localized.title)+'</h4><p>'+escaped(localized.detail)+'</p></span></button>';
+ }).join('');
+}
+function measure(){
+ const canvas=$('chart'),r=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2),w=Math.max(0,r.width),h=Math.max(0,r.height);
+ if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}
+ const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);return {ctx,w,h};
+}
+function draw(now=performance.now()){
+ if(!candles.length||!analysis)return;
+ const {ctx,w,h}=measure();if(w<80||h<100)return;
+ const left=w<480?17:27,right=w<480?74:92,top=37,bottom=h-52,innerW=w-left-right,innerH=bottom-top;
+ const maxWindow=w<380?16:w<610?20:w<860?45:80;
+ const count=Math.min(candles.length,maxWindow),first=Math.max(0,Math.min(candles.length-count,current-count+4));
+ const step=innerW/count,barWidth=Math.max(1,Math.min(17,step*.63));
+ const xAt=i=>left+(i-first+.5)*step;
+ const {min,max}=scaleAt(now),yAt=v=>top+(max-v)/(max-min)*innerH;
+ const tr=transition,p=tr?Math.max(0,Math.min(1,(now-tr.started)/tr.duration)):1,k=ease(p);
+ geo={left,right,top,bottom,w,h,innerW,innerH,step,first,count,xAt,yAt};
+ ctx.fillStyle=THEME.background;ctx.fillRect(0,0,w,h);
+ const ticks=Math.max(1,Math.ceil(85/Math.max(step,1)));
+ ctx.font='10px ui-monospace, monospace';
+ for(let i=first;i<first+count;i+=ticks){const x=xAt(i);ctx.fillStyle='#385064';ctx.textAlign='center';ctx.fillText(time(candles[i].time),x,h-27);}
+ for(let i=0;i<=5;i++){
+  const y=top+(bottom-top)*i/5,value=max-(max-min)*i/5;
+  ctx.textAlign='left';ctx.fillStyle='#425669';ctx.fillText(compact(value),left+innerW+9,y+3);
+ }
+ if(current<candles.length-1){
+  const nextX=Math.min(left+innerW,xAt(current)+step*.5),remain=Math.max(0,left+innerW-nextX);
+  if(remain>0){
+   ctx.fillStyle='rgba(48,73,91,.11)';ctx.fillRect(nextX,top,remain,innerH);
+   ctx.strokeStyle='rgba(50,69,81,.5)';ctx.lineWidth=.8;ctx.setLineDash([3,6]);ctx.beginPath();ctx.moveTo(nextX,top);ctx.lineTo(nextX,bottom);ctx.stroke();ctx.setLineDash([]);
+  }
+ }
+ if(layers.inside){
+  for(const z of analysis.zones){if(z.last<first)continue;const mother=candles[z.mother];
+   const x1=Math.max(left,xAt(z.mother)-step*.49),x2=Math.min(left+innerW,xAt(z.last)+step*.49);
+   const y1=yAt(mother.high),y2=yAt(mother.low);
+   if(x2<=x1||y2<=y1)continue;
+   ctx.fillStyle='rgba(188,127,55,.12)';ctx.fillRect(x1,y1,x2-x1,y2-y1);
+   ctx.strokeStyle='rgba(132,92,49,.7)';ctx.lineWidth=.9;ctx.setLineDash([4,5]);
+   for(const y of [y1,y2]){ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.stroke();}ctx.setLineDash([]);
+   ctx.textAlign='left';ctx.font='bold 10px ui-monospace,monospace';ctx.fillStyle='#6b4c27';ctx.fillText('IB '+time(mother.time),x1+4,Math.max(top+12,y1-7));
+  }
+ }
+ // Structural levels become visible only when the current CLOSED prefix knows them.
+ // A horizontal segment starts at its historical pivot, not the chart's left edge.
+ if(layers.structure&&analysis.advanced){
+  const {external:ex,internal:inn}=analysis.advanced;
+  const marked=[
+   {p:ex.majorHigh,label:'MH',color:'#1c529a',dash:[7,4],alpha:.95,major:true},
+   {p:ex.majorLow,label:'ML',color:'#00745a',dash:[7,4],alpha:.95,major:true},
+   {p:inn.protectedHigh||inn.internalHigh,label:'iSH',color:'#926029',dash:[3,7],alpha:.69},
+   {p:inn.protectedLow||inn.internalLow,label:'iSL',color:'#926029',dash:[3,7],alpha:.69}
+  ];
+  const usedY=[];
+  for(const m of marked){
+   if(!m.p)continue;
+   const yy=yAt(m.p.price);
+   if(yy<top||yy>bottom)continue;
+   if(!m.major&&usedY.some(v=>Math.abs(v-yy)<13))continue;
+   usedY.push(yy);
+   ctx.save();ctx.globalAlpha=m.alpha;ctx.strokeStyle=m.color;ctx.lineWidth=m.major?1.65:1;
+   ctx.setLineDash(m.dash);ctx.beginPath();ctx.moveTo(Math.max(left,xAt(m.p.index)),yy);ctx.lineTo(left+innerW,yy);ctx.stroke();ctx.setLineDash([]);
+   ctx.fillStyle=m.color;ctx.font='bold 10px ui-monospace,monospace';ctx.textAlign='right';
+   const label=m.label+' '+pivotPrice(m.p.price);
+   ctx.fillText(label,left+innerW-5,yy+(m.label==='ML'?12:-6));ctx.restore();
+  }
+ }
+ const accepted=analysis.confirmed;
+ if(layers.structure&&accepted.length>1){
+  ctx.save();ctx.beginPath();ctx.rect(left,top,innerW,innerH);ctx.clip();
+  ctx.beginPath();let drawn=false;
+  for(let i=0;i<accepted.length;i++){
+   const node=accepted[i],x=xAt(node.index),y=yAt(node.price);
+   if(i===0){ctx.moveTo(x,y);drawn=true;continue;}
+   if(tr&&tr.added.has(node.id)){
+    const last=accepted[i-1],xx=lerp(xAt(last.index),x,k),yy=lerp(yAt(last.price),y,k);
+    ctx.lineTo(xx,yy);
+    if(k<1){drawn=true;break;}
+   }else ctx.lineTo(x,y);
+  }
+  if(drawn){ctx.strokeStyle='#265dd4';ctx.lineWidth=2.3;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();}
+  ctx.restore();
+ }
+ for(let i=first;i<=Math.min(current,first+count-1);i++){
+  const c=candles[i],x=xAt(i),up=c.close>=c.open,style=up?THEME.candles.up:THEME.candles.down;
+  const newest=tr&&i===tr.newest&&tr.previous!==tr.newest;
+  ctx.save();if(newest){ctx.globalAlpha=.18+.82*k;ctx.translate(0,(1-k)*4);}
+  // Wick: opaque black regardless of candle direction (while fully revealed).
+  ctx.save();ctx.globalAlpha*=style.wickOpacity;ctx.strokeStyle=style.wick;
+  ctx.lineWidth=Math.max(1,Math.min(1.6,barWidth*.115));ctx.beginPath();ctx.moveTo(x,yAt(c.high));ctx.lineTo(x,yAt(c.low));ctx.stroke();ctx.restore();
+  const yt=yAt(Math.max(c.open,c.close)),yb=yAt(Math.min(c.open,c.close)),bodyHeight=Math.max(1.8,yb-yt);
+  ctx.save();ctx.globalAlpha*=style.bodyOpacity;ctx.fillStyle=style.body;ctx.fillRect(x-barWidth/2,yt,barWidth,bodyHeight);ctx.restore();
+  ctx.save();ctx.globalAlpha*=style.borderOpacity;ctx.strokeStyle=style.border;ctx.lineWidth=.95;
+  ctx.strokeRect(x-barWidth/2,yt,barWidth,bodyHeight);ctx.restore();
+  ctx.restore();
+ }
+ if(layers.structure||layers.raw){
+  const labels=[];
+  for(const s of analysis.swings){if(s.index<first||s.index>=first+count)continue;
+   const x=xAt(s.index),y=yAt(s.price);
+   if(layers.raw){ctx.save();ctx.strokeStyle=s.status==='inside_rejected'?'#ac4b47':PALETTE.raw;ctx.lineWidth=1.15;ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.stroke();if(s.status!=='eligible'){ctx.beginPath();ctx.moveTo(x-3.5,y-3.5);ctx.lineTo(x+3.5,y+3.5);ctx.moveTo(x+3.5,y-3.5);ctx.lineTo(x-3.5,y+3.5);ctx.stroke();}ctx.restore();}
+   if(!layers.structure||!['confirmed','pending'].includes(s.structStatus))continue;
+   if([analysis.advanced?.external.majorHigh?.id,analysis.advanced?.external.majorLow?.id].includes(s.id))continue;
+   const full=s.structStatus==='confirmed',col=!full?'#647a8a':s.type==='SH'?'#2859aa':'#0b7866';
+   ctx.save();const newAccepted=tr&&tr.added.has(s.id);if(newAccepted)ctx.globalAlpha=.3+.7*k;
+   ctx.fillStyle=full?col:THEME.background;ctx.strokeStyle=col;ctx.lineWidth=1.5;
+   ctx.beginPath();ctx.arc(x,y,full?4.3:3.4,0,Math.PI*2);ctx.fill();ctx.stroke();
+   const label=full?(s.comp||s.type):s.type+'?';ctx.font='bold 10px ui-sans-serif,sans-serif';
+   const ww=ctx.measureText(label).width+16,hh=20;
+   const posX=Math.max(left+ww/2,Math.min(left+innerW-ww/2,x));
+   let posY=Math.max(top+5,Math.min(bottom-hh-5,y+(s.type==='SH'?-34:16)));
+   for(let j=0;j<7;j++){if(!labels.some(b=>posX-ww/2<b.x+b.w+2&&posX+ww/2>b.x-2&&posY<b.y+b.h+3&&posY+hh>b.y-3))break;posY+=s.type==='SH'?-22:22;posY=Math.max(top+3,Math.min(bottom-hh-3,posY));}
+   labels.push({x:posX-ww/2,y:posY,w:ww,h:hh});
+   ctx.strokeStyle=col;ctx.globalAlpha*=.43;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(posX,posY+(s.type==='SH'?hh:0));ctx.stroke();ctx.globalAlpha=newAccepted?.3+.7*k:1;
+   ctx.fillStyle=full?'#edf4fb':'#f1f5f8';ctx.strokeStyle=col;ctx.lineWidth=.75;ctx.beginPath();ctx.roundRect(posX-ww/2,posY,ww,hh,5);ctx.fill();ctx.stroke();
+   ctx.textAlign='center';ctx.fillStyle=full?'#21364a':'#4c6373';ctx.fillText(label,posX,posY+14);ctx.restore();
+  }
+ }
+ // Anchor labels exactly at the currently active Major pivot candles. A marker
+ // can only appear after that pivot has become an accepted Major in this prefix.
+ if(layers.structure&&analysis.advanced){
+  const ex=analysis.advanced.external;
+  for(const item of [{p:ex.majorHigh,label:'MH',color:'#1c529a',above:true},
+                     {p:ex.majorLow,label:'ML',color:'#00745a',above:false}]){
+   if(!item.p||item.p.index<first||item.p.index>=first+count)continue;
+   const xx=xAt(item.p.index),yy=yAt(item.p.price);
+   if(yy<top||yy>bottom)continue;
+   ctx.save();ctx.lineWidth=2.25;ctx.strokeStyle=item.color;ctx.fillStyle='#fff';
+   ctx.beginPath();ctx.arc(xx,yy,5.4,0,Math.PI*2);ctx.fill();ctx.stroke();
+   ctx.font='bold 10px ui-monospace,monospace';ctx.textAlign='center';
+   const label=item.label+' · '+pivotPrice(item.p.price),width=ctx.measureText(label).width+15;
+   const bx=Math.max(left+width/2,Math.min(left+innerW-width/2,xx));
+   const by=Math.max(top+3,Math.min(bottom-25,yy+(item.above?-36:14)));
+   ctx.fillStyle=item.color;ctx.beginPath();ctx.roundRect(bx-width/2,by,width,22,5);ctx.fill();
+   ctx.fillStyle='#fff';ctx.fillText(label,bx,by+15);ctx.restore();
+  }
+ }
+ // PPT reversal labels: one high-priority label per closed candle.
+ // S+ = CLOSE beyond active opposing Major (main trend flips); C = wick-only
+ // rejection with body inside; B = CISD delivery shift without Major reversal.
+ if(layers.structure&&analysis.advanced){
+  const labels=analysis.advanced.events.filter(ev=>
+    ['major_reversal','mss_weak','cisd'].includes(ev.kind) && ev.at<=current &&
+    ev.at>=first && ev.at<first+count);
+  const oneByCandle=new Map();
+  for(const e of labels){
+   const previous=oneByCandle.get(e.at);
+   if(!previous||(PRIORITY[e.kind]||0)>(PRIORITY[previous.kind]||0))oneByCandle.set(e.at,e);
+  }
+  for(const ev of [...oneByCandle.values()].slice(-8)){
+   const candle=candles[ev.at],x=xAt(ev.at);
+   const upward=ev.data?.direction==='up',strong=ev.kind==='major_reversal';
+   const label=strong?'S+':ev.kind==='mss_weak'?'C':'B';
+   const fill=strong?(upward?'#047760':'#b73c52'):ev.kind==='mss_weak'?'#9a6d2a':'#425ca9';
+   const isBelow=upward,anchorY=yAt(isBelow?candle.low:candle.high);
+   const y=Math.max(top+3,Math.min(bottom-23,anchorY+(isBelow?11:-31)));
+   ctx.save();ctx.fillStyle=fill;ctx.font='bold 11px ui-monospace,monospace';
+   const text=label+(strong?(upward?' ↑':' ↓'):'');
+   const bw=ctx.measureText(text).width+14;
+   ctx.beginPath();ctx.roundRect(x-bw/2,y,bw,22,5);ctx.fill();
+   ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(text,x,y+15);ctx.restore();
+  }
+ }
+ // Connect the live event to its actual historical pivot; this is a visual pulse only.
+ if(tr&&tr.flash&&p<1){
+  const ev=currentEventList()[0];
+  if(ev&&ev.pivotIndex!==null&&ev.pivotIndex!==undefined&&ev.pivotIndex>=first){
+   const focus=analysis.swings.find(s=>s.index===ev.pivotIndex);
+   if(focus){ctx.save();ctx.globalAlpha=(1-k)*.8;ctx.strokeStyle=severity(ev);ctx.lineWidth=2;
+    ctx.shadowColor=severity(ev);ctx.shadowBlur=15;
+    ctx.beginPath();ctx.arc(xAt(focus.index),yAt(focus.price),9+k*22,0,Math.PI*2);ctx.stroke();ctx.restore();}
+  }
+ }
+ const last=candles[current],x=xAt(current),valueY=yAt(last.close),positive=last.close>=last.open,col=positive?'#285c85':'#2c7b3f';
+ ctx.strokeStyle=col;ctx.lineWidth=.9;ctx.setLineDash([4,5]);ctx.beginPath();ctx.moveTo(x+barWidth/2+3,valueY);ctx.lineTo(left+innerW,valueY);ctx.stroke();ctx.setLineDash([]);
+ const pillY=Math.max(top+10,Math.min(bottom-11,valueY));ctx.fillStyle=positive?'#245779':'#2f7b40';ctx.beginPath();ctx.roundRect(left+innerW+3,pillY-12,right-8,24,5);ctx.fill();
+ ctx.textAlign='left';ctx.fillStyle='#ffffff';ctx.font='bold 10px ui-monospace,monospace';ctx.fillText(last.close.toLocaleString('en-US',{maximumFractionDigits:1}),left+innerW+8,pillY+4);
+ if(tr&&tr.flash&&tr.previous!==tr.newest){
+  const xnow=xAt(current),glow=1-k;
+  ctx.strokeStyle='rgba(26,111,87,'+(glow*.55)+')';ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(xnow,yAt(last.close),7+(1-glow)*17,0,Math.PI*2);ctx.stroke();
+ }
+ // Time passes continuously between CLOSED bars. The scan cursor is time-only:
+ // no OHLC from the next candle is revealed until that candle closes.
+ if(playing&&current<candles.length-1){
+  const fraction=Math.max(0,Math.min(1,acc/(1200/speed)));
+  const marker=lerp(xAt(current),xAt(current+1),fraction);
+  ctx.save();ctx.globalAlpha=.65;ctx.strokeStyle='#276a64';ctx.lineWidth=1;
+  ctx.shadowColor='#2e716c';ctx.shadowBlur=9;
+  ctx.beginPath();ctx.moveTo(marker,top);ctx.lineTo(marker,bottom);ctx.stroke();
+  ctx.shadowBlur=0;ctx.fillStyle='#286b63';ctx.beginPath();ctx.arc(marker,bottom+3,2.4,0,Math.PI*2);ctx.fill();ctx.restore();
+ }
+ if(hover!==null&&hover<=current&&hover>=first){const xh=xAt(hover);ctx.setLineDash([3,5]);ctx.strokeStyle='#506b7f';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(xh,top);ctx.lineTo(xh,bottom);ctx.stroke();ctx.setLineDash([]);}
+}
+function tick(now){
+ request=null;if(!lastFrame)lastFrame=now;
+ const dt=Math.min(100,Math.max(0,now-lastFrame));lastFrame=now;
+ if(playing){
+  acc+=dt;const period=1200/speed;
+  let safety=0;
+  while(acc>=period&&current<candles.length-1&&safety++<30){acc-=period;stepTo(current+1,{animate:true,flash:true});}
+  if(current>=candles.length-1){setPlaying(false);}
+ }
+ draw(now);
+ const animating=transition&&now<transition.started+transition.duration;
+ if(playing||animating)schedule();else transition=null;
+}
+function loadDataset(payload, initialIndex=0){
+ const data=payload.candles;
+ if(!Array.isArray(data)||!data.length)throw Error(t('invalidCandles'));
+ for(const c of data){for(const k of ['open','high','low','close']){if(!Number.isFinite(c[k]))throw Error(t('invalidOHLC'));}}
+ stop();candles=data;datasetDetails=payload;datasetId=payload.dataset.id;source=payload.dataset.filename;
+ cache=new Map();current=0;analysis=getAnalysis(0);transition=null;lastFrame=0;feedSignature='';hover=null;
+ $('scrubber').max=String(candles.length-1);$('firstTime').textContent=time(candles[0].time);$('lastTime').textContent=time(candles.at(-1).time);
+ $('canvasTimeframe').textContent=inferFrame()+' / '+t('closed');
+ sourceMetaLine='';
+ $('dataDetails').title=(payload.warnings||[]).join('\n');
+ $('removeData').hidden=!!payload.dataset.builtin;
+ setError('');
+ stepTo(Math.min(initialIndex,candles.length-1),{animate:false});
+}
+async function apiJSON(path,options){
+ const resp=window.MSASOfflineAPI ? await window.MSASOfflineAPI.fetch(path,options) : await fetch(path,options);
+ let body;try{body=await resp.json()}catch(e){throw Error(t('invalidServer'));}
+ if(!resp.ok){const err=new Error(body.error||t('requestFailed'));err.payload=body;throw err;}
+ return body;
+}
+async function syncDatasetList(selectId){
+ const result=await apiJSON('/api/datasets');const selector=$('datasetSelect');
+ const chosen=selectId||selector.value||datasetId;
+ selector.replaceChildren();
+ for(const item of result.datasets){const opt=document.createElement('option');opt.value=item.id;opt.dataset.rawName=item.name;opt.textContent=item.name.replace(/\(mẫu\)/i,lang==='en'?'(sample)':'(mẫu)');selector.appendChild(opt);}
+ selector.value=chosen;
+ return result.datasets;
+}
+async function switchDataset(id,initialIndex=0){
+ stop();setError('');
+ $('datasetSelect').disabled=true;
+ try{
+  const payload=await apiJSON('/api/datasets/'+encodeURIComponent(id));
+  loadDataset(payload,initialIndex);$('datasetSelect').value=id;
+ }catch(err){setError(t('loadFailed',{message:I.serverError(err,lang)}));$('datasetSelect').value=datasetId;}
+ finally{$('datasetSelect').disabled=false;}
+}
+function popupNotice(message,kind='success'){
+ const node=$('importToast');node.textContent=message;node.dataset.kind=kind;node.classList.add('visible');
+ clearTimeout(popupNotice.id);popupNotice.id=setTimeout(()=>node.classList.remove('visible'),6500);
+}
+function mappingDialog(payload){
+ const columns=payload.columns||[];
+ const guessed=payload.suggested||{};
+ const preview=payload.preview||[];
+ const dialog=$('columnDialog');
+ $('mappingReason').textContent=lang==='vi'?(payload.error||t('mappingHint')):t(payload.code==='DATE_ORDER_REQUIRED'?'errorDate':'mappingHint');
+ const fields=['timestamp','open','high','low','close','volume'];
+ for(const field of fields){
+  const select=$('col_'+field);select.replaceChildren();
+  const empty=document.createElement('option');empty.value='';empty.textContent=t(field==='volume'?'noVolume':'chooseColumn');select.appendChild(empty);
+  for(let i=0;i<columns.length;i++){
+   const opt=document.createElement('option');opt.value=String(i);opt.textContent=(i+1)+'. '+(columns[i]||t('unnamedColumn'));select.appendChild(opt);
+  }
+  if(field==='timestamp'&&columns.length>5){
+   for(let i=0;i<Math.min(3,columns.length-1);i++){
+    const opt=document.createElement('option');opt.value=i+'+'+(i+1);opt.textContent=(i+1)+'+'+(i+2)+'. '+t('dateAndTime');select.appendChild(opt);
+   }
+  }
+  if(guessed[field]!==undefined)select.value=String(guessed[field]);
+ }
+ const th=$('columnPreview');th.replaceChildren();
+ const body=document.createElement('tbody');
+ for(const row of preview.slice(0,3)){
+  const tr=document.createElement('tr');for(const cell of row.slice(0,10)){const td=document.createElement('td');td.textContent=String(cell);tr.appendChild(td);}body.appendChild(tr);
+ }
+ th.appendChild(body);
+ if(payload.code==='DATE_ORDER_REQUIRED'){$('dateOrder').value='DMY';}
+ dialog.showModal();
+}
+async function importFile(file, mapping=null, dateOrder='auto'){
+ if(!file)return;
+ $('uploadData').disabled=true;
+ try{
+  const q=new URLSearchParams({filename:file.name, label:file.name.replace(/\.[^.]+$/, ''),date_order:dateOrder});
+  if(mapping)q.set('mapping',JSON.stringify(mapping));
+  const payload=await apiJSON('/api/import?'+q.toString(),{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:file});
+  fileWaiting=null;$('columnDialog').open&&$('columnDialog').close();
+  await syncDatasetList(payload.dataset.id);
+  loadDataset(payload,0);
+  popupNotice(t('imported',{name:file.name,count:payload.meta.rows,volume:t(payload.meta.volume_present?'volumeYes':'volumeNo')}));
+  if(payload.meta.gaps)popupNotice(t('gapsWarning',{count:payload.meta.rows,gaps:payload.meta.gaps}),'warning');
+ }catch(err){
+  if(err.payload&&['NEEDS_MAPPING','DATE_ORDER_REQUIRED'].includes(err.payload.code)){
+   fileWaiting=file;mappingDialog(err.payload);
+  }else{
+   const msg=t('uploadFailed',{name:file.name,message:I.serverError(err,lang)});
+   setError(msg);popupNotice(msg,'error');
+  }
+ }finally{$('uploadData').disabled=false;}
+}
+function updateTooltip(evt){
+ if(hover===null||hover>current){$('tooltip').classList.add('hidden');return;}
+ const c=candles[hover],tip=$('tooltip');
+ tip.innerHTML='<header class="mono">'+escaped(c.time.slice(0,16))+'</header><div class="tip-rows"><span>'+escaped(t('tooltipOpen'))+'</span><b class="mono">'+number(c.open)+'</b><span>'+escaped(t('tooltipHigh'))+'</span><b class="mono">'+number(c.high)+'</b><span>'+escaped(t('tooltipLow'))+'</span><b class="mono">'+number(c.low)+'</b><span>'+escaped(t('tooltipClose'))+'</span><b class="mono">'+number(c.close)+'</b>'+(c.volume===null||c.volume===undefined?'':'<span>'+escaped(t('tooltipVolume'))+'</span><b class="mono">'+number(c.volume)+'</b>')+'</div>';
+ tip.classList.remove('hidden');const r=$('chartBox').getBoundingClientRect();tip.style.left=Math.max(8,Math.min(r.width-194,evt.clientX-r.left+15))+'px';tip.style.top=Math.max(8,Math.min(r.height-205,evt.clientY-r.top-53))+'px';
+}
+$('play').addEventListener('click',()=>{if(playing){stop();return;}if(current>=candles.length-1)stepTo(0,{animate:false});setPlaying(true);});
+$('restart').addEventListener('click',()=>{stop();stepTo(0);});
+$('prev').addEventListener('click',()=>{stop();stepTo(current-1);});
+$('next').addEventListener('click',()=>{stop();stepTo(current+1);});
+$('scrubber').addEventListener('input',e=>{stop();stepTo(Number(e.target.value),{animate:true});});
+$('speed').addEventListener('change',e=>{speed=Number(e.target.value)||1;acc=0;lastFrame=0;if(playing)schedule();});
+for(const [id,property] of [['toggleStructure','structure'],['toggleInside','inside'],['toggleRaw','raw']]){
+ $(id).addEventListener('click',()=>{layers[property]=!layers[property];$(id).setAttribute('aria-pressed',String(layers[property]));schedule();});
+}
+$('events').addEventListener('click',event=>{const row=event.target.closest('[data-candle]');if(!row)return;stop();stepTo(Number(row.dataset.candle),{animate:true,flash:true});});
+$('csvFile').addEventListener('change',evt=>{
+ const file=evt.target.files?.[0];evt.target.value='';if(file)importFile(file);
+});
+$('uploadData').addEventListener('click',()=>$('csvFile').click());
+$('datasetSelect').addEventListener('change',e=>switchDataset(e.target.value));
+$('removeData').addEventListener('click',async()=>{
+ if(!datasetId||datasetId.endsWith('-sample'))return;
+ if(!window.confirm(t('confirmRemove')))return;
+ try{await apiJSON('/api/datasets/'+encodeURIComponent(datasetId),{method:'DELETE'});await syncDatasetList('btcusd-sample');await switchDataset('btcusd-sample',15);popupNotice(t('importRemoved'));}
+ catch(err){setError(err.message);}
+});
+// Share a point-in-time, closed-candle analysis report. No future candle data.
+$('exportAudit').addEventListener('click',()=>{
+ if(!candles.length||!analysis)return;
+ const a=analysis.advanced,info={
+  format:'msas-replay-snapshot-v2', analysis_version:'market_structure_advanced_v1_2',
+  exported_at:new Date().toISOString(), offline:!!window.MSASOfflineAPI, market_data_source:source,
+  dataset:datasetDetails?.dataset||null, metadata:datasetDetails?.meta||null,
+  warnings:datasetDetails?.warnings||[], last_closed_index:current,
+  last_closed_time:candles[current].time,
+  candles:candles.slice(0,current+1),
+  main:a.external, internal:a.internal, mss:a.mss, cisd:a.cisd, roleChanges:a.roleChanges,
+  acceptedSwings:analysis.confirmed,events:analysis.events,
+  policy:{source:'ADV S3-14 + REV S3-8',majorSelection:'provisional',mssTolerance:0,noLookahead:true},
+  note:'Replay pattern assessment. No financial advice; Main/Internal rules are provisional.'
+ };
+ const blob=new Blob([JSON.stringify(info,null,2)],{type:'application/json;charset=utf-8'});
+ const url=URL.createObjectURL(blob);const link=document.createElement('a');
+ link.href=url;link.download='MSAS_'+String(datasetId).replace(/[^a-z0-9_-]/gi,'_')+'_bar'+(current+1)+'.json';
+ document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+ popupNotice(t('exportDone'));
+});
+$('helpData').addEventListener('click',()=>{$('helpDialog').showModal();});
+$('closeHelp').addEventListener('click',()=>{$('helpDialog').close();});
+$('cancelMap').addEventListener('click',()=>{$('columnDialog').close();fileWaiting=null;});
+$('mappingForm').addEventListener('submit',event=>{
+ event.preventDefault();
+ const mapping={};for(const field of ['timestamp','open','high','low','close','volume']){const value=$('col_'+field).value;if(value)mapping[field]=value;}
+ if(['timestamp','open','high','low','close'].some(k=>mapping[k]===undefined)){ $('mappingReason').textContent=t('mappingMissing');return; }
+ $('columnDialog').close();if(fileWaiting)importFile(fileWaiting,mapping,$('dateOrder').value);
+});
+const chartBox=$('chartBox');
+chartBox.addEventListener('dragover',evt=>{if([...evt.dataTransfer?.types||[]].includes('Files')){evt.preventDefault();chartBox.classList.add('dropping');}});
+chartBox.addEventListener('dragleave',()=>chartBox.classList.remove('dropping'));
+chartBox.addEventListener('drop',evt=>{evt.preventDefault();chartBox.classList.remove('dropping');const file=evt.dataTransfer?.files?.[0];if(file)importFile(file);});
+$('chart').addEventListener('mousemove',evt=>{
+ if(!geo)return;const r=$('chart').getBoundingClientRect(),idx=Math.floor((evt.clientX-r.left-geo.left)/geo.step)+geo.first;
+ hover=idx<geo.first||idx>current||idx>=geo.first+geo.count?null:idx;
+ if(hover===null)$('tooltip').classList.add('hidden');else updateTooltip(evt);
+ updateTop();schedule();
+});
+$('chart').addEventListener('mouseleave',()=>{hover=null;$('tooltip').classList.add('hidden');updateTop();schedule();});
+$('chart').addEventListener('click',evt=>{if(!geo)return;const r=$('chart').getBoundingClientRect();stop();stepTo(Math.floor((evt.clientX-r.left-geo.left)/geo.step)+geo.first);});
+window.addEventListener('resize',schedule);
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)stop();});
+document.addEventListener('keydown',evt=>{
+ if(['INPUT','TEXTAREA','SELECT','BUTTON'].includes(document.activeElement?.tagName))return;
+ if(evt.key==='ArrowLeft'){evt.preventDefault();stop();stepTo(current-1);}else if(evt.key==='ArrowRight'){evt.preventDefault();stop();stepTo(current+1);}else if(evt.key===' '){evt.preventDefault();$('play').click();}else if(evt.key.toLowerCase()==='u'&&!evt.ctrlKey&&!evt.metaKey){$('csvFile').click();}
+});
+$('languageSelect').addEventListener('change',e=>setLanguage(e.target.value));
+refreshStaticLocale();
+(async()=>{
+ try{await syncDatasetList('btcusd-sample');await switchDataset('btcusd-sample',15);}catch(err){setError(t('serverUnavailable',{message:I.serverError(err,lang)}));}
+})();
+})();
+
+
+</script></body>
+</html>

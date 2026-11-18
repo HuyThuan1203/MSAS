@@ -11,3 +11,6 @@ Read `.claude/skills/msas-engineering/SKILL.md` before implementing market struc
 - **Public repo safety:** never include raw confidential files, credentials, local artifacts, or source PPT binaries without explicit authorization. Keep repository scope only.
 
 - **V5.1 active Major selection:** consult `docs/advanced/MAJOR_PIVOT_SELECTION.md`. Do not promote a weaker, more recent SH in place of a stronger confirmed candidate after a Close breakout. Validate exact pivot index/time and active Major/Internal status at every replay prefix. This policy remains provisional without user-labeled OHLC ground truth.
+
+- **V5.2 MSS/CISD:** Read `docs/advanced/MSS_CISD_RULEBOOK.md` and the user's reversal PPT slides 3-8 before editing reversal labels. `S+` uses strict Close vs active opposing MH/ML (zero tolerance) and flips Main immediately. Wick-only `C` and delivery change `B` are NOT Major reversals. Only closed bars; do not backdate events.
+- **Review:** Test two directions, multiple same-direction clusters, equality, no-lookahead, all four approved datasets, EN/VI chart labels, high-level notifications, Windows checkout and Docker CI.

@@ -135,3 +135,10 @@ button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8
 .snapshot-pivots b{font-size:10px;color:#e0eff4;font-weight:620;line-height:1.5;overflow-wrap:anywhere}
 @media(max-width:840px){.structure-strip{padding:8px 12px}.structure-pivots{margin-left:0}}
 @media(max-width:550px){.structure-statusbar{grid-template-columns:1fr}.structure-strip{padding:7px 11px}.structure-pivots{margin-left:auto}}
+
+/* Standalone help modal: compact, no extra dashboard panels. */
+.help-body{padding:0 22px 10px;color:#c4d8e2;font-size:13px;line-height:1.6;display:flex;flex-direction:column;gap:10px}
+.help-body pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1c25;border:1px solid #345063;color:#c9f3e5;padding:12px;border-radius:7px;font-size:11px;line-height:1.6}
+#exportAudit{padding:0 10px}
+#helpData{width:31px;height:29px;flex:0 0 auto;font-weight:900;justify-content:center}
+@media(max-width:550px){#exportAudit{font-size:10px;padding:0 8px}}
