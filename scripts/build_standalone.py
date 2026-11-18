@@ -24,6 +24,11 @@ JS=['chart-theme.js','i18n.js','engine.js','advanced_engine.js','studio.js']
 
 def build() -> str:
     content=(ROOT/'static/index.html').read_text(encoding='utf8')
+    version=(ROOT/'VERSION').read_text(encoding='utf8').strip()
+    # Gives recipients a verifiable build identity when multiple offline HTML
+    # versions are exchanged. No external CDN/runtime dependency is added.
+    assert '<head>' in content
+    content=content.replace('<head>', '<head>\n<meta name="msas-version" content="'+version+'"/>',1)
     style=(ROOT/'static/studio.css').read_text(encoding='utf8')
     tag='<link href="/studio.css" rel="stylesheet"/>'
     if content.count(tag)!=1:raise RuntimeError('Expected one local stylesheet link')

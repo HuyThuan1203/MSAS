@@ -40,4 +40,9 @@ Read `docs/advanced/MSS_CISD_RULEBOOK.md` for user-defined REV slides 3-8. Use o
 
 ## Reproducible randomized QA
 
-Run `python scripts/qa_gate.py --stress --require-node` before promoting market-structure changes. Review `qa-artifacts/stress-dashboard.html`, failures/seeds, independent strict Close and wick oracles, and `policyGaps` which are unresolved, not PASS. The weekly GitHub job executes two seeds and publishes artifacts. Long QA videos are rendered only when explicitly dispatched.
+Run `python scripts/qa_gate.py --stress --require-node` before promoting market-structure changes. Review `qa-artifacts/stress-dashboard.html`, failures/seeds, independent strict Close and wick oracles, and the `policyGaps.alreadyOutsideAfterRoleAssignment` count which V5.4 treats as a **covered Close-only regression**, not an unresolved gap. Competing Major pivots still require human review. The weekly GitHub job executes two seeds and publishes artifacts. Long QA videos are rendered only when explicitly dispatched.
+
+
+## V5.4 pinned corrective examples
+
+Read `docs/advanced/MAJOR_PIVOT_SELECTION.md`. In XAU40 at 21:00 the post-break Major rolls from 4013.4/3995.8 to 4001.5/3991.1 once lower LH/LL are confirmed. In user-annotated XAU48 the latest MH/ML remain 3396.648/3373.545. A Close outside the currently active opposing Major triggers S+ immediately with tol=0, even if previous Close was outside that newly active threshold. Preserve separately the confirmation time and the pivot's original index. Render MSS S+, MSS C, CISD B on the candles, including coincident B+C. Require all regression gates and HTML byte-for-byte CI reproduction.

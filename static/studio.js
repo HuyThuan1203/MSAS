@@ -162,6 +162,17 @@ function updateTop(){
 }
 function updateFeed(animate){
  const atNow=currentEventList(),lead=atNow[0]||null;
+ // Important signals are also announced INSIDE the chart, even if the
+ // notification history is filtered. Only closed-bar events are eligible.
+ const onChart=atNow.filter(ev=>['major_reversal','mss_weak','cisd'].includes(ev.kind));
+ const banner=$('chartSignal');
+ if(onChart.length){
+  banner.classList.remove('hidden');banner.dataset.kind=onChart[0].kind;
+  banner.textContent=onChart.map(ev=>{
+   const tag=ev.kind==='major_reversal'?'MSS S+':ev.kind==='mss_weak'?'MSS C':'CISD B';
+   return tag+' · '+eventText(ev).title;
+  }).join('  /  ');
+ }else{banner.classList.add('hidden');banner.textContent='';banner.dataset.kind='none';}
  const her=$('hero');
  const key=(lead?lead.kind+'|'+lead.title:'none')+'|'+current;
  if(key!==feedSignature){
@@ -322,30 +333,35 @@ function draw(now=performance.now()){
    ctx.fillStyle='#fff';ctx.fillText(label,bx,by+15);ctx.restore();
   }
  }
- // PPT reversal labels: one high-priority label per closed candle.
- // S+ = CLOSE beyond active opposing Major (main trend flips); C = wick-only
- // rejection with body inside; B = CISD delivery shift without Major reversal.
- if(layers.structure&&analysis.advanced){
-  const labels=analysis.advanced.events.filter(ev=>
+ // MSS / CISD are shown ON the chart at the triggering CLOSED candle.
+ // Preserve both C and B if they occur together, instead of dropping one.
+ if(analysis.advanced){
+  const events=analysis.advanced.events.filter(ev=>
     ['major_reversal','mss_weak','cisd'].includes(ev.kind) && ev.at<=current &&
     ev.at>=first && ev.at<first+count);
-  const oneByCandle=new Map();
-  for(const e of labels){
-   const previous=oneByCandle.get(e.at);
-   if(!previous||(PRIORITY[e.kind]||0)>(PRIORITY[previous.kind]||0))oneByCandle.set(e.at,e);
-  }
-  for(const ev of [...oneByCandle.values()].slice(-8)){
+  const occupied=[];
+  for(const ev of events.slice(-14)){
    const candle=candles[ev.at],x=xAt(ev.at);
    const upward=ev.data?.direction==='up',strong=ev.kind==='major_reversal';
-   const label=strong?'S+':ev.kind==='mss_weak'?'C':'B';
+   const label=strong?'MSS S+':ev.kind==='mss_weak'?'MSS C':'CISD B';
    const fill=strong?(upward?'#047760':'#b73c52'):ev.kind==='mss_weak'?'#9a6d2a':'#425ca9';
    const isBelow=upward,anchorY=yAt(isBelow?candle.low:candle.high);
-   const y=Math.max(top+3,Math.min(bottom-23,anchorY+(isBelow?11:-31)));
-   ctx.save();ctx.fillStyle=fill;ctx.font='bold 11px ui-monospace,monospace';
-   const text=label+(strong?(upward?' ↑':' ↓'):'');
-   const bw=ctx.measureText(text).width+14;
-   ctx.beginPath();ctx.roundRect(x-bw/2,y,bw,22,5);ctx.fill();
-   ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(text,x,y+15);ctx.restore();
+   ctx.save();ctx.font='bold 10px ui-monospace,monospace';
+   const display=label+(strong?(upward?' ↑':' ↓'):'');
+   const bw=ctx.measureText(display).width+14;
+   const bx=Math.max(left+bw/2,Math.min(left+innerW-bw/2,x));
+   let y=Math.max(top+4,Math.min(bottom-26,anchorY+(isBelow?12:-33)));
+   // Resolve collisions deterministically without changing the candle anchor.
+   for(let k=0;k<8;k++){
+    if(!occupied.some(r=>bx-bw/2<r.x+r.w+3&&bx+bw/2>r.x-3&&y<r.y+r.h+3&&y+22>r.y-3))break;
+    y=Math.max(top+4,Math.min(bottom-26,y+(isBelow?-27:27)));
+   }
+   occupied.push({x:bx-bw/2,y,w:bw,h:22});
+   ctx.fillStyle=fill;ctx.beginPath();ctx.roundRect(bx-bw/2,y,bw,22,5);ctx.fill();
+   ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(display,bx,y+15);
+   ctx.strokeStyle=fill;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y+(isBelow?0:22));
+   ctx.lineTo(x,Math.max(top,Math.min(bottom,anchorY)));ctx.stroke();
+   ctx.restore();
   }
  }
  // Connect the live event to its actual historical pivot; this is a visual pulse only.
@@ -513,7 +529,7 @@ $('removeData').addEventListener('click',async()=>{
 $('exportAudit').addEventListener('click',()=>{
  if(!candles.length||!analysis)return;
  const a=analysis.advanced,info={
-  format:'msas-replay-snapshot-v2', analysis_version:'market_structure_advanced_v1_2',
+  format:'msas-replay-snapshot-v2', analysis_version:'market_structure_advanced_v1_3',
   exported_at:new Date().toISOString(), offline:!!window.MSASOfflineAPI, market_data_source:source,
   dataset:datasetDetails?.dataset||null, metadata:datasetDetails?.meta||null,
   warnings:datasetDetails?.warnings||[], last_closed_index:current,

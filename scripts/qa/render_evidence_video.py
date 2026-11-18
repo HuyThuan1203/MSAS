@@ -128,11 +128,11 @@ def scenes(report):
             'Import random CSV and replay by closed candle',
             'Check EN/VI, concise notifications and levels',
             'Real Chromium screenshots + short screen recording'],image='07-random-csv-imported.png',source='Browser evidence JSON records the observed UI state'),
-        dict(title='10  /  Important REVIEW findings',subtitle='An automated PASS is NOT proof that every rule is defined',points=[
-            f'{gaps:,} observations outside newly assigned Major boundaries',
-            'No definitive PPT rule for already-outside previous Close',
+        dict(title='10  /  Covered Close edge and remaining REVIEW',subtitle='An automated PASS is NOT proof that every rule is defined',points=[
+            f'{gaps:,} already-outside Close cases now exercised by strict S+ oracle',
+            'No artificial second crossing required for confirmed MSS',
             'Major candidate ties and nested waves remain provisional',
-            'We keep the user-approved XAU pivots unchanged'],image='06-language-vi.png',source='Unresolved policy explicitly reported, not marked as passed'),
+            'User-reviewed XAU pivots and XAU40 rolling regression are guarded'],image='06-language-vi.png',source='Close rule tested; competing pivot tie-break remains provisional'),
         dict(title='11  /  Reproduce, CI and handoff',subtitle='One command, machine-readable evidence and video proof',points=[
             'Run: python scripts/qa_gate.py --stress --require-node',
             'GitHub Actions: Python, Node, Windows, browser, Docker',
@@ -153,7 +153,7 @@ def narrations(report):
         f'Kiểm tra trọng yếu tiếp theo là tránh nhìn trước. Hệ thống được chạy với toàn bộ lịch sử và chạy lặp lại ở nhiều điểm cắt của chuỗi. Sự kiện nào chưa được biết tại nến hiện tại thì không được xuất hiện sớm. Thời điểm công nhận swing phải sau khi nến bên phải đã đóng. Chúng tôi cũng kiểm tra tính toàn vẹn OHLC, dấu thời gian trùng, cột viết hoa viết thường, dữ liệu thiếu Volume và các file có nội dung sai. Tổng cộng ghi nhận {ass} phép kiểm tra trong đợt stress này.',
         'Đây là ví dụ XAUUSD mà người dùng đã đánh dấu trực tiếp trên đồ thị. Bộ dữ liệu có bốn mươi tám nến M mười lăm. Tại nến cuối, cấu trúc chính tăng và cấu trúc phụ tăng. Major High nằm ở ba nghìn ba trăm chín mươi sáu phẩy sáu bốn tám, lúc mười bốn giờ ba mươi UTC. Major Low nằm ở ba nghìn ba trăm bảy mươi ba phẩy năm bốn năm, lúc mười lăm giờ mười lăm UTC. Kiểm thử trình duyệt xác nhận nhãn và đường mức giá tại đúng swing.',
         'Chúng tôi tiếp tục kiểm tra trên trình duyệt Chromium thực tế. Giao diện dùng một file HTML độc lập không kết nối mạng. Người thử có thể mở file, chọn tiếng Anh hoặc tiếng Việt, nhập file CSV mới và tua theo từng nến. Trong bài kiểm thử, một bộ dữ liệu inside bar ngẫu nhiên đã được nạp vào, và trạng thái Major cũng như Internal được hiển thị ở từng mốc. Không có lỗi JavaScript và không xuất hiện yêu cầu mạng nào trong phiên kiểm tra offline này.',
-        f'Điểm quan trọng nhất của báo cáo là không đánh đồng kiểm thử thành công với mô hình đã được chứng thực tuyệt đối. Có {g} lượt quan sát mà giá đã nằm ngoài một ngưỡng Major vừa có hiệu lực, nhưng chưa tạo một giao cắt giá đóng cửa mới từ phía trong. Tài liệu hiện chưa mô tả đủ cách xử lý khi mốc Major thay đổi mà nến trước đã nằm ngoài ngưỡng. Tình huống đó được đánh dấu cần xem xét. Chúng tôi không tự ý sửa thuật toán vì có thể làm sai các mốc XAUUSD mà người dùng đã nghiệm thu.',
+        f'Điểm quan trọng nhất là phân biệt quy tắc giá đóng cửa với cách ghép đỉnh đáy quan trọng. Có {g} trường hợp giá đóng đã ở ngoài mốc Major đang có hiệu lực nhưng không tạo giao cắt mới từ phía trong. Phiên bản năm chấm bốn đã bổ sung phép kiểm tra độc lập: giá đóng vượt Major đối ứng với sai số bằng không phải tạo tín hiệu S cộng, không đòi một lần giao cắt thứ hai. Riêng lựa chọn cặp Major giữa nhiều swing ứng viên vẫn là chính sách tạm thời, và được kiểm tra chéo với hai bộ dữ liệu XAU đã được chú thích.',
         'Để tái lập, chạy lệnh python scripts trên qa gate với tham số stress, require node và seed mặc định. Kết quả tạo file JSON, bảng HTML có thể lọc, bảng CSV từng ca, hình chụp trình duyệt và video chứng cứ. GitHub Actions tiếp tục kiểm tra Python, Node, định dạng dữ liệu trên Windows, giao diện Chromium và Docker build. Có thêm bài stress ngẫu nhiên cho các lần push và kiểm tra định kỳ. Video này được dựng từ các báo cáo chạy thật và hình chụp tự động, không phải bản trình diễn tưởng tượng. Các chính sách chưa rõ cần tiếp tục gắn nhãn và xác nhận theo PPT.'
     ]
 

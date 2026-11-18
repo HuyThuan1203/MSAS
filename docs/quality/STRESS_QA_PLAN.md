@@ -10,14 +10,14 @@
 | **Model invariants** | Event at valid CLOSED bar, confirmed pivots not future, no future events/role changes, strict OHLC validation | Recompute every sampled prefix independently and compare to full-history prefix | PASS means causal consistency, not market accuracy |
 | **User-annotated** | XAUUSD 48-bar final MH SH34 3396.648 / ML SL37 3373.545; Main UP/Internal UP | Original screenshot + `tests/test_major_selection.js` and Chromium | PASS for **this** labeled sample only |
 | **Provisional implementation** | Competing Major pivot selection; protected Internal and multi-wave split; Open-inside condition for C | Consistency / mutation regressions, not an authoritative PPT oracle | **REVIEW**, even when tests don't fail |
-| **Source not given** | Exact OHLC for PPT diagram 1–14, nested waves, historical tick buffers, fresh-Major prior-close-already-outside behavior | No matching human-labeled candles | **NOT VERIFIED**; do not claim PASS |
+| **Source not given** | Exact OHLC for PPT diagram 1–14, nested waves, historical tick buffers, competing nested Major wave thresholds | No matching human-labeled candles | **NOT VERIFIED**; do not claim PASS |
 
 ## 2. Data generation and replay
 
 - `scripts/qa/stress_qa.js`: self-contained Node.js Xorshift32 generator. Seed and scenario ID determine the **same CSV candles** on Windows, Linux and CI. Uses 4-decimal synthetic OHLC, 15-minute UTC timestamps and `Volume:null`. Each candle satisfies `low <= min(open,close) <= max(open,close) <= high`; never fills missing real candles.
 - 12 regimes, balanced by index: `up`, `down`, `range`, `volatile`, `whipsaw`, `inside`, `spike`, `gaps` (price gaps, not missing timestamps), `plateau`, `reversal`, `squeeze`, `mixed`.
 - Default: **360 scenarios × 128 candles = 46,080 synthetic OHLC** (plus **960 source-oracle trials** for S+/C/B, mirrored directions, equality and multi-cluster reference).
-- Mandatory `assert` checks from source rules: confirmed Swing timing and strict neighbors; Close S+ vs opposing Major (with prior inside-to-outside crossing); C wick and Close inside; B Close through the first Open of last same-direction cluster; forward-only timeline; no lookahead of events/roles and dynamic Major/Internal levels; no fabricated pending Major pivot.
+- Mandatory `assert` checks from source rules: confirmed Swing timing and strict neighbors; Close S+ vs opposing Major (prior candle position NOT required); C wick and Close inside; B Close through the first Open of last same-direction cluster; forward-only timeline; no lookahead of events/roles and dynamic Major/Internal levels; no fabricated pending Major pivot.
 - `tests/test_random_import_contract.py`: 96 valid varied CSV inputs (uppercase/lowercase, reordered columns, absent/empty Volume) and 72 invalid price/timestamp cases. `tests/test_generated_fixture_manifest.py`: SHA-256 and importer checks on 24 deterministic CSV fixtures, two per regime.
 - `fixtures/generated/manifest.json` tags **every file** `is_synthetic:true`, stores per-file source hash, base seed and source generator. This is *not* a gold-labeled trend benchmark.
 - `scripts/qa/report_stress.py`: self-contained HTML report, CSV per-case ledger, Markdown summary. `stress-report.json` stores all seeds/conditions, counter totals, per-case states, source vs provisional caveats and representative unresolved case IDs.
@@ -34,7 +34,15 @@
 | Presentation | Chromium desktop/mobile: theme, EN/VI, dynamic Major status, S+/C/B on chart, CSV upload, offline HTML has no HTTP request |
 | Delivery | Linux Python 3.10/3.12, Node source + stress, Windows `autocrlf` provenance, Chromium, Docker build and health all pass CI before claiming green release |
 
-`policyGaps.alreadyOutsideAfterRoleAssignment` counts observations where price is outside a currently active Major but *did not newly cross from the inner side* because the prior candle was already outside. ADV/REV slides say **Close breaks a Major**, but do not resolve whether simply remaining outside a newly assigned boundary triggers a fresh S+. These observations are recorded as **policy review**, not PASS, and no source-backed auto-correction is made. A careless `Close > Major` rewrite here changed user-reviewed XAU final Major Low; this is intentionally prohibited until the user adjudicates with labeled candle examples.
+`policyGaps.alreadyOutsideAfterRoleAssignment` is retained in the JSON for backwards
+compatibility with old QA tooling, but in V5.4 these cases are **covered
+regressions**, not unresolved policy gaps: the independent oracle asserts the
+current CLOSED price strictly beyond the active opposing Major produces S+.
+The historical crossing-only guard missed these situations; the corrected
+engine no longer requires a second crossing. This is separate from the
+**still-provisional** pairing of the next Major from competing confirmed swings.
+See `tests/test_major_rolling_reversal.js` for the user-supplied XAU40/48
+replay checkpoints and source-guided no-lookahead contract.
 
 ## 4. One-command local and CI
 

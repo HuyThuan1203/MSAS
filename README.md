@@ -110,7 +110,7 @@ The Major selection policy from V5.1 and the precise wave-boundary tie-break
 for CISD remain **provisional**. They have reproducible tests, not universal
 financial-market certification. The two 48-candle CSVs are price examples,
 **not human-labeled trading decisions**. Canonical datasets and raw hashes are
-unchanged; the analysis/audit version is `market_structure_advanced_v1_2`.
+unchanged; the analysis/audit version is `market_structure_advanced_v1_3`.
 
 ### One-file offline demo — no Docker, Python or network needed by the recipient
 
@@ -209,3 +209,19 @@ GitHub Actions checks Python 3.10/3.12, Node-based source/advanced/theme/EN-VI t
 ### Source and data boundaries
 
 The repository includes the two user-supplied 48-bar UTC sample files, their exact canonical output, importer edge-case fixtures, and versioned engine audits. Original PowerPoint files and preview screenshots are **not** published: redistributing the source decks requires separate authorization. Rule traceability is available in `docs/advanced/SOURCE_TRACEABILITY.md`. Market-structure classifications beyond closed-candle local pivots use **provisional** policies and are not trading instructions.
+
+
+## V5.4: rolling Major correction and MSS/CISD on-chart alerts
+
+- For XAUUSD 40-candle sample at index 24 (25/40, 21:00 UTC), the
+  **CLOSED-price verified** structure is Main DOWN, MH 4001.50 (SH-14),
+  ML 3991.10 (SL-17). New Major roles are assigned no earlier than each
+  source swing's structural confirmation.
+- Confirmed MSS S+ now uses **Close vs the currently active opposing Major**
+  with tolerance zero; C (wick only) and B (delivery warning) never flip Main.
+- The chart renders explicit **MSS S+**, **MSS C**, **CISD B** tags on the
+  actual closed candles, retaining both C+B on the same candle. A compact
+  in-chart signal notice appears on the triggering candle only.
+- Validated against 40/48 bar XAU regressions, PPT synthetic inversion,
+  360-case seeded random stress, EN/VI and Chromium desktop/mobile.
+- See `docs/advanced/MSS_CISD_RULEBOOK.md` for source-vs-interpretation.

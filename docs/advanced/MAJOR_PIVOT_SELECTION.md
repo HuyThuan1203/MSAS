@@ -1,41 +1,44 @@
-# Major High / Major Low selection — V5.1 review ledger
+# MSAS V5.4 — Closed-price Major rolling and structure checkpoints
 
-**Status: IMPLEMENTATION POLICY (provisional).** Source references: advanced PPT slides 5, 7, 11, 13 and 14. This is a market-structure study, not a trading strategy.
+**Sources:** `Cau_truc_nang_cao_-_Final.pptx`, slides 5–7, 11, 13–14; `Mau_hinh_xac_nhan_ao_chieu_-_Final (1).pptx`, slides 2–4 and 8. The source PPTs are user-provided but are not published in this public repository. **Scope:** replay and pattern classification; NOT an entry/exit signal.
 
-## Rules explicitly established by PPT
+## What the slides explicitly require (S)
 
-1. Use accepted alternating SH/SL to establish Major structure: HH+HL means Main UP; LH+LL means Main DOWN. Do not confuse local vs main trend.
-2. In an UP Major, keep MH/ML as the effective structural thresholds while Internal waves fluctuate inside. A Close past Major High means Main continuation; a Close past Major Low means Main reversal. Down Major is symmetrical.
-3. Major roles change **only when justified**. Slide 11 replaces 4/3 by 10/9; slide 13 replaces 4/3 by 14/13 after a confirmed breakthrough. A reversal from UP to DOWN keeps 14 as Major High and leaves the new Major Low unformed (`null`).
-4. Break of an Inside Bar mother range uses wick High/Low; break of Major structure uses **Close**. Never backdate knowledge before the confirming candle closes.
+1. Local SH/SL are produced from *three CLOSED candles*. A pivot is not knowable on its center candle and cannot become structural until its eligibility is confirmed.
+2. Main/External and Internal directions are distinct. Major High/Low must be updated as validated structure changes; they are NOT static levels and not necessarily the most recent two local swings.
+3. A main reversal MSS **S+** is confirmed on the **current** closed candle when `Close > active Major High` in Main DOWN, or `Close < active Major Low` in Main UP. Tolerance is exactly **0**; equality does not cross. The previous candle's Close is not an extra condition from the slides.
+4. A wick-only excursion **C** leaves Main unchanged; CISD **B** is a delivery early-warning and does not change Main.
+5. On an S+ reversal, retain the opposing Major point and mark the newly needed Major as **not confirmed**. Do not invent a new pivot on the break candle.
 
-## V5.1 correction: strongest eligible extreme in a close-breaking wave
+## Deterministic implementation (I, provisional where the slides are incomplete)
 
-Previous V5: after a Close crossed the old Major boundary, the first *newly confirmed* swing was selected as Major. This could ignore a more extreme previously confirmed swing in the same move and **move Major High lower**.
+- Read the *active* Major before a candle is processed. Evaluate the current Close against the opposing boundary first. This prevents a newly assigned boundary whose previous Close was already outside from suppressing an S+.
+- Once a same-direction Close extension has been observed **since the current pair became effective**, a new Major pair may be promoted only after eligible **structurally confirmed** SH/SL candidates are known. Do not require a second artificial crossing of the old Major if a Close has already established the extension.
+- For Main DOWN, prefer a new **lower SL** and the latest eligible **lower SH** preceding that low. A wick higher than the protected Major High cannot replace it as a bearish Lower High.
+- For Main UP, a new **higher SH** and an eligible **corrective SL** following it may replace the current bounds. This is required by the user's XAUUSD 48-bar annotated example. Other valid pairing candidates and multiple nested degrees remain an unresolved policy.
+- Only append role changes at actual structural confirmation; record the earlier original pivot time separately. The chart may anchor the label at that earlier candle *after the role becomes known*, never in the preceding replay prefix.
+- The original three-bar/Inside-Bar implementation in `static/engine.js` remains unchanged. The rules above live only in `static/advanced_engine.js`, with source/assumption trace in `docs/advanced/MSS_CISD_RULEBOOK.md`.
 
-V5.1: on/after a Close break, scan eligible, structurally confirmed pivots in the current move (after prior Major or after the reversal trigger); choose the highest SH for an UP breakout or lowest SL for a DOWN breakout. If multiple prices tie, prefer the earlier pivot index. If the new extreme was confirmed before the breakout, pair it with the strongest confirmed corrective opposite pivot formed after the extreme and before the breakout; otherwise pair with the latest preceding accepted opposite pivot. The Major role is assigned at the actual later closed candle (`at`); its historical pivot (`index`) remains unchanged. This policy extends the qualitative slides to numerical CSV and remains **provisional**.
+## Repeatable evidence: the user-reported failure and protected baseline
 
-### Reproducible observed example: XAUUSD M15, 2025-06-18
+| Case | Closed replay index | Main | Active MH | Active ML | First knowable update |
+|---|---:|---|---|---|---|
+| XAU40 prior pair | 15 (18:45 UTC) | DOWN | SH-9, 4013.40 | SL-12, 3995.80 | index 15 |
+| **XAU40 corrected pair** | **19 (19:45 UTC)** | **DOWN** | **SH-14, 4001.50** | **SL-17, 3991.10** | **index 19**, after structural SL-17 accepted |
+| **XAU40 user screenshot** | **24 (21:00 UTC; 25/40)** | **DOWN** | **4001.50** | **3991.10** | no later valid CLOSE-confirmed roll by index 24 |
+| XAU48 protected user annotation | 40 (16:00 UTC) | UP | SH-34, 3396.648 | SL-37, 3373.545 | index 40, after SL-37 structural confirmation |
+| XAU48 final | 47 (17:45 UTC) | UP | 3396.648 | 3373.545 | unchanged from index 40 |
 
-- Before bar 43 (16:45 UTC), the provisional engine's current Major pair is `SH-30 @ 3389.645` / `SL-27 @ 3378.745`.
-- Bar 43 CLOSE = `3392.535`, strictly above previous Major High `3389.645`: Main UP continuation.
-- `SH-34 @ 3396.648` (14:30 UTC) is already confirmed by bar 38, higher than old Major High. It is stronger than the subsequent `SH-44 @ 3394.498`.
-- The selected confirmed corrective opposite pivot is `SL-37 @ 3373.545` (15:15 UTC), the corrective low after SH34 before breakout. Both MH and ML are displayed in the snapshot and anchored on the chart, with role assignment at bar 43, not retrospectively at 34/37.
-- At bar 47 Main = UP and Internal = UP (as identified at bar 46) with the confirmed base inputs used here. Unknown is **not** sideways.
+At XAU40 index 24 there is another eligible local SL at 3991.00, but the current Close is 3991.30, which is not below the active 3991.10 Major Low. A low wick alone is not the same as close-confirmed continuation.
 
-### BTCUSD M15, 2025-06-18
+These are **engine outputs checked against the screenshots and numeric CSVs**. The user's annotated XAU48 MH/ML pair is user-confirmed; the exact XAU40 replacement pair is a deterministic *implementation interpretation* of the screenshot's request to roll the bounds, and remains open for user sign-off.
 
-- At final bar 47: Main UP, Major High `SH-33 @ 105348.75` (14:15 UTC), Major Low `SL-30 @ 103837.75` (13:30 UTC). Internal UNKNOWN; local internal SH/SL still shown as available.
+## Acceptance gates
 
-## Known unresolved policy questions
+- `node tests/test_major_rolling_reversal.js` (XAU40/48, zero tolerance, reversal both ways, all 88 causal prefixes).
+- `node tests/test_major_selection.js` (user-reviewed XAU48 pivot IDs and times).
+- `node tests/test_mss_cisd.js` (source-defined S+/C/B behavior).
+- `python scripts/qa_gate.py --stress --require-node` and `python scripts/offline_smoke.py` (Chromium; preserves all chart labels and EN/VI).
+- CI checks `dist/MSAS_Standalone_Offline.html` is *regenerated byte-for-byte* from its canonical modules so users don't receive stale standalone builds.
 
-- A synthetic PPT illustration is not OHLC ground truth. Exact screenshot-marked pivot candle indexes were not exported as certified labels. The above is a source-informed candidate; **do not claim an exact match to user-drawn marks until those indexes/prices are checked independently**.
-- The PPT does not say whether a candidate preceding opposite pivot that was transiently close-broken before promotion should be disqualified. That case must be labeled and explicitly decided before final model acceptance.
-- The same policy has not been benchmarked on long histories, nested structures, or exchange-specific session rules; do not infer that 48-bar acceptance proves production readiness.
-- A new accepted same-kind pivot that is a weaker high/lower low is Internal/history rather than automatically rolling the Major label.
-
-## Test cases
-
-- `node tests/test_major_selection.js` checks sample regression, role timestamps, both source decks' synthetic 1–14 sequence and full-prefix determinism.
-- `node tests/test_advanced_structure.js` checks current slide-13 fixtures and mirrored reversal.
-- `python scripts/qa_gate.py --require-node`, GitHub Playwright E2E and Docker health gates must pass before merging into main.
+**Not certified:** uniqueness of Major selection among complex competing pivots, multi-degree Internal nested structures, or quantitative pattern accuracy on markets without independently labeled truth.

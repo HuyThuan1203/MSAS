@@ -100,9 +100,10 @@ function checkCase(x){
     p.price===c.low&&c.low<bars[p.index-1].low&&c.low<bars[p.index+1].low,'3-bar strict neighbor comparator');
  }
  for(const e of full.events){check(e.at>=0&&e.at<n,'event candle exists');refCheckEvent(e,bars[e.at]);}
- // Independent crossing oracle for a STRONG MSS. The source states Close must
- // BREAK the active Major; a previous close already beyond a freshly assigned
- // level is a documented unresolved edge policy, not certified ground truth.
+ // Independent strict-Close oracle for S+: the source uses the current
+ // ACTIVE Major and zero tolerance, without a second previous-close crossing.
+ // Prior-close-outside events are recorded as regression coverage (not PASS
+ // by themselves), because old code could miss exactly these reversals.
  const grouped=new Map();for(const p of base.confirmed){if(!grouped.has(p.structConfirmedAt))grouped.set(p.structConfirmedAt,[]);grouped.get(p.structConfirmedAt).push(p);}
  const stream=A.makeState();
  for(let t=0;t<n;t++){
@@ -117,8 +118,8 @@ function checkCase(x){
   const oldEventCount=stream.events.length;
   A.advance(stream,t,bars[t],grouped.get(t)||[]);
   const newStrong=stream.events.slice(oldEventCount).filter(e=>e.kind==='major_reversal');
-  check(Boolean(crossed)===Boolean(newStrong.length),`REV S3/S8 missed or false S+ ${x.id} at ${t}: expectedCross=${!!crossed} actual=${newStrong.length}, prior=${before.trend} close=${bars[t].close}`);
-  if(crossed){equal(newStrong[0].data.direction,expectedDirection,'S+ flip direction');check(stream.external.trend===expectedDirection,'S+ changes main');}
+  check(Boolean(outside)===Boolean(newStrong.length),`REV S3/S8 missed/false S+ ${x.id} at ${t}: expectedCloseOutside=${!!outside} actual=${newStrong.length}, prior=${before.trend} close=${bars[t].close}`);
+  if(outside){equal(newStrong[0].data.direction,expectedDirection,'S+ flip direction');check(stream.external.trend===expectedDirection,'S+ changes main');}
  }
  const indices=new Set([0,1,2,3,Math.floor(n/4),Math.floor(n/2),Math.floor(n*3/4),n-2,n-1]);
  const rand=rng(x.seed^0x9e3779b9);for(let j=0;j<cfg.prefixes;j++)indices.add(choose(rand,n));
@@ -185,7 +186,7 @@ function targeted(seed,n){
 }
 function csvOf(x){return 'Timestamp,Open,High,Low,Close\n'+x.candles.map(b=>`${b.time},${b.open},${b.high},${b.low},${b.close}`).join('\n')+'\n';}
 function outputJson(filename,obj){const target=path.resolve(ROOT,filename);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(obj,null,2)+'\n');}
-const policyGaps={alreadyOutsideAfterRoleAssignment:0,examples:[]};
+const policyGaps={alreadyOutsideAfterRoleAssignment:0,status:'regression_covered',examples:[]};
 const started=Date.now();const report={tool:'msas-deterministic-stress-qa',version:'1.0.0',source:'REV slides 3-8; ADV slides 5-14; Basic Swing/Inside slides',
   synthetic:true,seed:cfg.seed,config:{cases:cfg.cases,bars:cfg.bars,prefixes:cfg.prefixes,randomGenerativeModes:TYPES},
   status:'RUNNING',cases:[],coverage:{labels:{'S+':0,C:0,B:0},main:{up:0,down:0,unknown:0},internal:{up:0,down:0,unknown:0},modes:{}},errors:[],

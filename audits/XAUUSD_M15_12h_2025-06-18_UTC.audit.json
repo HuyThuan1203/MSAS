@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "analysis_version": "market_structure_advanced_v1_2",
+  "analysis_version": "market_structure_advanced_v1_3",
   "source_dataset_id": "xauusd_m15_20250618_0600_utc",
   "source_sha256": "7b89bcb95d5f83418a258b0075da95913c57f637328ff1ec076a44fd76aa9ea2",
   "is_synthetic": false,
@@ -24,7 +24,7 @@
     "mssStrongCount": 1,
     "mssWeakCount": 1,
     "cisdCount": 2,
-    "events": 9
+    "events": 8
   },
   "pivots": [
     {
@@ -437,7 +437,7 @@
       "reason": "latest_internal_low"
     },
     {
-      "at": 43,
+      "at": 40,
       "pivot_id": "SH-30",
       "pivot_index": 30,
       "from": "major_high",
@@ -445,7 +445,7 @@
       "reason": "major_rolled"
     },
     {
-      "at": 43,
+      "at": 40,
       "pivot_id": "SL-27",
       "pivot_index": 27,
       "from": "major_low",
@@ -453,36 +453,36 @@
       "reason": "major_rolled"
     },
     {
-      "at": 43,
+      "at": 40,
       "pivot_id": "SH-34",
       "pivot_index": 34,
       "from": "confirmed_swing",
       "to": "major_high",
-      "reason": "strongest_confirmed_major_break_wave"
+      "reason": "close_confirmed_rolling_major_provisional"
     },
     {
-      "at": 43,
+      "at": 40,
       "pivot_id": "SL-37",
       "pivot_index": 37,
       "from": "confirmed_swing",
       "to": "major_low",
-      "reason": "strongest_confirmed_major_break_wave"
+      "reason": "close_confirmed_rolling_major_provisional"
     },
     {
-      "at": 43,
-      "pivot_id": "SH-39",
-      "pivot_index": 39,
-      "from": "confirmed_swing",
-      "to": "internal_sh",
-      "reason": "latest_internal_high"
-    },
-    {
-      "at": 43,
+      "at": 40,
       "pivot_id": "SL-37",
       "pivot_index": 37,
       "from": "confirmed_swing",
       "to": "internal_sl",
       "reason": "latest_internal_low"
+    },
+    {
+      "at": 42,
+      "pivot_id": "SH-39",
+      "pivot_index": 39,
+      "from": "confirmed_swing",
+      "to": "internal_sh",
+      "reason": "latest_internal_high"
     },
     {
       "at": 45,
@@ -682,34 +682,14 @@
       "available_at_utc": "2025-06-18T15:30:00.000Z"
     },
     {
-      "id": "major_continuation:43:6",
-      "at": 43,
-      "kind": "major_continuation",
-      "layer": "external",
-      "title": "Cấu trúc chính tiếp diễn TĂNG",
-      "detail": "Close 3392.535 > Major High 3389.645. Chờ Swing High mới hợp lệ để cập nhật cặp Major.",
-      "severity": "success",
-      "source": "ADV:S7,S11,S14",
-      "refs": [
-        "SH-30"
-      ],
-      "data": {
-        "direction": "up",
-        "close": 3392.535,
-        "brokenLevel": 3389.645
-      },
-      "bar_open_time_utc": "2025-06-18T16:45:00Z",
-      "available_at_utc": "2025-06-18T17:00:00.000Z"
-    },
-    {
-      "id": "major_updated:43:7",
-      "at": 43,
+      "id": "major_updated:40:6",
+      "at": 40,
       "kind": "major_updated",
       "layer": "external",
-      "title": "Đã cập nhật Major High / Major Low",
-      "detail": "Major High 3396.648; Major Low 3373.545. Cặp đỉnh/đáy mạnh nhất đã xác nhận cho nhịp phá Major; không chọn cực trị chỉ vì xuất hiện gần nhất.",
+      "title": "Cập nhật Major theo sóng đã xác nhận",
+      "detail": "Đã xác nhận tiếp diễn tăng bằng Close; Major High 3396.648, Major Low 3373.545.",
       "severity": "success",
-      "source": "ADV:S11,S13-14",
+      "source": "ADV:S7,S11,S14",
       "refs": [
         "SH-34",
         "SL-37"
@@ -720,13 +700,13 @@
         "majorLow": 3373.545,
         "majorHighIndex": 34,
         "majorLowIndex": 37,
-        "selection": "strongest_confirmed_wave_provisional"
+        "selection": "close_confirmed_roll_provisional"
       },
-      "bar_open_time_utc": "2025-06-18T16:45:00Z",
-      "available_at_utc": "2025-06-18T17:00:00.000Z"
+      "bar_open_time_utc": "2025-06-18T16:00:00Z",
+      "available_at_utc": "2025-06-18T16:15:00.000Z"
     },
     {
-      "id": "internal_established:46:8",
+      "id": "internal_established:46:7",
       "at": 46,
       "kind": "internal_established",
       "layer": "internal",
@@ -2748,18 +2728,18 @@
         "trend": "up",
         "phase": "confirmed",
         "majorHigh": {
-          "id": "SH-30",
-          "index": 30,
+          "id": "SH-34",
+          "index": 34,
           "type": "SH",
-          "price": 3389.645,
-          "confirmedAt": 32
+          "price": 3396.648,
+          "confirmedAt": 38
         },
         "majorLow": {
-          "id": "SL-27",
-          "index": 27,
+          "id": "SL-37",
+          "index": 37,
           "type": "SL",
-          "price": 3378.745,
-          "confirmedAt": 31
+          "price": 3373.545,
+          "confirmedAt": 40
         },
         "breakAt": null,
         "breakLevel": null
@@ -2769,11 +2749,11 @@
         "phase": "collecting",
         "internalHigh": null,
         "internalLow": {
-          "id": "SL-31",
-          "index": 31,
+          "id": "SL-37",
+          "index": 37,
           "type": "SL",
-          "price": 3384.648,
-          "confirmedAt": 35
+          "price": 3373.545,
+          "confirmedAt": 40
         },
         "protectedHigh": null,
         "protectedLow": null,
@@ -2815,7 +2795,30 @@
           "majorDirectionUnchanged": true
         }
       },
-      "eventsAt": [],
+      "eventsAt": [
+        {
+          "id": "major_updated:40:6",
+          "at": 40,
+          "kind": "major_updated",
+          "layer": "external",
+          "title": "Cập nhật Major theo sóng đã xác nhận",
+          "detail": "Đã xác nhận tiếp diễn tăng bằng Close; Major High 3396.648, Major Low 3373.545.",
+          "severity": "success",
+          "source": "ADV:S7,S11,S14",
+          "refs": [
+            "SH-34",
+            "SL-37"
+          ],
+          "data": {
+            "direction": "up",
+            "majorHigh": 3396.648,
+            "majorLow": 3373.545,
+            "majorHighIndex": 34,
+            "majorLowIndex": 37,
+            "selection": "close_confirmed_roll_provisional"
+          }
+        }
+      ],
       "confirmedPivots": [
         "SL-37"
       ]
@@ -2829,18 +2832,18 @@
         "trend": "up",
         "phase": "confirmed",
         "majorHigh": {
-          "id": "SH-30",
-          "index": 30,
+          "id": "SH-34",
+          "index": 34,
           "type": "SH",
-          "price": 3389.645,
-          "confirmedAt": 32
+          "price": 3396.648,
+          "confirmedAt": 38
         },
         "majorLow": {
-          "id": "SL-27",
-          "index": 27,
+          "id": "SL-37",
+          "index": 37,
           "type": "SL",
-          "price": 3378.745,
-          "confirmedAt": 31
+          "price": 3373.545,
+          "confirmedAt": 40
         },
         "breakAt": null,
         "breakLevel": null
@@ -2850,11 +2853,11 @@
         "phase": "collecting",
         "internalHigh": null,
         "internalLow": {
-          "id": "SL-31",
-          "index": 31,
+          "id": "SL-37",
+          "index": 37,
           "type": "SL",
-          "price": 3384.648,
-          "confirmedAt": 35
+          "price": 3373.545,
+          "confirmedAt": 40
         },
         "protectedHigh": null,
         "protectedLow": null,
@@ -2908,18 +2911,18 @@
         "trend": "up",
         "phase": "confirmed",
         "majorHigh": {
-          "id": "SH-30",
-          "index": 30,
+          "id": "SH-34",
+          "index": 34,
           "type": "SH",
-          "price": 3389.645,
-          "confirmedAt": 32
+          "price": 3396.648,
+          "confirmedAt": 38
         },
         "majorLow": {
-          "id": "SL-27",
-          "index": 27,
+          "id": "SL-37",
+          "index": 37,
           "type": "SL",
-          "price": 3378.745,
-          "confirmedAt": 31
+          "price": 3373.545,
+          "confirmedAt": 40
         },
         "breakAt": null,
         "breakLevel": null
@@ -2927,13 +2930,19 @@
       "internal": {
         "trend": "unknown",
         "phase": "collecting",
-        "internalHigh": null,
+        "internalHigh": {
+          "id": "SH-39",
+          "index": 39,
+          "type": "SH",
+          "price": 3389.948,
+          "confirmedAt": 42
+        },
         "internalLow": {
-          "id": "SL-31",
-          "index": 31,
+          "id": "SL-37",
+          "index": 37,
           "type": "SL",
-          "price": 3384.648,
-          "confirmedAt": 35
+          "price": 3373.545,
+          "confirmedAt": 40
         },
         "protectedHigh": null,
         "protectedLow": null,
@@ -3062,48 +3071,7 @@
           "majorDirectionUnchanged": true
         }
       },
-      "eventsAt": [
-        {
-          "id": "major_continuation:43:6",
-          "at": 43,
-          "kind": "major_continuation",
-          "layer": "external",
-          "title": "Cấu trúc chính tiếp diễn TĂNG",
-          "detail": "Close 3392.535 > Major High 3389.645. Chờ Swing High mới hợp lệ để cập nhật cặp Major.",
-          "severity": "success",
-          "source": "ADV:S7,S11,S14",
-          "refs": [
-            "SH-30"
-          ],
-          "data": {
-            "direction": "up",
-            "close": 3392.535,
-            "brokenLevel": 3389.645
-          }
-        },
-        {
-          "id": "major_updated:43:7",
-          "at": 43,
-          "kind": "major_updated",
-          "layer": "external",
-          "title": "Đã cập nhật Major High / Major Low",
-          "detail": "Major High 3396.648; Major Low 3373.545. Cặp đỉnh/đáy mạnh nhất đã xác nhận cho nhịp phá Major; không chọn cực trị chỉ vì xuất hiện gần nhất.",
-          "severity": "success",
-          "source": "ADV:S11,S13-14",
-          "refs": [
-            "SH-34",
-            "SL-37"
-          ],
-          "data": {
-            "direction": "up",
-            "majorHigh": 3396.648,
-            "majorLow": 3373.545,
-            "majorHighIndex": 34,
-            "majorLowIndex": 37,
-            "selection": "strongest_confirmed_wave_provisional"
-          }
-        }
-      ],
+      "eventsAt": [],
       "confirmedPivots": []
     },
     {
@@ -3368,7 +3336,7 @@
       },
       "eventsAt": [
         {
-          "id": "internal_established:46:8",
+          "id": "internal_established:46:7",
           "at": 46,
           "kind": "internal_established",
           "layer": "internal",

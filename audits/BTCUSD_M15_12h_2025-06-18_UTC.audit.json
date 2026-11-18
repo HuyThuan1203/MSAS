@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "analysis_version": "market_structure_advanced_v1_2",
+  "analysis_version": "market_structure_advanced_v1_3",
   "source_dataset_id": "btcusd_m15_20250618_0600_utc",
   "source_sha256": "534d598a168086f9582b339d4a434beaff42aba9fef4060a9fb93a0022d59fce",
   "is_synthetic": false,

@@ -78,7 +78,7 @@ class TestContract(unittest.TestCase):
             doc=json.loads((ROOT/'audits'/f'{sym}_M15_12h_2025-06-18_UTC.audit.json').read_text('utf-8'))
             self.assertEqual(len(doc['timeline']),48)
             self.assertEqual(doc['source_timeframe'],'M15')
-            self.assertEqual(doc['analysis_version'],'market_structure_advanced_v1_2')
+            self.assertEqual(doc['analysis_version'],'market_structure_advanced_v1_3')
             self.assertEqual(doc['model_provenance']['mss_tolerance'],0)
             self.assertIn('mss',doc)
             self.assertIn('cisd',doc)

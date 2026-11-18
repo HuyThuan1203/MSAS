@@ -19,7 +19,7 @@ for(let t=0;t<candles.length;t++){
   external:aa.external,internal:aa.internal,mss:aa.mss,cisd:aa.cisd,
   eventsAt:aa.events.filter(e=>e.at===t),confirmedPivots:bb.confirmed.filter(p=>p.structConfirmedAt===t).map(p=>p.id)});
 }
-const report={schema_version:'1.0.0',analysis_version:'market_structure_advanced_v1_2',
+const report={schema_version:'1.0.0',analysis_version:'market_structure_advanced_v1_3',
  source_dataset_id:input.dataset_id,source_sha256:input.metadata.sha256,
  is_synthetic:input.metadata.is_synthetic,source_timeframe:input.timeframe,
  model_provenance:{ppt:['Cau_truc_nang_cao_-_Final.pptx','Mau_hinh_xac_nhan_ao_chieu_-_Final.pptx'],policy:'mixed source-locked/provisional',volume_used:false,mss_tolerance:0},

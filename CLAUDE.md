@@ -16,3 +16,7 @@ Read `.claude/skills/msas-engineering/SKILL.md` before implementing market struc
 - **Review:** Test two directions, multiple same-direction clusters, equality, no-lookahead, all four approved datasets, EN/VI chart labels, high-level notifications, Windows checkout and Docker CI.
 
 - **Stress QA:** after any structural rule change, run `python scripts/qa_gate.py --stress --require-node` and inspect `qa-artifacts/stress-dashboard.html`. Never call provisional Major/Internal policies source-certified based only on randomized test PASS. Source traceability: `docs/quality/STRESS_QA_PLAN.md`. Synthetic CSVs are not training or ground truth labels. The user-approved XAU MH/ML regression remains mandatory.
+
+
+- **V5.4 rolling Major regression:** always run `tests/test_major_rolling_reversal.js` and read `docs/advanced/MAJOR_PIVOT_SELECTION.md`. XAU40 at 25/40 requires DOWN, MH 4001.50 and ML 3991.10; XAU48 final requires MH 3396.648 and ML 3373.545. No-lookahead and S+ Close-only/tolerance=0 are hard gates. Do not fake an event time or force a second crossing. The corrective-pair selection remains provisional.
+- **UI:** show BOTH MSS and CISD on the actual closed-bar chart (not just in the notification feed) and never drop coincident C+B; CI checks actual canvas text and in-chart signal indicator.

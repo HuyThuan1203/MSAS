@@ -34,18 +34,26 @@ Evaluate each **closed** candle at index `at` against the **active Major before 
 
 **Temporal rules:** A Swing centered at `i` cannot become locally known before right-hand candle `i+1` closes, nor may Major roles be assigned before that Swing is structurally confirmed. Event `at` is the candle closing index at which it is knowable, never the historical pivot index. Only labels for events at or before the current replay candle may be drawn. User-confirmed XAU sample (48 M15 bars) remains MH=3396.648 (14:30 UTC), ML=3373.545 (15:15 UTC) at last candle, with Main UP/Internal UP.
 
-## Open boundary policy: previous Close already outside new Major
+## Closed-price boundary rule and rolling Major pivots (V5.4)
 
-A dynamically reassigned Major may become active while the **previous CLOSED
-candle is already beyond** the newly effective threshold. The engine currently
-requires a *fresh inside-to-outside crossing* before issuing a new S+ or
-continuation, rather than treating each still-outside candle as a new break.
-This is an implementation interpretation (I), **not uniquely resolved by
-REV slide 8**. A naïve switch to unconditional `Close > MH` / `Close < ML`
-changed the user-confirmed final XAU Major Low; it is **not accepted** without
-human-reviewed examples. Automated stress tests report these conditions in
-`policyGaps.alreadyOutsideAfterRoleAssignment`, status **REVIEW** (not PASS).
-All actual triggered S+ comparisons remain strict at tolerance = 0.
+S+ uses the **current closed price against the Major active BEFORE this bar**,
+strictly `>` or `<`, without demanding another inside-to-outside cross of the
+previous candle. Thus a newly effective protected threshold cannot suppress a
+valid reversal simply because the previous Close already exceeded it.
+
+Same-direction *continuation* is distinct from S+. The next Major pair is
+promoted only after (1) a Close proved extension beyond the active boundary
+since the Major role was assigned; and (2) the subsequent corresponding
+Swing pair is structurally confirmed. XAU40 user screenshot at 25/40 (21:00)
+rolls MH `SH-14 = 4001.5`, ML `SL-17 = 3991.1` at bar index 19, rather than
+holding stale `SH-9 = 4013.4`, `SL-12 = 3995.8`. The next SL at 3991.0 is
+wick-only below 3991.1 at bar 24, so it is not automatically promoted.
+
+The user-annotated XAU48 remains MH `SH-34 = 3396.648`, ML `SL-37 = 3373.545`,
+first promoted when the corrective SL has been *structurally confirmed* at
+index 40. No user source mandates a unique competing-pivot tie-break for
+arbitrary OHLC. **Choosing the latest lower LH before a new bearish LL and
+its mirrored bullish corrective pair is implementation policy (I)**.
 
 ## Presentation and event priority
 
@@ -60,7 +68,7 @@ All actual triggered S+ comparisons remain strict at tolerance = 0.
 - `tests/test_mss_cisd.js`: synthetic two-way DOWN→UP and UP→DOWN cases, strong S+ vs wick-only C vs delivery B; two bearish groups choose last; equality at Major no flip; numeric-close legacy fixtures cannot fabricate Open/High/Low; no lookahead; four independent 40/48-bar datasets.
 - `tests/test_major_selection.js`: user-reviewed XAU extreme/paired low and prefix causal consistency.
 - `scripts/offline_smoke.py`: offline HTML Chromium desktop/mobile, EN/VI and user-provided CSV import, no network; GitHub Actions performs browser test.
-- `scripts/export_structure.js`: auditable timeline, analysis version `market_structure_advanced_v1_2`, `model_provenance.mss_tolerance=0`.
+- `scripts/export_structure.js`: auditable timeline, analysis version `market_structure_advanced_v1_3`, `model_provenance.mss_tolerance=0`.
 - Data examples have no independent certified S+/C/B ground-truth labels. Their automated PASS checks internal causality, stable semantics and contracts, NOT source-image price-perfect alignment.
 - `U`: how to delimit nested waves after ambiguous/multiple swing confirmations; time-of-day market sessions; same-candle open outside then close inside/at boundary; arbitrary number of substructures; how to choose strongest eligible Major candidate after competing swings. No unsupported blanket PASS for these edge cases.
 

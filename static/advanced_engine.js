@@ -30,7 +30,7 @@ function makeState(){return {
  cisd:{reference:null,last:null,emitted:[]},
  external:{trend:'unknown',phase:'uninitialized',majorHigh:null,majorLow:null,breakAt:null,breakLevel:null},
  internal:{trend:'unknown',phase:'uninitialized',internalHigh:null,internalLow:null,protectedHigh:null,protectedLow:null,pendingDirection:null,pendingBreakAt:null,confirmed:false},
- segmentStart:-1
+ segmentStart:-1,majorRoleAt:-1
 };}
 function log(s,at,kind,layer,title,detail,refs=[],source='ADV:S14',severity='info',data=null){
  const ev={id:`${kind}:${at}:${s.events.length}`,at,kind,layer,title,detail,severity,source,refs,data};
@@ -98,13 +98,14 @@ function refreshInternal(s,at){
  }
 }
 function setMajor(s,at,trend,high,low,reason){
- const e=s.external;
+ const e=s.external,oldHighId=e.majorHigh?.id,oldLowId=e.majorLow?.id;
  if(e.majorHigh&&e.majorHigh.id!==high?.id)changeRole(s,at,e.majorHigh,'major_high','historical_major','major_rolled');
  if(e.majorLow&&e.majorLow.id!==low?.id)changeRole(s,at,e.majorLow,'major_low','historical_major','major_rolled');
  e.trend=trend;e.phase='confirmed';e.majorHigh=level(high);e.majorLow=level(low);e.breakAt=null;e.breakLevel=null;
- if(high)changeRole(s,at,high,'confirmed_swing','major_high',reason);
- if(low)changeRole(s,at,low,'confirmed_swing','major_low',reason);
+ if(high&&high.id!==oldHighId)changeRole(s,at,high,'confirmed_swing','major_high',reason);
+ if(low&&low.id!==oldLowId)changeRole(s,at,low,'confirmed_swing','major_low',reason);
  s.segmentStart=trend==='up'?high.index:low.index;
+ s.majorRoleAt=at;
  clearInternal(s);
 }
 function initialize(s,at){
@@ -145,6 +146,11 @@ function pendingMajorPair(s,direction){
   follow.sort((a,b)=>direction==='up'?a.price-b.price||a.index-b.index:b.price-a.price||a.index-b.index);
   const opposite=follow[0]||earlierOpposite(s.history,extreme);
   if(opposite){
+   if(direction==='down'&&e.majorHigh&&opposite.price>=e.majorHigh.price){
+    // Higher opposing wick is NOT a new bearish Lower High. The protected
+    // prior Major High stays active until a real lower high is confirmed.
+    return {high:e.majorHigh,low:extreme};
+   }
    return direction==='up'?{high:extreme,low:opposite}:{high:opposite,low:extreme};
   }
  }
@@ -214,6 +220,60 @@ function scanReversalSignals(s,at,bar,previousMajor){
                 referenceStartIndex:ref.startIndex,majorDirectionUnchanged:true};
  }
 }
+/** Refresh a CONFIRMED Major pair from a fully accepted continuation wave.
+ *
+ * A breakout already observed after an old Major became active counts as
+ * price confirmation (even if the boundary was assigned with price already
+ * outside it). Promotion still REQUIRES accepted Swing evidence; this is
+ * independent from S+ reversal and never invents a pivot at the breakout.
+ *
+ * REV:S8 + ADV:S7,S11,S14 establish Close and rolling role semantics. Which
+ * eligible corrective pivot to pair is not completely defined by the PPT;
+ * these deterministic tie-breaks are provisional and regression-tested.
+ */
+function rollMajorFromConfirmed(s,at){
+ const e=s.external;
+ if(e.phase!=='confirmed'||!e.majorHigh||!e.majorLow)return false;
+ const up=e.trend==='up',oldEdge=up?e.majorHigh:e.majorLow;
+ const from=Math.max(0,s.majorRoleAt+1);
+ const priceProved=s.closed.slice(from,at+1).some(b=>
+    up?b.close>oldEdge.price+MSS_TOLERANCE:b.close<oldEdge.price-MSS_TOLERANCE);
+ if(!priceProved)return false;
+ let high=null,low=null;
+ if(up){
+  const highs=s.history.filter(p=>p.type==='SH'&&p.index>e.majorHigh.index&&p.price>e.majorHigh.price&&p.structConfirmedAt>s.majorRoleAt)
+        .sort((a,b)=>b.price-a.price||a.index-b.index);
+  for(const newHigh of highs){
+   // The user-labeled XAU48 main swing includes an accepted corrective SL
+   // AFTER the major high. Never choose the old preceding low while that
+   // corrective pivot is not yet known (it would lock a premature ML).
+   const corrective=s.history.filter(p=>p.type==='SL'&&p.index>newHigh.index&&p.structConfirmedAt>s.majorRoleAt)
+         .sort((a,b)=>a.price-b.price||a.index-b.index)[0];
+   if(corrective){high=newHigh;low=corrective;break;}
+  }
+ }else{
+  const lows=s.history.filter(p=>p.type==='SL'&&p.index>e.majorLow.index&&p.price<e.majorLow.price&&p.structConfirmedAt>s.majorRoleAt)
+       .sort((a,b)=>a.price-b.price||a.index-b.index);
+  for(const newLow of lows){
+   // A lower HIGH must precede the fresh LL, otherwise retain the old
+   // protected MH. A wick-only higher SH cannot become a new bearish MH.
+   const highs=s.history.filter(p=>p.type==='SH'&&p.index>e.majorLow.index&&
+       p.index<newLow.index&&p.price<e.majorHigh.price)
+       .sort((a,b)=>b.index-a.index);
+   const newHigh=highs[0];
+   if(newHigh){high=newHigh;low=newLow;break;}
+  }
+ }
+ if(!high||!low)return false;
+ setMajor(s,at,e.trend,high,low,'close_confirmed_rolling_major_provisional');
+ log(s,at,'major_updated','external','Cập nhật Major theo sóng đã xác nhận',
+     `Đã xác nhận ${e.trend==='up'?'tiếp diễn tăng':'tiếp diễn giảm'} bằng Close; Major High ${high.price}, Major Low ${low.price}.`,
+     [high.id,low.id],'ADV:S7,S11,S14','success',
+     {direction:e.trend,majorHigh:high.price,majorLow:low.price,
+      majorHighIndex:high.index,majorLowIndex:low.index,
+      selection:'close_confirmed_roll_provisional'});
+ return true;
+}
 function cross(prev,now,threshold,direction){
  if(threshold===null||threshold===undefined)return false;
  return direction==='up'?(now>threshold&&(prev===null||prev<=threshold)):(now<threshold&&(prev===null||prev>=threshold));
@@ -234,7 +294,7 @@ function advance(s,at,candleOrClose,newlyConfirmed=[]){
  // Price breaches are evaluated against levels known BEFORE the current candle closed.
  if(external.trend!=='unknown'){
   const h=external.majorHigh,l=external.majorLow;
-  if(external.trend==='up'&&l&&cross(prev,close,l.price,'down')){
+  if(external.trend==='up'&&l&&close<l.price-MSS_TOLERANCE){
    const oldLow=l;
    changeRole(s,at,l,'major_low','broken_major_low','external_reversal');
    external.trend='down';external.phase='awaiting_major_low';external.majorLow=null;
@@ -245,7 +305,7 @@ function advance(s,at,candleOrClose,newlyConfirmed=[]){
        [h?.id,oldLow.id].filter(Boolean),'ADV:S3,S7,S13-14;REV:S3,S8','error',
        {label:'S+',direction:'down',close,brokenLevel:oldLow.price,retainedLevel:h?.price??null,
         majorPivotId:oldLow.id,confirmed:true,tolerance:MSS_TOLERANCE});
-  }else if(external.trend==='down'&&h&&cross(prev,close,h.price,'up')){
+  }else if(external.trend==='down'&&h&&close>h.price+MSS_TOLERANCE){
    const oldHigh=h;
    changeRole(s,at,h,'major_high','broken_major_high','external_reversal');
    external.trend='up';external.phase='awaiting_major_high';external.majorHigh=null;
@@ -323,6 +383,10 @@ function advance(s,at,candleOrClose,newlyConfirmed=[]){
         majorHighIndex:pair.high.index,majorLowIndex:pair.low.index,selection:'strongest_confirmed_wave_provisional'});
   }
  }
+ // Re-evaluate active Major after accepting this candle's newly confirmed
+ // Swing(s). This can roll a continuation WITHOUT requiring a second price
+ // crossing after a fresh Major assignment (XAU40 at bars 16-25).
+ rollMajorFromConfirmed(s,at);
  if(external.phase==='confirmed')refreshInternal(s,at);
  s.at=at;s.previousClose=close;
  if(!VALID_TRENDS.has(external.trend)||!VALID_TRENDS.has(s.internal.trend))throw Error('Xu hướng không hợp lệ.');
@@ -345,7 +409,7 @@ function analysisFromAccepted(candles,accepted,upto){
          mss:{tolerance:MSS_TOLERANCE,last:state.mss.last,lastWeak:state.mss.lastWeak},
          cisd:{reference:state.cisd.reference,last:state.cisd.last},
          events:state.events,roleChanges:state.roleChanges,
-         acceptedCount:state.history.length,policy:{source:'ADV PPT S3-S14',majorSelection:'strongest-confirmed-extreme-in-closed-break-wave (provisional)',
+         acceptedCount:state.history.length,policy:{source:'ADV PPT S3-S14',majorSelection:'close-confirmed-rolling-pair-and-wave-extreme (provisional)',
             initialMajor:'latest confirmed trend pair',closeBreak:'strict',tolerance:0,
             mssSource:'REV S3-S4,S8',cisdSource:'REV S5-S8',
             cisdWaveBoundary:'latest eligible opposite pivot (provisional)',noLookahead:true},

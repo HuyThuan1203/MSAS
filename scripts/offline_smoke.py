@@ -23,10 +23,19 @@ async def main():
                 page.on('pageerror',lambda exc:errs.append(str(exc)))
                 page.on('request',lambda req:requests.append(req.url))
                 await page.set_content(html,wait_until='load',timeout=30000)
+                assert await page.locator('meta[name="msas-version"]').get_attribute('content') == (ROOT/'VERSION').read_text().strip()
                 await page.wait_for_function('document.querySelector("#progressCount").textContent.includes("40")',timeout=12000)
                 assert await page.locator('#languageSelect').input_value()=='en'
                 assert await page.locator('#datasetSelect option').count()==4
                 assert await page.locator('#eventCount').inner_text() is not None
+                # User screenshot 25/40 (21:00) must show the rolled Major pair,
+                # rather than stale 4013.40/3995.80 levels.
+                await page.locator('#datasetSelect').select_option('xauusd-sample')
+                await page.locator('#scrubber').fill('24')
+                await page.locator('#scrubber').dispatch_event('input')
+                assert (await page.locator('#feedMajorHigh').inner_text()).startswith('4,001.50')
+                assert (await page.locator('#feedMajorLow').inner_text()).startswith('3,991.10')
+                assert (await page.locator('#majorDirection').inner_text()).startswith('DOWN')
                 await page.locator('#datasetSelect').select_option('xauusd-20250618')
                 await page.wait_for_function('document.querySelector("#progressCount").textContent.includes("48")',timeout=12000)
                 # Every price-action classification must be visible on the
@@ -42,6 +51,31 @@ async def main():
                         assert 'S+' not in await page.locator('#events').inner_text()
                     if cutoff==30:
                         assert (await page.locator('#majorDirection').inner_text()).startswith('UP')
+                    if expected is not None:
+                        assert await page.locator('#chartSignal').is_visible(), (cutoff,expected)
+                        tag={'CISD':'CISD B','S+':'MSS S+','C':'MSS C'}[expected]
+                        assert tag in await page.locator('#chartSignal').inner_text(), (cutoff,tag)
+                    else:
+                        assert not await page.locator('#chartSignal').is_visible()
+                # Spy on actual canvas text to verify the signal is drawn at
+                # its closed bar, not merely listed in the side panel.
+                if name=='desktop':
+                    await page.evaluate('''() => {
+                      window.__signalDrawn=[];
+                      const proto=CanvasRenderingContext2D.prototype;
+                      const original=proto.fillText;
+                      proto.fillText=function(value,...args){
+                        if(/^MSS |^CISD /.test(String(value))) window.__signalDrawn.push(String(value));
+                        return original.call(this,value,...args);
+                      };
+                    }''')
+                    await page.locator('#scrubber').fill('37')
+                    await page.locator('#scrubber').dispatch_event('input')
+                    await page.wait_for_timeout(180)
+                    drawn=await page.evaluate('window.__signalDrawn')
+                    assert any('MSS S+' in label for label in drawn),drawn
+                    assert any('MSS C' in label for label in drawn),drawn
+                    assert any('CISD B' in label for label in drawn),drawn
                 await page.locator('#scrubber').fill('47')
                 await page.locator('#scrubber').dispatch_event('input')
                 assert (await page.locator('#majorDirection').inner_text()).startswith('UP')
