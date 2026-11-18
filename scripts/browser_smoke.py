@@ -75,9 +75,10 @@ async def main() -> None:
                     await page.locator("#datasetSelect").select_option("xauusd-sample")
                     # Dataset switching fetches candles asynchronously. The initial BTC
                     # sample also has 40 bars, so checking progressCount alone races on
-                    # slower/mobile browser runners. Wait for the XAU final close.
+                    # slower/mobile browser runners. switchDataset() starts at
+                    # the FIRST XAU candle (Close 4023.50), not the last candle.
                     await page.wait_for_function(
-                        "document.querySelector('#lastClose')?.textContent.trim() === '3,991.30'",
+                        "document.querySelector('#lastClose')?.textContent.trim() === '4,023.50'",
                         timeout=12000,
                     )
                     await page.locator("#scrubber").fill("24")
