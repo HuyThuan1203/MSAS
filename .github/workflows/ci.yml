@@ -4,6 +4,15 @@ on:
     branches: [main, 'feat/**', 'release/**']
   pull_request:
   workflow_dispatch:
+    inputs:
+      stress_cases:
+        description: 'Random OHLC sequences per stress seed'
+        required: false
+        type: choice
+        default: '360'
+        options: ['120', '360', '1200']
+  schedule:
+    - cron: '21 3 * * 0'  # Weekly Sunday at 03:21 UTC, no company device required
 permissions:
   contents: read
 jobs:
@@ -53,6 +62,40 @@ jobs:
           node tests/test_major_selection.js
           node tests/test_mss_cisd.js
           node tests/test_ui_theme_i18n.js
+  stress-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Deterministic randomized OHLC + independent MSS/CISD oracles
+        env:
+          STRESS_CASES: ${{ github.event_name == 'schedule' && '1200' || inputs.stress_cases || '360' }}
+        run: |
+          node scripts/qa/stress_qa.js --cases="$STRESS_CASES" --bars=128 --seed=20261118 --out=qa-artifacts/stress-report.json --emit-fixtures=qa-artifacts/generated-csv --fixtures=24
+          node scripts/qa/stress_qa.js --cases="$STRESS_CASES" --bars=128 --seed=20261119 --out=qa-artifacts/stress-secondary.json
+          python scripts/qa/report_stress.py --report qa-artifacts/stress-report.json --output qa-artifacts/stress-dashboard.html
+          python -m unittest discover -s tests -p 'test_random_*.py' -v
+          python -m unittest discover -s tests -p 'test_generated_fixture_manifest.py' -v
+      - name: Archive reproducible evidence, failures included
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MSAS-Deterministic-Stress-QA
+          path: |
+            qa-artifacts/stress-report.json
+            qa-artifacts/stress-secondary.json
+            qa-artifacts/stress-dashboard.html
+            qa-artifacts/stress-summary.md
+            qa-artifacts/stress-ledger.csv
+            qa-artifacts/generated-csv/
+          if-no-files-found: warn
+          retention-days: 21
   browser-e2e:
     runs-on: ubuntu-latest
     steps:
@@ -106,3 +149,41 @@ jobs:
           done
           docker logs msas-ci
           exit 1
+
+  qa-evidence-video:
+    if: github.event_name == 'workflow_dispatch'
+    needs: [stress-qa, browser-e2e]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download stress reports from the same revision
+        uses: actions/download-artifact@v4
+        with:
+          name: MSAS-Deterministic-Stress-QA
+          path: qa-artifacts/
+      - name: Install QA-only browser and local rendering tools
+        run: |
+          python -m pip install -r requirements-qa.txt pillow
+          python -m playwright install --with-deps chromium
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg espeak fonts-dejavu-core
+      - name: Capture actual offline Chromium session and render Vietnamese video
+        run: |
+          python scripts/build_standalone.py
+          python scripts/qa/capture_evidence.py
+          python scripts/qa/render_evidence_video.py --report qa-artifacts/stress-report.json --output qa-artifacts/MSAS_QA_Evidence_7min.mp4
+      - name: Archive optional 5–10 minute QA walkthrough and checksum manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MSAS-7min-QA-Evidence-Video
+          path: |
+            qa-artifacts/MSAS_QA_Evidence_7min.mp4
+            qa-artifacts/video-evidence-manifest.json
+            qa-artifacts/evidence/browser-evidence.json
+          if-no-files-found: warn
+          retention-days: 21

@@ -1,0 +1,36 @@
+{
+  "version": "5.3.0-stress-qa",
+  "source_deck_sha256": {
+    "Mau_hinh_xac_nhan_ao_chieu_-_Final (1).pptx": "a82cdb0fc0e0e2587d9206b5162e9fe813cc8856a5b8b0eedffd5ccc1547a9bf",
+    "Cau_truc_nang_cao_-_Final.pptx": "6e7dbe626b17a5e6719c7e7c9849f7e305e9aab5753dd7f9f678ee7d37754a5e",
+    "Cau_truc_nen_va_Swing_points.pptx": "7742d873885b1aae303a6375eff17411a5e676d5dc46725fd104ba988c18a67f",
+    "Vi_du_ve_swing_point_vo_hieu_do_Inside_Bar.pptx": "9c034c0a350ecb7eec6d9bb0167c01920360f57a07da19ccae70353763f8d468"
+  },
+  "source_decks_private": true,
+  "synthetic_data_not_ground_truth": true,
+  "seed": 20261118,
+  "random_scenarios": 360,
+  "bars_per_scenario": 128,
+  "total_random_bars": 46080,
+  "targeted_trials": 960,
+  "assertions": 145590,
+  "source_event_counts_synthetic": {
+    "S+": 554,
+    "C": 1173,
+    "B": 3512
+  },
+  "policy_review_observations": 767,
+  "unverified_rules": [
+    "PPT exact source diagram OHLC",
+    "new-major already-outside Close handling",
+    "all nested/competing Major tie-breaks"
+  ],
+  "local_qa_groups_pass": 15,
+  "local_python_tests_pass": 31,
+  "browser_offline_desktop_mobile": "PASS",
+  "video_seconds": 386.7,
+  "video_sha256": "03f5380d623d92d687883b7d39ba98caf2985dbc5dbc5fa5d6261f0c198ff8b5",
+  "stress_report_sha256": "fb434cc5c762dc3a8d8738669672022d90374f7658382e1e3805b01859c50f82",
+  "evidence_location": "Workflow artifacts and downloadable project handoff; MP4 intentionally not committed to Git",
+  "github_ci_status": "NOT VERIFIED until GitHub Actions run for this commit"
+}

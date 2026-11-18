@@ -52,6 +52,14 @@ def main() -> int:
                         help="Run optional Playwright Chromium UI test against localhost server")
     parser.add_argument("--docker", action="store_true",
                         help="Build Docker image (requires Docker daemon)")
+    parser.add_argument("--stress", action="store_true",
+                        help="Run deterministic synthetic market/regression test and create report")
+    parser.add_argument("--stress-cases", type=int, default=360,
+                        help="Number of generated random OHLC scenarios (default 360)")
+    parser.add_argument("--stress-bars", type=int, default=128,
+                        help="Candles in each generated scenario (default 128)")
+    parser.add_argument("--stress-seed", type=int, default=20261118,
+                        help="Fixed random seed (default 20261118)")
     parser.add_argument("--json-report", type=Path, help="Write machine-readable QA report")
     args = parser.parse_args()
     results: list[dict] = []
@@ -68,6 +76,18 @@ def main() -> int:
         print(f"[{status}] Node.js not available; JS regression suite not executed")
         results.append({"name": "Node.js regression suite", "status": status,
                         "reason": "Optional for local runtime, required for full CI"})
+    if args.stress:
+        if not node:
+            results.append({"name":"Deterministic market stress", "status":"FAIL", "reason":"Node.js required for stress"})
+        else:
+            results.append(run("Deterministic synthetic OHLC stress / S+ C B / no-lookahead",
+                [node,"scripts/qa/stress_qa.js",f"--cases={args.stress_cases}",
+                 f"--bars={args.stress_bars}",f"--seed={args.stress_seed}",
+                 "--out=qa-artifacts/stress-report.json"],timeout=150))
+            results.append(run("Generate reproducible stress dashboard and ledger",
+                [sys.executable,"scripts/qa/report_stress.py",
+                 "--report","qa-artifacts/stress-report.json",
+                 "--output","qa-artifacts/stress-dashboard.html"],timeout=30))
     if args.browser:
         results.append(run("Playwright browser UI + API integration",
                            [sys.executable, "scripts/browser_smoke.py"], timeout=150))

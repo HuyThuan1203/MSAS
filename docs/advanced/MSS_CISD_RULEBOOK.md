@@ -34,6 +34,19 @@ Evaluate each **closed** candle at index `at` against the **active Major before 
 
 **Temporal rules:** A Swing centered at `i` cannot become locally known before right-hand candle `i+1` closes, nor may Major roles be assigned before that Swing is structurally confirmed. Event `at` is the candle closing index at which it is knowable, never the historical pivot index. Only labels for events at or before the current replay candle may be drawn. User-confirmed XAU sample (48 M15 bars) remains MH=3396.648 (14:30 UTC), ML=3373.545 (15:15 UTC) at last candle, with Main UP/Internal UP.
 
+## Open boundary policy: previous Close already outside new Major
+
+A dynamically reassigned Major may become active while the **previous CLOSED
+candle is already beyond** the newly effective threshold. The engine currently
+requires a *fresh inside-to-outside crossing* before issuing a new S+ or
+continuation, rather than treating each still-outside candle as a new break.
+This is an implementation interpretation (I), **not uniquely resolved by
+REV slide 8**. A naïve switch to unconditional `Close > MH` / `Close < ML`
+changed the user-confirmed final XAU Major Low; it is **not accepted** without
+human-reviewed examples. Automated stress tests report these conditions in
+`policyGaps.alreadyOutsideAfterRoleAssignment`, status **REVIEW** (not PASS).
+All actual triggered S+ comparisons remain strict at tolerance = 0.
+
 ## Presentation and event priority
 
 - On chart, only the active Major High/Low, Internal status, and confirmed Swing structure; show labels **S+**, **C**, **B** on their closed source candles, not on later bars or hidden future.

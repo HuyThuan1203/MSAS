@@ -37,3 +37,7 @@ Publish only user-authorized project code, samples and rules. Do not publish sou
 ## V5.2 reversal interpretation and regression
 
 Read `docs/advanced/MSS_CISD_RULEBOOK.md` for user-defined REV slides 3-8. Use only active Major levels known at candle CLOSE. `S+`=strict Close beyond opposing Major, immediate Main reversal; `C`=wick-only attempted breach with Close inside (no trend flip); `B`=CISD Close across the Open of the first candle of the final old-direction group (early warning only). All tolerances 0. Do not conflate these events with Internal trend, do not invent new MH/ML without accepted Swing. Add causal tests in `tests/test_mss_cisd.js` and inspect current Main/Internal readout and event labels in both EN/VI.
+
+## Reproducible randomized QA
+
+Run `python scripts/qa_gate.py --stress --require-node` before promoting market-structure changes. Review `qa-artifacts/stress-dashboard.html`, failures/seeds, independent strict Close and wick oracles, and `policyGaps` which are unresolved, not PASS. The weekly GitHub job executes two seeds and publishes artifacts. Long QA videos are rendered only when explicitly dispatched.

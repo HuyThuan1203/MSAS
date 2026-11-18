@@ -14,3 +14,5 @@ Read `.claude/skills/msas-engineering/SKILL.md` before implementing market struc
 
 - **V5.2 MSS/CISD:** Read `docs/advanced/MSS_CISD_RULEBOOK.md` and the user's reversal PPT slides 3-8 before editing reversal labels. `S+` uses strict Close vs active opposing MH/ML (zero tolerance) and flips Main immediately. Wick-only `C` and delivery change `B` are NOT Major reversals. Only closed bars; do not backdate events.
 - **Review:** Test two directions, multiple same-direction clusters, equality, no-lookahead, all four approved datasets, EN/VI chart labels, high-level notifications, Windows checkout and Docker CI.
+
+- **Stress QA:** after any structural rule change, run `python scripts/qa_gate.py --stress --require-node` and inspect `qa-artifacts/stress-dashboard.html`. Never call provisional Major/Internal policies source-certified based only on randomized test PASS. Source traceability: `docs/quality/STRESS_QA_PLAN.md`. Synthetic CSVs are not training or ground truth labels. The user-approved XAU MH/ML regression remains mandatory.

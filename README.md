@@ -1,3 +1,37 @@
+## Reproducible random OHLC QA and evidence video (V5.3)
+
+The **production app remains lightweight**: stress tests do not run during replay
+or send imported OHLC to a service. Instead `qa_gate.py --stress` invokes a
+fully local Node test driver, and GitHub Actions runs it on every push/PR and
+weekly. Generated data is SYNTHETIC, not exchange candles or human-labeled
+trading ground truth. Use the `--seed` option to reproduce any reported case.
+
+```powershell
+# Local, no administrator or Docker required (Node.js is needed for QA only)
+python scripts/qa_gate.py --stress --stress-cases 360 --stress-bars 128 --stress-seed 20261118 --require-node --json-report qa-artifacts/full-gate.json
+# Evidence: qa-artifacts/stress-report.json, stress-dashboard.html, stress-ledger.csv, stress-summary.md
+```
+
+The default stress run generates **360 × 128** valid M15 OHLC candles across
+12 regimes, plus deterministic two-way S+/C/B source-oracle cases. The
+`fixtures/generated/` folder contains **24 CSV samples** (two of each regime)
+for manual upload, with reproducible SHA-256 manifest; these are **not**
+pre-labeled external market-structure examples.
+
+To render the optional 5–10 minute narrated evidence video, install only on a
+QA workstation (not needed by users of MSAS): Pillow, Playwright + Chromium,
+FFmpeg and eSpeak Vietnamese. Then run `python scripts/qa/capture_evidence.py`
+and `python scripts/qa/render_evidence_video.py`. The browser capture is real
+Chromium, not a simulated chart. An edited QA walkthrough is not a seven-minute
+continuous real-time screen recording.
+
+GitHub Actions → `MSAS validation and Docker build` → **Run workflow** generates
+QA artifacts and the narrated video; ordinary push/PR runs the whole stress
+suite but does not spend resources generating a long video. Weekly scheduled
+checks run an expanded 1200-case test per seed. See
+`docs/quality/STRESS_QA_PLAN.md` for source-to-test mapping, limitations,
+release gates and unresolved boundary cases.
+
 # Market Structure Studio V5.2 — MSS / CISD Structural Replay
 
 **Scope:** deterministic, closed-candle market-structure study for replay/backtesting **pattern detection**. No exchange integration, BUY/SELL recommendation, or P&L inference. V5 extends V4 with major/external structure and minor/internal structure based on the new 14-slide user PPT. The original 3-candle/Inside-Bar detection semantics remain unchanged; its same-kind pivot selection is still provisional. The V5 UI localizes structured events independently of the detection logic.
