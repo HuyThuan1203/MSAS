@@ -71,7 +71,7 @@ jobs:
         run: python scripts/qa_gate.py --browser --require-node --json-report qa-artifacts/qa-report.json
       - name: Build offline single-file HTML
         run: python scripts/build_standalone.py
-      - name: Chromium offline single-file UI: EN/VI, S+ C B, import, no-network
+      - name: 'Chromium offline single-file UI: EN/VI, S+ C B, import, no-network'
         run: python scripts/offline_smoke.py
       - name: Upload shareable HTML demo
         uses: actions/upload-artifact@v4
