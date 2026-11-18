@@ -73,6 +73,13 @@ async def main() -> None:
                     }""")
                     assert pixel == [198, 210, 223, 255], f"Unexpected background RGBA: {pixel}"
                     await page.locator("#datasetSelect").select_option("xauusd-sample")
+                    # Dataset switching fetches candles asynchronously. The initial BTC
+                    # sample also has 40 bars, so checking progressCount alone races on
+                    # slower/mobile browser runners. Wait for the XAU final close.
+                    await page.wait_for_function(
+                        "document.querySelector('#lastClose')?.textContent.trim() === '3,991.30'",
+                        timeout=12000,
+                    )
                     await page.locator("#scrubber").fill("24")
                     await page.locator("#scrubber").dispatch_event("input")
                     assert (await page.locator("#majorDirection").inner_text()).startswith("DOWN")
