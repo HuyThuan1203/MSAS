@@ -90,7 +90,7 @@
         if(moreExtreme)path[path.length-1]=p;
       }else path.push(p);
     }
-    const confirmed=eligible;
+    const confirmed=path;
     let priorHigh=null,priorLow=null;
     for(const p of confirmed){
       if(p.type==='SH'){
