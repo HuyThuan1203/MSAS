@@ -75,38 +75,22 @@
       }
     }
 
-    // Project interpretation: a structurally confirmed turn must be followed by
-    // an opposite eligible turn. Consecutive same-type turns retain only the
-    // more extreme one; the last turn remains pending (never backdated).
-    const eligible=swings.filter(s=>s.status==='eligible').sort((x,y)=>x.index-y.index);
+    // A strictly eligible three-CLOSED-bar swing is known at its right bar.
+    // Opposing pivots are NOT a prerequisite. The alternating path is a
+    // separate display/structural pairing view and must not delay detection.
+    // Same-kind replacements are recorded when later closed bars arrive;
+    // previously emitted pivots retain their historical confirmation time.
+    const eligible=swings.filter(p=>p.status==='eligible').sort((x,y)=>x.index-y.index);
+    for(const p of eligible){p.structStatus='confirmed';p.structConfirmedAt=p.confirmedAt;}
     const path=[];
     for(const p of eligible){
-      if(!path.length){path.push(p);continue;}
-      const last=path[path.length-1];
-      if(p.type===last.type){
-        const extreme=p.type==='SH'?p.price>last.price:p.price<last.price;
-        if(extreme){
-          last.structStatus='superseded';
-          p.structStatus='pending';
-          path[path.length-1]=p;
-          emit(p.confirmedAt,'replace','Dời '+p.type+' sang mốc mới',
-            'Mốc '+hhmm(c[last.index].time)+' bị thay bằng '+hhmm(c[p.index].time)+' do cực trị '+
-            (p.type==='SH'?'cao hơn':'thấp hơn')+' trước khi xuất hiện swing đối ứng hợp lệ.','warning',p.index,{type:p.type,action:'replace',previousTime:hhmm(c[last.index].time),newTime:hhmm(c[p.index].time)});
-        }else{
-          p.structStatus='superseded';
-          emit(p.confirmedAt,'replace','Không dùng '+p.type+' trùng loại',
-            'Đã có '+p.type+' cực trị mạnh hơn tại '+hhmm(c[last.index].time)+'; chưa có swing đối ứng hợp lệ.','warning',p.index,{type:p.type,action:'ignore',previousTime:hhmm(c[last.index].time),newTime:hhmm(c[p.index].time)});
-        }
-      }else{
-        last.structStatus='confirmed';
-        last.structConfirmedAt=p.confirmedAt;
-        p.structStatus='pending';
-        path.push(p);
-        emit(p.confirmedAt,'pair','Xác thực '+last.type+' bằng swing đối ứng',
-          last.type+' '+hhmm(c[last.index].time)+' được xác thực cấu trúc khi '+p.type+' '+hhmm(c[p.index].time)+' được nhận diện.','success',last.index,{previousType:last.type,previousTime:hhmm(c[last.index].time),oppositeType:p.type,oppositeTime:hhmm(c[p.index].time)});
-      }
+      const previous=path[path.length-1];
+      if(previous&&previous.type===p.type){
+        const moreExtreme=p.type==='SH'?p.price>previous.price:p.price<previous.price;
+        if(moreExtreme)path[path.length-1]=p;
+      }else path.push(p);
     }
-    const confirmed=path.filter(p=>p.structStatus==='confirmed');
+    const confirmed=path;
     let priorHigh=null,priorLow=null;
     for(const p of confirmed){
       if(p.type==='SH'){

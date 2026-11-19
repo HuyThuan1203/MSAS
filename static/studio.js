@@ -44,8 +44,7 @@ function setLanguage(value){
 // Notifications intentionally show only material structural decisions and
 // user-defined confirmation signals. Raw local pivots and Inside Bars remain
 // available on the chart/JSON audit; they do not flood the event feed.
-const IMPORTANT_KINDS=new Set(['major_reversal','major_updated','major_continuation',
-  'major_established','internal_reversal','internal_confirmed','mss_weak','cisd']);
+const IMPORTANT_KINDS=new Set(['major_reversal','major_continuation','major_established']);
 const PRIORITY={major_reversal:100,mss_weak:90,cisd:80,major_updated:65,
   major_continuation:55,internal_reversal:48,internal_confirmed:42,
   major_established:35,internal_established:0};
@@ -55,6 +54,8 @@ const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:redu
 let candles=[],analysis=null,current=0,playing=false,source='',speed=1,acc=0,lastFrame=0,request=null;
 let cache=new Map(),hover=null,geo=null,transition=null;
 let layers={structure:true,inside:true,raw:false};
+// Fixed-candle replay viewport. Mouse wheel zooms, drag pans, double-click follows live.
+let visibleBars=40,viewRight=null,dragStart=null,dragMoved=false;
 let feedSignature='',sourceMetaLine='';
 const ease=x=>1-Math.pow(1-Math.max(0,Math.min(1,x)),3);
 const lerp=(a,b,t)=>a+(b-a)*t;
@@ -164,14 +165,11 @@ function updateFeed(animate){
  const atNow=currentEventList(),lead=atNow[0]||null;
  // Important signals are also announced INSIDE the chart, even if the
  // notification history is filtered. Only closed-bar events are eligible.
- const onChart=atNow.filter(ev=>['major_reversal','mss_weak','cisd'].includes(ev.kind));
+ const onChart=atNow.filter(ev=>ev.kind==='major_reversal');
  const banner=$('chartSignal');
  if(onChart.length){
   banner.classList.remove('hidden');banner.dataset.kind=onChart[0].kind;
-  banner.textContent=onChart.map(ev=>{
-   const tag=ev.kind==='major_reversal'?'MSS S+':ev.kind==='mss_weak'?'MSS C':'CISD B';
-   return tag+' · '+eventText(ev).title;
-  }).join('  /  ');
+  banner.textContent=onChart.map(ev=>'MSS S+ · '+eventText(ev).title).join('  /  ');
  }else{banner.classList.add('hidden');banner.textContent='';banner.dataset.kind='none';}
  const her=$('hero');
  const key=(lead?lead.kind+'|'+lead.title:'none')+'|'+current;
@@ -206,9 +204,10 @@ function draw(now=performance.now()){
  if(!candles.length||!analysis)return;
  const {ctx,w,h}=measure();if(w<80||h<100)return;
  const left=w<480?17:27,right=w<480?74:92,top=37,bottom=h-52,innerW=w-left-right,innerH=bottom-top;
- const maxWindow=w<380?16:w<610?20:w<860?45:80;
- const count=Math.min(candles.length,maxWindow),first=Math.max(0,Math.min(candles.length-count,current-count+4));
- const step=innerW/count,barWidth=Math.max(1,Math.min(17,step*.63));
+ const count=Math.max(1,Math.min(candles.length,visibleBars));
+ const rightIndex=Math.max(count-1,Math.min(current,viewRight===null?current:viewRight));
+ const first=Math.max(0,rightIndex-count+1);
+ const step=innerW/count,barWidth=Math.max(1,step*.94);
  const xAt=i=>left+(i-first+.5)*step;
  const {min,max}=scaleAt(now),yAt=v=>top+(max-v)/(max-min)*innerH;
  const tr=transition,p=tr?Math.max(0,Math.min(1,(now-tr.started)/tr.duration)):1,k=ease(p);
@@ -337,7 +336,7 @@ function draw(now=performance.now()){
  // Preserve both C and B if they occur together, instead of dropping one.
  if(analysis.advanced){
   const events=analysis.advanced.events.filter(ev=>
-    ['major_reversal','mss_weak','cisd'].includes(ev.kind) && ev.at<=current &&
+    ev.kind==='major_reversal' && ev.at<=current &&
     ev.at>=first && ev.at<first+count);
   const occupied=[];
   for(const ev of events.slice(-14)){
@@ -559,14 +558,34 @@ const chartBox=$('chartBox');
 chartBox.addEventListener('dragover',evt=>{if([...evt.dataTransfer?.types||[]].includes('Files')){evt.preventDefault();chartBox.classList.add('dropping');}});
 chartBox.addEventListener('dragleave',()=>chartBox.classList.remove('dropping'));
 chartBox.addEventListener('drop',evt=>{evt.preventDefault();chartBox.classList.remove('dropping');const file=evt.dataTransfer?.files?.[0];if(file)importFile(file);});
+$('chart').addEventListener('wheel',evt=>{
+ if(!candles.length)return;
+ evt.preventDefault();
+ const change=evt.deltaY<0?-4:4;
+ visibleBars=Math.max(8,Math.min(200,visibleBars+change));
+ // Keep the inspected historical area when zooming, not future candles.
+ if(viewRight!==null)viewRight=Math.min(current,Math.max(visibleBars-1,viewRight));
+ schedule();
+},{passive:false});
+$('chart').addEventListener('mousedown',evt=>{
+ if(evt.button!==0||!geo)return;
+ dragStart={x:evt.clientX,right:viewRight===null?current:viewRight};dragMoved=false;
+});
+window.addEventListener('mouseup',()=>{dragStart=null;});
+$('chart').addEventListener('dblclick',()=>{viewRight=null;schedule();});
 $('chart').addEventListener('mousemove',evt=>{
+ if(dragStart&&geo){
+  const shift=Math.round((dragStart.x-evt.clientX)/geo.step);
+  if(Math.abs(evt.clientX-dragStart.x)>4)dragMoved=true;
+  if(dragMoved){viewRight=Math.max(visibleBars-1,Math.min(current,dragStart.right+shift));schedule();return;}
+ }
  if(!geo)return;const r=$('chart').getBoundingClientRect(),idx=Math.floor((evt.clientX-r.left-geo.left)/geo.step)+geo.first;
  hover=idx<geo.first||idx>current||idx>=geo.first+geo.count?null:idx;
  if(hover===null)$('tooltip').classList.add('hidden');else updateTooltip(evt);
  updateTop();schedule();
 });
 $('chart').addEventListener('mouseleave',()=>{hover=null;$('tooltip').classList.add('hidden');updateTop();schedule();});
-$('chart').addEventListener('click',evt=>{if(!geo)return;const r=$('chart').getBoundingClientRect();stop();stepTo(Math.floor((evt.clientX-r.left-geo.left)/geo.step)+geo.first);});
+$('chart').addEventListener('click',evt=>{if(dragMoved){dragMoved=false;return;}if(!geo)return;const r=$('chart').getBoundingClientRect();stop();stepTo(Math.floor((evt.clientX-r.left-geo.left)/geo.step)+geo.first);});
 window.addEventListener('resize',schedule);
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)stop();});
 document.addEventListener('keydown',evt=>{
