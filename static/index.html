@@ -28,21 +28,19 @@
 </div>
 <div class="quote"><div class="last-price"><strong class="mono" id="lastClose">--</strong><span class="mono" id="lastDelta">--</span></div></div>
 </div>
-<div class="overlaybar"><div class="ohlc mono"><span class="field"><em>O</em><b id="openVal">--</b></span><span class="field"><em>H</em><b id="highVal">--</b></span><span class="field"><em>L</em><b id="lowVal">--</b></span><span class="field"><em>C</em><b id="closeVal">--</b></span></div><div class="layers"><span data-i18n="indicators">INDICATORS</span><button aria-pressed="true" class="layer" id="toggleStructure" type="button"><i></i><span data-i18n="structure">Structure</span></button><button aria-pressed="true" class="layer" data-color="gold" id="toggleInside" type="button"><i></i><span data-i18n="inside">Inside bar</span></button><button aria-pressed="false" class="layer" id="toggleRaw" type="button"><i></i><span data-i18n="candidates">Candidates</span></button></div></div>
+<div class="overlaybar"><div class="layers"><span data-i18n="indicators">INDICATORS</span><button aria-pressed="true" class="layer" id="toggleStructure" type="button"><i></i><span data-i18n="structure">Structure</span></button><button aria-pressed="true" class="layer" data-color="gold" id="toggleInside" type="button"><i></i><span data-i18n="inside">Inside bar</span></button><button aria-pressed="false" class="layer" id="toggleRaw" type="button"><i></i><span data-i18n="candidates">Candidates</span></button><button aria-pressed="false" class="layer" data-color="gold" id="toggleDiag" type="button"><i></i><span data-i18n="diagnostics">Diagnostics</span></button></div></div>
 <div aria-label="Structure at the current closed candle" aria-live="polite" class="structure-statusbar" id="chartStructureSummary">
 <div class="structure-strip major-strip" data-trend="unknown" id="majorStrip">
 <span class="structure-kicker" data-i18n="majorLabel">MAIN / MAJOR</span>
 <strong class="structure-direction" id="majorDirection">UNKNOWN</strong>
-<div class="structure-pivots"><span><b>MH</b> <em class="mono" id="majorHighValue">—</em></span><span><b>ML</b> <em class="mono" id="majorLowValue">—</em></span></div>
 </div>
 <div class="structure-strip internal-strip" data-trend="unknown" id="internalStrip">
 <span class="structure-kicker" data-i18n="internalLabel">INTERNAL</span>
 <strong class="structure-direction" id="internalDirection">UNKNOWN</strong>
-<div class="structure-pivots"><span><b>iSH</b> <em class="mono" id="internalHighValue">—</em></span><span><b>iSL</b> <em class="mono" id="internalLowValue">—</em></span></div>
 </div>
 </div>
 <div class="error" id="errorbox" role="alert"></div><div aria-live="polite" class="import-toast" id="importToast" role="status"></div>
-<div class="graph" id="chartBox"><canvas aria-label="Candlestick chart and market-structure overlays" data-i18n-aria="chartAria" id="chart" role="img"></canvas><div id="chartSignal" class="chart-signal hidden" role="status" aria-live="polite"></div><div class="axis-legend mono" id="canvasTimeframe">M15 / CLOSED CANDLES</div><div class="tooltip hidden" id="tooltip"></div></div>
+<div class="graph" id="chartBox"><div aria-label="Candlestick chart and market-structure overlays" data-i18n-aria="chartAria" id="chart" role="img"></div><canvas aria-hidden="true" id="zoneLayer"></canvas><div aria-label="Values of the inspected candle" class="chart-legend mono" data-i18n-aria="legendAria" id="chartLegend"><div class="axis-legend" id="canvasTimeframe">M15 / CLOSED CANDLES</div><div class="ohlc"><span class="field"><em>O</em><b id="openVal">--</b></span><span class="field"><em>H</em><b id="highVal">--</b></span><span class="field"><em>L</em><b id="lowVal">--</b></span><span class="field"><em>C</em><b id="closeVal">--</b></span></div></div><div class="chart-signal hidden" id="chartSignal" role="status" aria-live="polite"></div><button class="go-live" data-i18n="goLive" data-i18n-title="goLiveTitle" hidden="" id="goLive" type="button">Go to live</button></div>
 <div class="controls">
 <div class="transportline"><div class="transport">
 <button aria-label="First candle" class="ibtn" data-i18n-aria="firstCandle" data-i18n-title="firstCandle" id="restart" title="First candle"><svg viewbox="0 0 24 24"><path d="M5 4v16M20 12H8m0 0 6-6m-6 6 6 6"></path></svg></button>
@@ -53,16 +51,15 @@
 </div><div class="readout mono"><span class="index" id="progressCount">-- / --</span><strong id="timeLabel">--:--</strong></div></div>
 <div class="timeline"><span class="mono" id="firstTime">--:--</span><input aria-label="Replay timeline" class="scrubber" data-i18n-aria="timeline" id="scrubber" max="39" min="0" step="1" type="range" value="39"/><span class="mono" id="lastTime">--:--</span></div>
 </div>
+<div class="attrib"><a data-i18n="attribution" href="https://www.tradingview.com/" rel="noopener noreferrer" target="_blank">Charts by TradingView</a><span data-i18n="attributionSuffix"> · Lightweight Charts™ (Apache-2.0)</span></div>
 </section>
 <aside aria-label="Replay event notifications" class="stream" data-i18n-aria="feedAria">
-<div class="stream-top"><div><div class="stream-heading"><i class="beacon" id="livePulse"></i><h2 data-i18n="notifications">Notifications</h2></div><p data-i18n="updatedOnClose">Updated after each candle closes</p></div><span class="mode">OFFLINE REPLAY</span></div>
+<div class="stream-top"><div><div class="stream-heading"><i class="beacon" id="livePulse"></i><h2 data-i18n="notifications">Notifications</h2></div><p data-i18n="updatedOnClose">Updated after each candle closes</p></div><span class="mode" data-i18n="offlineReplay">OFFLINE REPLAY</span></div>
 <div class="asof"><span data-i18n="candleClose">LAST CLOSED CANDLE</span><b class="mono" id="feedTime">--</b></div>
 <div aria-live="polite" class="structure-snapshot" id="structureSnapshot">
 <div class="snapshot-title" data-i18n="currentStatus">STRUCTURE AT THIS CANDLE CLOSE</div>
 <div class="snapshot-row"><b data-i18n="majorLabel">MAIN / MAJOR</b><strong data-trend="unknown" id="feedMajorTrend">UNKNOWN</strong></div>
-<div class="snapshot-pivots"><div><span data-i18n="majorHighLabel">Major High</span><b class="mono" id="feedMajorHigh">Not confirmed</b></div><div><span data-i18n="majorLowLabel">Major Low</span><b class="mono" id="feedMajorLow">Not confirmed</b></div></div>
-<div class="snapshot-row snapshot-internal"><b data-i18n="internalLabel">INTERNAL</b><strong data-trend="unknown" id="feedInternalTrend">UNKNOWN</strong></div>
-<div class="snapshot-pivots"><div><span>iSH</span><b class="mono" id="feedInternalHigh">Not confirmed</b></div><div><span>iSL</span><b class="mono" id="feedInternalLow">Not confirmed</b></div></div>
+<div class="snapshot-row snapshot-internal-row"><b data-i18n="internalLabel">INTERNAL</b><strong data-trend="unknown" id="feedInternalTrend">UNKNOWN</strong></div>
 </div>
 <div class="live-hero" id="hero"><div class="signal-type" id="heroCategory">AWAITING DATA</div><h3 id="heroTitle">--</h3><p id="heroDetail">--</p><div class="hero-time"><span id="heroMeta">--</span></div></div>
 <div class="history-header"><b data-i18n="latestEvents">RECENT EVENTS</b><span id="eventCount">0 events</span></div>
@@ -105,5 +102,5 @@
 
 
 
-<script defer="" src="/chart-theme.js"></script><script defer="" src="/i18n.js"></script><script defer="" src="/engine.js"></script><script defer="" src="/advanced_engine.js"></script><script defer="" src="/studio.js"></script></body>
+<script defer="" src="/vendor/lightweight-charts-4.2.3.standalone.production.js"></script><script defer="" src="/chart-theme.js"></script><script defer="" src="/i18n.js"></script><script defer="" src="/engine.js"></script><script defer="" src="/advanced_engine.js"></script><script defer="" src="/studio.js"></script></body>
 </html>

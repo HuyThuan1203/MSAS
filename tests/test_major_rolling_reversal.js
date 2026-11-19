@@ -17,11 +17,11 @@ assert.equal(sample40.length,40);
 // already falls below 3995.80: no artificial *second* crossing is required.
 assert.equal(sample40[15].close,3995.2);
 assert.deepEqual(active(state(sample40,15).external),['SH-9',4013.4,'SL-12',3995.8]);
-assert.deepEqual(active(state(sample40,18).external),['SH-9',4013.4,'SL-12',3995.8]);
-const rolled=state(sample40,19);
+// V6 user amendment 2026-11-19: 19 -> 18 (SL-17 right bar closes).
+const rolled=state(sample40,18);
 assert.equal(rolled.external.trend,'down');
 assert.deepEqual(active(rolled.external),['SH-14',4001.5,'SL-17',3991.1]);
-assert(rolled.events.some(e=>e.kind==='major_updated'&&e.at===19&&e.refs.includes('SL-17')));
+assert(rolled.events.some(e=>e.kind==='major_updated'&&e.at===18&&e.refs.includes('SL-17')));
 const screenshot=state(sample40,24); // 25 / 40 at 21:00 screenshot
 assert.equal(sample40[24].time.slice(11,16),'21:00');
 assert.equal(screenshot.external.trend,'down');
@@ -32,9 +32,11 @@ assert.equal(sample40[24].close,3991.3);
 assert(!screenshot.events.some(e=>e.at===24&&e.kind==='major_updated'));
 // The independently annotated 48-bar sample must NOT regress: MH SH34,
 // corrective ML SL37. These can only be promoted after confirmations.
-const at39=state(fixture48,39),at40=state(fixture48,40),end48=state(fixture48,47);
-assert.notEqual(at39.external.majorLow?.id,'SL-37','correction promoted early');
-assert.deepEqual(active(at40.external),['SH-34',3396.648,'SL-37',3373.545]);
+// V6 user amendment 2026-11-19: 40 -> 38 (SL-37 right bar closes).
+const at37=state(fixture48,37),at38=state(fixture48,38),at40=state(fixture48,40),end48=state(fixture48,47);
+assert.notEqual(at37.external.majorLow?.id,'SL-37','correction promoted early');
+assert.deepEqual(active(at38.external),['SH-34',3396.648,'SL-37',3373.545]);
+assert.equal(at40.external.trend,'up');assert.deepEqual(active(at40.external),['SH-34',3396.648,'SL-37',3373.545]);
 assert.deepEqual(active(end48.external),['SH-34',3396.648,'SL-37',3373.545]);
 assert.equal(end48.external.trend,'up');
 // Deterministic no-lookahead of *both* Major values and event timing.
@@ -58,4 +60,4 @@ const up=seed('up');A.advance(up,0,{open:92,high:93,low:88,close:91});
 A.advance(up,1,{open:90,high:91,low:88,close:90});assert.equal(up.external.trend,'up');
 A.advance(up,2,{open:90,high:91,low:86,close:88});assert.equal(up.external.trend,'down');
 assert.equal(A.MSS_TOLERANCE,0);
-console.log('PASS screenshot XAU40 Major rolls at confirmed LL, XAU48 annotated pivots, Close MSS, 80 prefix histories');
+console.log('PASS screenshot XAU40 Major rolls at confirmed LL, XAU48 annotated pivots, Close MSS, 88 prefix histories');

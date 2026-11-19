@@ -89,3 +89,23 @@ Provider file (original raw; do not mutate)
 ## Analysis version V5.1
 
 `analysis_version=market_structure_advanced_v1_1` marks the semantic Major re-pivoting change. Dataset schema `1.0.0` and the basic `engine.js` source-locked rules remain unchanged. Historical events are recomputed causally and audit JSON files are regenerated from the same canonical 48-bar inputs, never by editing old audit event timestamps. At every prefix the UI must report `external.trend`, `internal.trend`, `external.majorHigh/majorLow`, `internal.internalHigh/internalLow` including `null` as unconfirmed. Chart MH/ML anchor markers refer to each pivot's `index`; a role change appears no earlier than the actual closed bar `at`.
+
+## V6 — USER-AMENDED streaming contract (2026-11-19)
+
+`analysis_version=market_structure_advanced_v2_0` supersedes the delayed pairing rules above. A strict three-closed-bar SH/SL is eligible and structural at its right bar close (`index + 1`). It never waits for an opposite pivot. Inside-child pivots remain `inside_rejected`; when a tied child is the only reason its mother fails the strict comparison, the mother/children cluster is compared with the first non-inside breakout bar and may produce an `inside_compressed` mother pivot at that breakout close.
+
+`advanced_engine.createStream().push(closedBar)` is the primary execution path. It incrementally detects local pivots and advances Major/Internal state without rescanning earlier bars. `replayAll(candles)` returns immutable `frames`, `events`, `pivots`, `roleChanges`, and `zones`. Prefix APIs replay through the same stream, so frame `t` and every audit item at or before `t` are byte-structurally identical whether the input ends at `t` or continues.
+
+Each frame is `{at, external, internal, active, lastPrimary}`. `external` adds `provisionalHigh` / `provisionalLow`; these use stable IDs `PX-H-<index>` / `PX-L-<index>`, have `confirmedAt:null` and `provisional:true`, and are never promoted as fabricated pivots. `active` points to current `SH`, `SL`, `MH`, `ML`, `iSH`, and `iSL` IDs. The append-only pivot ledger uses `{id,type,index,price,recognizedAt,status,rule}`; role history is never rewritten when an active ID changes.
+
+Only `major_established`, `major_continuation`, and `major_reversal` are `primary:true`. Major updates, Internal events, MSS C, CISD B, and local replacements are audit-only (`primary:false`). Close breaks use strict tolerance zero against the Major active before the current closed bar; equality never breaks. This is the **USER-AMENDED V6** deterministic policy and remains a structural replay model, not an entry/exit system.
+
+### V6 round 2 — assignment validity, cluster chaining, and scale
+
+A pivot can enter MH or ML only when it is still unbroken at the assignment close: no Close in `(pivot.index, assignmentAt]` may be above an SH candidate or below an SL candidate. This applies to initialization, continuation extremes, corrective sides, and S+ retention/reversal candidates. When all candidates for a side have already been violated, the existing confirmed boundary (if any) is not replaced and the side remains pending behind `provisionalHigh` / `provisionalLow` until a valid pivot is recognized. This prevents a closed price from immediately re-breaking a newly assigned historical level.
+
+For Inside compression, the left comparison is the last non-inside bar before the mother, walking through children of a prior cluster when necessary. A breakout crossing both mother boundaries produces no compressed pivot. The breakout bar remains eligible to mother a later cluster, so consecutive clusters are processed forward-only; no pivot exists in a prefix ending before its breakout close.
+
+Open policy question retained deliberately: when the mother is already a strict three-bar pivot against its first inside child, V6 recognizes that ordinary pivot at `mother + 1` instead of delaying it until cluster breakout. Round 2 does not change or source-certify that behavior.
+
+`replayAll` is budgeted for the 25,000-row input limit. Frames contain only current IDs/Level objects and the last primary event, never copies of the pivot ledger. The deterministic performance gate requires one 25,000-bar replay in less than 3,000 ms on the development machine and reports heap usage.

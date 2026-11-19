@@ -73,3 +73,15 @@ its mirrored bullish corrective pair is implementation policy (I)**.
 - `U`: how to delimit nested waves after ambiguous/multiple swing confirmations; time-of-day market sessions; same-candle open outside then close inside/at boundary; arbitrary number of substructures; how to choose strongest eligible Major candidate after competing swings. No unsupported blanket PASS for these edge cases.
 
 **Changes require** a source slide or approved interpretation, unit/prefix fixture, schema check, EN/VI test, and green Linux+Windows+Docker+Chromium workflow before claiming a release.
+
+## V6 — USER-AMENDED event priority (2026-11-19)
+
+MSS/CISD are evaluated only relative to the active MH/ML before the current closed bar. Strict Close S+ remains an immediate Main reversal with tolerance zero. Weak wick C and delivery B stay in the append-only event audit but carry `primary:false`, never alter Main, and never become the frame's `lastPrimary`. Internal-only breaks and `major_updated` are also non-primary. The complete primary whitelist is `major_established`, `major_continuation`, and `major_reversal`.
+
+After a primary break, `provisionalHigh` or `provisionalLow` tracks the running OHLC extreme from the break bar with ID `PX-H-<index>` / `PX-L-<index>`. It is display/audit state only. A real SH/SL enters the Major role only on its causal recognition close. Primary events are deduplicated by `(kind, direction, broken Major level ID)`; equality at either Major boundary is never a break.
+
+The XAU protected regressions move earlier only because strict pivots no longer wait for an opposite pivot: XAU40 SL-17 is actionable at 18, and XAU48 SL-37 at 38. Their prices and IDs are unchanged. Competing-pivot selection and CISD wave segmentation remain provisional.
+
+### V6 round 2 — no synthetic second break
+
+Primary breaks are still evaluated before pivots recognized on the same closed bar. After that evaluation, a historical candidate whose price has already been strictly crossed by any intervening Close cannot become an active Major. The engine therefore cannot manufacture a second S+/continuation merely by assigning a weaker already-broken level after the first event. Pending state and PX extremes carry the wave until a causally recognized, still-valid pivot exists. C and B remain non-primary and are unaffected.

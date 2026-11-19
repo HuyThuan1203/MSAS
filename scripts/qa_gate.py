@@ -25,6 +25,10 @@ NODE_SUITES = (
     "tests/test_major_selection.js",
     "tests/test_major_rolling_reversal.js",
     "tests/test_mss_cisd.js",
+    "tests/test_immediate_swings.js",
+    "tests/test_v6_rules.js",
+    "tests/test_v6_causal_stream.js",
+    "tests/test_v6_perf.js",
     "tests/test_ui_theme_i18n.js",
 )
 
@@ -33,8 +37,9 @@ def run(label: str, argv: list[str], timeout: int = 120) -> dict:
     started = time.monotonic()
     try:
         completed = subprocess.run(argv, cwd=ROOT, capture_output=True, text=True,
+                                   encoding="utf-8", errors="replace",
                                    timeout=timeout, check=False)
-        detail = (completed.stdout + completed.stderr).strip()
+        detail = ((completed.stdout or "") + (completed.stderr or "")).strip()
         status = "PASS" if completed.returncode == 0 else "FAIL"
         if detail:
             print(detail[-2500:])

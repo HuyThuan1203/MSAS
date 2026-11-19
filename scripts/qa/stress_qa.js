@@ -55,6 +55,7 @@ function check(cond,label){assert(cond,label);assertions++;}
 function equal(a,b,label){assert.deepStrictEqual(a,b,label);assertions++;}
 function refCheckEvent(e,b){
  const d=e.data||{};
+ check(e.primary===['major_established','major_continuation','major_reversal'].includes(e.kind),'V6 primary event whitelist');
  if(e.kind==='major_reversal'){
   check(d.label==='S+'&&d.confirmed===true&&d.tolerance===0,'REV 3,8 S+ contract');
   check(d.direction==='up'?b.close>d.brokenLevel:b.close<d.brokenLevel,'REV S+ strict Close');
@@ -76,8 +77,12 @@ function stateInvariant(state,limit){
  const ext=state.external,inn=state.internal;
  check(['up','down','unknown'].includes(ext.trend),'valid Main enum');
  check(['up','down','unknown'].includes(inn.trend),'valid Internal enum');
- if(ext.phase==='awaiting_major_high')check(ext.trend==='up'&&(ext.majorHigh===null||ext.majorHigh.price===ext.breakLevel),'pending MH: null after S+ or retained after continuation');
- if(ext.phase==='awaiting_major_low')check(ext.trend==='down'&&(ext.majorLow===null||ext.majorLow.price===ext.breakLevel),'pending ML: null after S+ or retained after continuation');
+ if(ext.phase==='awaiting_major_high')check(ext.breakAt===null?
+   ext.majorHigh===null&&ext.provisionalHigh!==null:
+   ext.trend==='up'&&(ext.majorHigh===null||ext.majorHigh.price===ext.breakLevel),'pending MH: provisional during initialization; null after S+ or retained after continuation');
+ if(ext.phase==='awaiting_major_low')check(ext.breakAt===null?
+   ext.majorLow===null&&ext.provisionalLow!==null:
+   ext.trend==='down'&&(ext.majorLow===null||ext.majorLow.price===ext.breakLevel),'pending ML: provisional during initialization; null after S+ or retained after continuation');
  for(const p of [ext.majorHigh,ext.majorLow,inn.internalHigh,inn.internalLow,inn.protectedHigh,inn.protectedLow]){
   if(!p)continue;
   check(p.index>=0&&p.index<=limit&&Number.isFinite(p.price),'known pivot valid');
@@ -93,23 +98,31 @@ function checkCase(x){
  const base=E.analyzePrefix(bars,n-1),full=A.analyzeAdvancedPrefix(bars,n-1,base);
  check(full.policy.noLookahead&&full.policy.tolerance===0&&A.MSS_TOLERANCE===0,'no lookahead / zero tolerance');
  stateInvariant(full,n-1);
- for(const p of base.confirmed){
-  check(p.index>=1&&p.index<n-1&&p.confirmedAt>=p.index+1&&p.structConfirmedAt>=p.index+1,'3-bar closed swing timing');
+ for(const p of base.detected){
+  check(p.index>=1&&p.index<n-1&&p.confirmedAt>=p.index+1&&p.structConfirmedAt===p.confirmedAt,'V6 immediate closed-bar swing timing');
   const c=bars[p.index];
-  check(p.type==='SH'?p.price===c.high&&c.high>bars[p.index-1].high&&c.high>bars[p.index+1].high:
+  if(p.rule==='three_bar')check(p.type==='SH'?p.price===c.high&&c.high>bars[p.index-1].high&&c.high>bars[p.index+1].high:
     p.price===c.low&&c.low<bars[p.index-1].low&&c.low<bars[p.index+1].low,'3-bar strict neighbor comparator');
+  else check(p.rule==='inside_compressed'&&p.confirmedAt>p.index+1,'compressed mother waits for breakout close');
  }
  for(const e of full.events){check(e.at>=0&&e.at<n,'event candle exists');refCheckEvent(e,bars[e.at]);}
+ const detectedById=new Map(base.detected.map(p=>[p.id,p]));
+ for(const role of full.roleChanges.filter(r=>r.to==='major_high'||r.to==='major_low')){
+  const p=detectedById.get(role.pivot_id);check(Boolean(p),`assigned Major pivot exists: ${role.pivot_id}`);
+  const closes=bars.slice(p.index+1,role.at+1).map(b=>b.close);
+  check(role.to==='major_high'?closes.every(close=>close<=p.price):closes.every(close=>close>=p.price),
+    `V6 Major assignment not already Close-violated: ${x.id} ${p.id} @${role.at}`);
+ }
  // Independent strict-Close oracle for S+: the source uses the current
  // ACTIVE Major and zero tolerance, without a second previous-close crossing.
  // Prior-close-outside events are recorded as regression coverage (not PASS
  // by themselves), because old code could miss exactly these reversals.
- const grouped=new Map();for(const p of base.confirmed){if(!grouped.has(p.structConfirmedAt))grouped.set(p.structConfirmedAt,[]);grouped.get(p.structConfirmedAt).push(p);}
+ const grouped=new Map();for(const p of base.detected){if(!grouped.has(p.structConfirmedAt))grouped.set(p.structConfirmedAt,[]);grouped.get(p.structConfirmedAt).push(p);}
  const stream=A.makeState();
  for(let t=0;t<n;t++){
   const before=stream.external;
-  const outside=(before.trend==='down'&&before.majorHigh&&bars[t].close>before.majorHigh.price) ||
-                 (before.trend==='up'&&before.majorLow&&bars[t].close<before.majorLow.price);
+  const outside=stream._majorEstablished&&((before.trend==='down'&&before.majorHigh&&bars[t].close>before.majorHigh.price) ||
+                 (before.trend==='up'&&before.majorLow&&bars[t].close<before.majorLow.price));
   const threshold=before.trend==='down'?before.majorHigh?.price:before.majorLow?.price;
   const previous=stream.previousClose;
   const crossed=outside&&(previous===null|| (before.trend==='down'?previous<=threshold:previous>=threshold));
@@ -118,7 +131,7 @@ function checkCase(x){
   const oldEventCount=stream.events.length;
   A.advance(stream,t,bars[t],grouped.get(t)||[]);
   const newStrong=stream.events.slice(oldEventCount).filter(e=>e.kind==='major_reversal');
-  check(Boolean(outside)===Boolean(newStrong.length),`REV S3/S8 missed/false S+ ${x.id} at ${t}: expectedCloseOutside=${!!outside} actual=${newStrong.length}, prior=${before.trend} close=${bars[t].close}`);
+  check(Boolean(outside)===Boolean(newStrong.length),`REV S3/S8 missed/false S+ ${x.id} at ${t}: expectedCloseOutside=${!!outside} actual=${newStrong.length}, prior=${before.trend} phase=${before.phase} level=${before.trend==='down'?before.majorHigh?.id:before.majorLow?.id} close=${bars[t].close} events=${stream.events.filter(e=>e.primary).map(e=>e.kind+':'+e.at+':'+e.data?.majorPivotId).join('|')}`);
   if(outside){equal(newStrong[0].data.direction,expectedDirection,'S+ flip direction');check(stream.external.trend===expectedDirection,'S+ changes main');}
  }
  const indices=new Set([0,1,2,3,Math.floor(n/4),Math.floor(n/2),Math.floor(n*3/4),n-2,n-1]);
@@ -130,7 +143,7 @@ function checkCase(x){
   equal(p1.roleChanges,fullRoles.filter(e=>e.at<=i),`roles no-lookahead ${x.id} at ${i}`);
   stateInvariant(p1,i);
  }
- return {id:x.id,seed:x.seed,type:x.type,bars:n,swings:base.confirmed.length,finalMain:full.external.trend,finalInternal:full.internal.trend,
+ return {id:x.id,seed:x.seed,type:x.type,bars:n,swings:base.detected.length,selectedSwings:base.confirmed.length,finalMain:full.external.trend,finalInternal:full.internal.trend,
    eventCounts:full.events.reduce((out,e)=>(out[e.kind]=(out[e.kind]||0)+1,out),{}),prefixCount:indices.size,checks:assertions-assertionsBefore};
 }
 const bar=(open,close,high=Math.max(open,close),low=Math.min(open,close))=>({open,close,high,low});
@@ -190,7 +203,7 @@ const policyGaps={alreadyOutsideAfterRoleAssignment:0,status:'regression_covered
 const started=Date.now();const report={tool:'msas-deterministic-stress-qa',version:'1.0.0',source:'REV slides 3-8; ADV slides 5-14; Basic Swing/Inside slides',
   synthetic:true,seed:cfg.seed,config:{cases:cfg.cases,bars:cfg.bars,prefixes:cfg.prefixes,randomGenerativeModes:TYPES},
   status:'RUNNING',cases:[],coverage:{labels:{'S+':0,C:0,B:0},main:{up:0,down:0,unknown:0},internal:{up:0,down:0,unknown:0},modes:{}},errors:[],
-  oracle:{sourceLocked:['strict three-closed-bar pivot','Inside Bar invalidation retained','S+ Close across opposing Major','C wick only, no trend switch','B last bearish/bullish cluster Open','tolerance=0','no future knowledge'],
+  oracle:{sourceLocked:['V6 immediate strict three-closed-bar pivot','V6 tied-mother Inside compression at breakout close','Inside Bar invalidation retained','S+ Close across opposing Major','C wick only, no trend switch','B last bearish/bullish cluster Open','tolerance=0','no future knowledge'],
           provisional:['Major candidate tie-break','Internal protected level/wave segmentation','C body-open requirement'],unverified:['exact PPT numeric 1-14 OHLC prices not supplied']} };
 try{
  const target=targeted(cfg.seed^0x55aa33,Math.max(20,Math.ceil(cfg.cases/3)));

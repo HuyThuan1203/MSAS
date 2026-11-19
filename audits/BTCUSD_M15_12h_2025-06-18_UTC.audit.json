@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "analysis_version": "market_structure_advanced_v1_3",
+  "analysis_version": "market_structure_advanced_v2_0",
   "source_dataset_id": "btcusd_m15_20250618_0600_utc",
   "source_sha256": "534d598a168086f9582b339d4a434beaff42aba9fef4060a9fb93a0022d59fce",
   "is_synthetic": false,
@@ -10,21 +10,22 @@
       "Cau_truc_nang_cao_-_Final.pptx",
       "Mau_hinh_xac_nhan_ao_chieu_-_Final.pptx"
     ],
-    "policy": "mixed source-locked/provisional",
+    "policy": "USER-AMENDED V6 mixed source-locked/provisional",
     "volume_used": false,
     "mss_tolerance": 0
   },
   "summary": {
     "bars": 48,
     "localSwingCount": 15,
-    "acceptedStructuralSwingCount": 10,
-    "localTrendAtEnd": "unknown",
-    "externalTrendAtEnd": "up",
+    "detectedStructuralSwingCount": 15,
+    "acceptedStructuralSwingCount": 11,
+    "localTrendAtEnd": "down",
+    "externalTrendAtEnd": "down",
     "internalTrendAtEnd": "unknown",
-    "mssStrongCount": 1,
-    "mssWeakCount": 2,
+    "mssStrongCount": 2,
+    "mssWeakCount": 1,
     "cisdCount": 4,
-    "events": 10
+    "events": 16
   },
   "pivots": [
     {
@@ -34,11 +35,11 @@
       "type": "SL",
       "price": 104731.26,
       "confirmed_at": 5,
-      "structure_confirmed_at": 7,
+      "recognized_at": 5,
+      "structure_confirmed_at": 5,
       "validity": "eligible",
       "structural_status": "confirmed",
-      "comparison": "SL",
-      "zone_id": null
+      "rule": "three_bar"
     },
     {
       "id": "SH-6",
@@ -47,11 +48,11 @@
       "type": "SH",
       "price": 105035.9,
       "confirmed_at": 7,
-      "structure_confirmed_at": null,
+      "recognized_at": 7,
+      "structure_confirmed_at": 7,
       "validity": "eligible",
-      "structural_status": "superseded",
-      "comparison": "",
-      "zone_id": null
+      "structural_status": "confirmed",
+      "rule": "three_bar"
     },
     {
       "id": "SH-8",
@@ -60,11 +61,11 @@
       "type": "SH",
       "price": 105336.17,
       "confirmed_at": 9,
-      "structure_confirmed_at": 11,
+      "recognized_at": 9,
+      "structure_confirmed_at": 9,
       "validity": "eligible",
       "structural_status": "confirmed",
-      "comparison": "SH",
-      "zone_id": null
+      "rule": "three_bar"
     },
     {
       "id": "SL-10",
@@ -73,11 +74,11 @@
       "type": "SL",
       "price": 104749.75,
       "confirmed_at": 11,
-      "structure_confirmed_at": 13,
+      "recognized_at": 11,
+      "structure_confirmed_at": 11,
       "validity": "eligible",
       "structural_status": "confirmed",
-      "comparison": "HL",
-      "zone_id": null
+      "rule": "three_bar"
     },
     {
       "id": "SH-12",
@@ -86,11 +87,11 @@
       "type": "SH",
       "price": 105159.7,
       "confirmed_at": 13,
-      "structure_confirmed_at": 20,
+      "recognized_at": 13,
+      "structure_confirmed_at": 13,
       "validity": "eligible",
       "structural_status": "confirmed",
-      "comparison": "LH",
-      "zone_id": null
+      "rule": "three_bar"
     },
     {
       "id": "SH-17",
@@ -99,11 +100,11 @@
       "type": "SH",
       "price": 104829.36,
       "confirmed_at": 18,
-      "structure_confirmed_at": null,
+      "recognized_at": 18,
+      "structure_confirmed_at": 18,
       "validity": "eligible",
-      "structural_status": "superseded",
-      "comparison": "",
-      "zone_id": null
+      "structural_status": "confirmed",
+      "rule": "three_bar"
     },
     {
       "id": "SL-19",
@@ -112,11 +113,11 @@
       "type": "SL",
       "price": 104191.62,
       "confirmed_at": 20,
-      "structure_confirmed_at": 25,
+      "recognized_at": 20,
+      "structure_confirmed_at": 20,
       "validity": "eligible",
       "structural_status": "confirmed",
-      "comparison": "LL",
-      "zone_id": null
+      "rule": "three_bar"
     },
     {
       "id": "SH-24",
@@ -125,11 +126,11 @@
       "type": "SH",
       "price": 104932.84,
       "confirmed_at": 25,
-      "structure_confirmed_at": 31,
+      "recognized_at": 25,
+      "structure_confirmed_at": 25,
       "validity": "eligible",
       "structural_status": "confirmed",
-      "comparison": "LH",
-      "zone_id": null
+      "rule": "three_bar"
     },
     {
       "id": "SL-30",
@@ -138,11 +139,11 @@
       "type": "SL",
       "price": 103837.75,
       "confirmed_at": 31,
-      "structure_confirmed_at": 34,
+      "recognized_at": 31,
+      "structure_confirmed_at": 31,
       "validity": "eligible",
       "structural_status": "confirmed",
-      "comparison": "LL",
-      "zone_id": null
+      "rule": "three_bar"
     },
     {
       "id": "SH-33",
@@ -151,11 +152,11 @@
       "type": "SH",
       "price": 105348.75,
       "confirmed_at": 34,
-      "structure_confirmed_at": 38,
+      "recognized_at": 34,
+      "structure_confirmed_at": 34,
       "validity": "eligible",
       "structural_status": "confirmed",
-      "comparison": "HH",
-      "zone_id": null
+      "rule": "three_bar"
     },
     {
       "id": "SL-37",
@@ -164,11 +165,11 @@
       "type": "SL",
       "price": 104161.37,
       "confirmed_at": 38,
-      "structure_confirmed_at": 40,
+      "recognized_at": 38,
+      "structure_confirmed_at": 38,
       "validity": "eligible",
       "structural_status": "confirmed",
-      "comparison": "HL",
-      "zone_id": null
+      "rule": "three_bar"
     },
     {
       "id": "SH-39",
@@ -177,11 +178,11 @@
       "type": "SH",
       "price": 105014.67,
       "confirmed_at": 40,
-      "structure_confirmed_at": 42,
+      "recognized_at": 40,
+      "structure_confirmed_at": 40,
       "validity": "eligible",
       "structural_status": "confirmed",
-      "comparison": "LH",
-      "zone_id": null
+      "rule": "three_bar"
     },
     {
       "id": "SL-41",
@@ -190,11 +191,11 @@
       "type": "SL",
       "price": 104366.46,
       "confirmed_at": 42,
-      "structure_confirmed_at": null,
+      "recognized_at": 42,
+      "structure_confirmed_at": 42,
       "validity": "eligible",
-      "structural_status": "superseded",
-      "comparison": "",
-      "zone_id": null
+      "structural_status": "confirmed",
+      "rule": "three_bar"
     },
     {
       "id": "SL-44",
@@ -203,11 +204,11 @@
       "type": "SL",
       "price": 104005,
       "confirmed_at": 45,
-      "structure_confirmed_at": null,
+      "recognized_at": 45,
+      "structure_confirmed_at": 45,
       "validity": "eligible",
-      "structural_status": "superseded",
-      "comparison": "",
-      "zone_id": null
+      "structural_status": "confirmed",
+      "rule": "three_bar"
     },
     {
       "id": "SL-46",
@@ -216,85 +217,73 @@
       "type": "SL",
       "price": 103627,
       "confirmed_at": 47,
-      "structure_confirmed_at": null,
+      "recognized_at": 47,
+      "structure_confirmed_at": 47,
       "validity": "eligible",
-      "structural_status": "pending",
-      "comparison": "",
-      "zone_id": null
+      "structural_status": "confirmed",
+      "rule": "three_bar"
     }
   ],
   "external": {
-    "trend": "up",
+    "trend": "down",
     "phase": "confirmed",
     "majorHigh": {
       "id": "SH-33",
       "index": 33,
       "type": "SH",
       "price": 105348.75,
-      "confirmedAt": 38
-    },
-    "majorLow": {
-      "id": "SL-30",
-      "index": 30,
-      "type": "SL",
-      "price": 103837.75,
       "confirmedAt": 34
     },
+    "majorLow": {
+      "id": "SL-44",
+      "index": 44,
+      "type": "SL",
+      "price": 104005,
+      "confirmedAt": 45
+    },
     "breakAt": null,
-    "breakLevel": null
+    "breakLevel": null,
+    "provisionalHigh": null,
+    "provisionalLow": null
   },
   "internal": {
     "trend": "unknown",
     "phase": "collecting",
-    "internalHigh": {
-      "id": "SH-39",
-      "index": 39,
-      "type": "SH",
-      "price": 105014.67,
-      "confirmedAt": 42
-    },
-    "internalLow": {
-      "id": "SL-37",
-      "index": 37,
-      "type": "SL",
-      "price": 104161.37,
-      "confirmedAt": 40
-    },
+    "internalHigh": null,
+    "internalLow": null,
     "protectedHigh": null,
     "protectedLow": null,
-    "pendingDirection": null,
-    "pendingBreakAt": null,
     "confirmed": false
   },
   "mss": {
     "tolerance": 0,
     "last": {
-      "at": 33,
+      "at": 45,
       "label": "S+",
-      "direction": "up",
-      "eventId": "major_reversal:33:3",
-      "brokenLevel": 105159.7
+      "direction": "down",
+      "eventId": "major_reversal:45:12",
+      "brokenLevel": 104161.37
     },
     "lastWeak": {
-      "at": 46,
+      "at": 44,
       "label": "C",
-      "eventId": "mss_weak:46:9",
-      "majorPivotId": "SL-30"
+      "eventId": "mss_weak:44:10",
+      "majorPivotId": "SL-37"
     }
   },
   "cisd": {
     "reference": {
-      "direction": "up",
-      "startIndex": 46,
-      "endIndex": 46,
-      "open": 104104.11,
-      "waveStartIndex": 37,
-      "opposingSwingId": "SL-37"
+      "direction": "down",
+      "startIndex": 44,
+      "endIndex": 45,
+      "open": 104446.92,
+      "waveStartIndex": 44,
+      "opposingSwingId": "SH-39"
     },
     "last": {
       "at": 44,
       "label": "B",
-      "eventId": "cisd:44:8",
+      "eventId": "cisd:44:11",
       "referenceOpen": 104415.99,
       "referenceStartIndex": 42,
       "majorDirectionUnchanged": true
@@ -302,55 +291,95 @@
   },
   "role_changes": [
     {
-      "at": 25,
+      "at": 20,
       "pivot_id": "SH-12",
       "pivot_index": 12,
       "from": "confirmed_swing",
       "to": "major_high",
-      "reason": "initial_major_pair"
+      "reason": "initial_major_pair_v6"
     },
     {
-      "at": 25,
+      "at": 20,
       "pivot_id": "SL-19",
       "pivot_index": 19,
       "from": "confirmed_swing",
       "to": "major_low",
-      "reason": "initial_major_pair"
+      "reason": "initial_major_pair_v6"
     },
     {
-      "at": 33,
-      "pivot_id": "SH-12",
-      "pivot_index": 12,
-      "from": "major_high",
-      "to": "broken_major_high",
-      "reason": "external_reversal"
+      "at": 25,
+      "pivot_id": "SH-24",
+      "pivot_index": 24,
+      "from": "confirmed_swing",
+      "to": "internal_sh",
+      "reason": "latest_internal_high"
     },
     {
-      "at": 38,
+      "at": 31,
       "pivot_id": "SL-19",
       "pivot_index": 19,
       "from": "major_low",
       "to": "historical_major",
-      "reason": "major_rolled"
+      "reason": "break_extreme_v6"
     },
     {
-      "at": 38,
+      "at": 31,
+      "pivot_id": "SL-30",
+      "pivot_index": 30,
+      "from": "confirmed_swing",
+      "to": "major_low",
+      "reason": "break_extreme_v6"
+    },
+    {
+      "at": 31,
+      "pivot_id": "SH-12",
+      "pivot_index": 12,
+      "from": "major_high",
+      "to": "historical_major",
+      "reason": "preceding_lower_high_v6"
+    },
+    {
+      "at": 31,
+      "pivot_id": "SH-24",
+      "pivot_index": 24,
+      "from": "confirmed_swing",
+      "to": "major_high",
+      "reason": "preceding_lower_high_v6"
+    },
+    {
+      "at": 32,
+      "pivot_id": "SH-24",
+      "pivot_index": 24,
+      "from": "major_high",
+      "to": "historical_major",
+      "reason": "external_reversal_v6"
+    },
+    {
+      "at": 34,
       "pivot_id": "SH-33",
       "pivot_index": 33,
       "from": "confirmed_swing",
       "to": "major_high",
-      "reason": "strongest_confirmed_major_break_wave"
+      "reason": "break_extreme_v6"
     },
     {
       "at": 38,
       "pivot_id": "SL-30",
       "pivot_index": 30,
-      "from": "confirmed_swing",
-      "to": "major_low",
-      "reason": "strongest_confirmed_major_break_wave"
+      "from": "major_low",
+      "to": "historical_major",
+      "reason": "corrective_after_major_high_v6"
     },
     {
-      "at": 40,
+      "at": 38,
+      "pivot_id": "SL-37",
+      "pivot_index": 37,
+      "from": "confirmed_swing",
+      "to": "major_low",
+      "reason": "corrective_after_major_high_v6"
+    },
+    {
+      "at": 38,
       "pivot_id": "SL-37",
       "pivot_index": 37,
       "from": "confirmed_swing",
@@ -358,22 +387,76 @@
       "reason": "latest_internal_low"
     },
     {
-      "at": 42,
+      "at": 40,
       "pivot_id": "SH-39",
       "pivot_index": 39,
       "from": "confirmed_swing",
       "to": "internal_sh",
       "reason": "latest_internal_high"
+    },
+    {
+      "at": 42,
+      "pivot_id": "SL-37",
+      "pivot_index": 37,
+      "from": "internal_sl",
+      "to": "historical_swing",
+      "reason": "newer_internal_low"
+    },
+    {
+      "at": 42,
+      "pivot_id": "SL-41",
+      "pivot_index": 41,
+      "from": "confirmed_swing",
+      "to": "internal_sl",
+      "reason": "latest_internal_low"
+    },
+    {
+      "at": 45,
+      "pivot_id": "SL-37",
+      "pivot_index": 37,
+      "from": "major_low",
+      "to": "historical_major",
+      "reason": "external_reversal_v6"
+    },
+    {
+      "at": 45,
+      "pivot_id": "SL-44",
+      "pivot_index": 44,
+      "from": "confirmed_swing",
+      "to": "major_low",
+      "reason": "break_extreme_v6"
     }
   ],
   "events": [
     {
-      "id": "major_established:25:0",
-      "at": 25,
+      "id": "replace:9:0",
+      "at": 9,
+      "kind": "replace",
+      "layer": "local",
+      "title": "Thay SH-6 bằng SH-8",
+      "detail": "SH-8 cực trị hơn SH-6 trong đường Swing nhân quả.",
+      "severity": "info",
+      "source": "ADV:S14",
+      "refs": [
+        "SH-6",
+        "SH-8"
+      ],
+      "data": {
+        "oldId": "SH-6",
+        "newId": "SH-8",
+        "type": "SH"
+      },
+      "primary": false,
+      "bar_open_time_utc": "2025-06-18T08:15:00Z",
+      "available_at_utc": "2025-06-18T08:30:00.000Z"
+    },
+    {
+      "id": "major_established:20:1",
+      "at": 20,
       "kind": "major_established",
       "layer": "external",
       "title": "Khởi tạo cấu trúc chính GIẢM",
-      "detail": "Major High 105159.7; Major Low 104191.62. Xác định từ Swing đã được chấp nhận theo HH+HL / LH+LL.",
+      "detail": "Major High 105159.7; Major Low 104191.62.",
       "severity": "success",
       "source": "ADV:S5,S14",
       "refs": [
@@ -385,36 +468,17 @@
         "majorHigh": 105159.7,
         "majorLow": 104191.62
       },
-      "bar_open_time_utc": "2025-06-18T12:15:00Z",
-      "available_at_utc": "2025-06-18T12:30:00.000Z"
+      "primary": true,
+      "bar_open_time_utc": "2025-06-18T11:00:00Z",
+      "available_at_utc": "2025-06-18T11:15:00.000Z"
     },
     {
-      "id": "major_continuation:28:1",
-      "at": 28,
-      "kind": "major_continuation",
-      "layer": "external",
-      "title": "Cấu trúc chính tiếp diễn GIẢM",
-      "detail": "Close 104083.98 < Major Low 104191.62. Chờ Swing Low mới hợp lệ để cập nhật cặp Major.",
-      "severity": "success",
-      "source": "ADV:S7,S14",
-      "refs": [
-        "SL-19"
-      ],
-      "data": {
-        "direction": "down",
-        "close": 104083.98,
-        "brokenLevel": 104191.62
-      },
-      "bar_open_time_utc": "2025-06-18T13:00:00Z",
-      "available_at_utc": "2025-06-18T13:15:00.000Z"
-    },
-    {
-      "id": "cisd:32:2",
-      "at": 32,
+      "id": "cisd:22:2",
+      "at": 22,
       "kind": "cisd",
       "layer": "delivery",
       "title": "CISD B · thay đổi hành vi giá",
-      "detail": "Close 105079.8 vượt Open 104534.02 của nến đầu cụm GIẢM cuối cùng. Đây chỉ là tín hiệu sớm; Major vẫn GIẢM.",
+      "detail": "Close 104635.91 vượt Open 104483.22 của nến đầu cụm GIẢM cuối cùng. Đây chỉ là tín hiệu sớm; Major vẫn GIẢM.",
       "severity": "warning",
       "source": "REV:S5-S8",
       "refs": [],
@@ -422,103 +486,108 @@
         "label": "B",
         "direction": "up",
         "mainTrend": "down",
-        "close": 105079.8,
-        "referenceOpen": 104534.02,
-        "referenceStartIndex": 28,
-        "referenceEndIndex": 29,
-        "waveStartIndex": 24,
+        "close": 104635.91,
+        "referenceOpen": 104483.22,
+        "referenceStartIndex": 21,
+        "referenceEndIndex": 21,
+        "waveStartIndex": 19,
         "confirmed": false,
         "tolerance": 0
       },
-      "bar_open_time_utc": "2025-06-18T14:00:00Z",
-      "available_at_utc": "2025-06-18T14:15:00.000Z"
+      "primary": false,
+      "bar_open_time_utc": "2025-06-18T11:30:00Z",
+      "available_at_utc": "2025-06-18T11:45:00.000Z"
     },
     {
-      "id": "major_reversal:33:3",
-      "at": 33,
+      "id": "major_continuation:28:3",
+      "at": 28,
+      "kind": "major_continuation",
+      "layer": "external",
+      "title": "Cấu trúc chính tiếp diễn GIẢM",
+      "detail": "Close 104083.98 < 104191.62; chờ Swing Low thực, dùng cực trị tạm thời trong lúc chờ.",
+      "severity": "success",
+      "source": "ADV:S7,S11,S14",
+      "refs": [
+        "SL-19",
+        "SH-12"
+      ],
+      "data": {
+        "label": null,
+        "direction": "down",
+        "close": 104083.98,
+        "brokenLevel": 104191.62,
+        "retainedLevel": 105159.7,
+        "majorPivotId": "SL-19",
+        "confirmed": true,
+        "tolerance": 0
+      },
+      "primary": true,
+      "bar_open_time_utc": "2025-06-18T13:00:00Z",
+      "available_at_utc": "2025-06-18T13:15:00.000Z"
+    },
+    {
+      "id": "major_updated:31:4",
+      "at": 31,
+      "kind": "major_updated",
+      "layer": "external",
+      "title": "Cập nhật Major theo bằng chứng Swing đã đóng",
+      "detail": "Cập nhật độc lập ML + MH ngay khi Swing được nhận diện; không chờ đủ cặp đối diện.",
+      "severity": "success",
+      "source": "ADV:S7,S11,S14",
+      "refs": [
+        "SH-24",
+        "SL-30"
+      ],
+      "data": {
+        "direction": "down",
+        "majorHigh": 104932.84,
+        "majorLow": 103837.75,
+        "changed": [
+          "ML",
+          "MH"
+        ],
+        "selection": "USER-AMENDED V6 independent closed-bar roles"
+      },
+      "primary": false,
+      "bar_open_time_utc": "2025-06-18T13:45:00Z",
+      "available_at_utc": "2025-06-18T14:00:00.000Z"
+    },
+    {
+      "id": "major_reversal:32:5",
+      "at": 32,
       "kind": "major_reversal",
       "layer": "external",
       "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
-      "detail": "Giá đóng 105196.32 cao hơn Major High 105159.7; giữ Major Low 104191.62, Major High mới chờ xác nhận.",
-      "severity": "success",
-      "source": "ADV:S3,S7,S14;REV:S3,S8",
+      "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+      "severity": "error",
+      "source": "ADV:S3,S7,S13-14;REV:S3,S8",
       "refs": [
-        "SH-12",
-        "SL-19"
+        "SH-24",
+        "SL-30"
       ],
       "data": {
         "label": "S+",
         "direction": "up",
-        "close": 105196.32,
-        "brokenLevel": 105159.7,
-        "retainedLevel": 104191.62,
-        "majorPivotId": "SH-12",
+        "close": 105079.8,
+        "brokenLevel": 104932.84,
+        "retainedLevel": 103837.75,
+        "majorPivotId": "SH-24",
         "confirmed": true,
         "tolerance": 0
       },
-      "bar_open_time_utc": "2025-06-18T14:15:00Z",
-      "available_at_utc": "2025-06-18T14:30:00.000Z"
+      "primary": true,
+      "bar_open_time_utc": "2025-06-18T14:00:00Z",
+      "available_at_utc": "2025-06-18T14:15:00.000Z"
     },
     {
-      "id": "cisd:35:4",
-      "at": 35,
-      "kind": "cisd",
-      "layer": "delivery",
-      "title": "CISD B · thay đổi hành vi giá",
-      "detail": "Close 104646.82 vượt Open 105071.92 của nến đầu cụm TĂNG cuối cùng. Đây chỉ là tín hiệu sớm; Major vẫn TĂNG.",
-      "severity": "warning",
-      "source": "REV:S5-S8",
-      "refs": [],
-      "data": {
-        "label": "B",
-        "direction": "down",
-        "mainTrend": "up",
-        "close": 104646.82,
-        "referenceOpen": 105071.92,
-        "referenceStartIndex": 33,
-        "referenceEndIndex": 33,
-        "waveStartIndex": 33,
-        "confirmed": false,
-        "tolerance": 0
-      },
-      "bar_open_time_utc": "2025-06-18T14:45:00Z",
-      "available_at_utc": "2025-06-18T15:00:00.000Z"
-    },
-    {
-      "id": "mss_weak:37:5",
-      "at": 37,
-      "kind": "mss_weak",
-      "layer": "external",
-      "title": "MSS C · nỗ lực đảo chiều yếu",
-      "detail": "Râu nến vượt Major Low 104191.62, nhưng Close 104779.51 trở lại biên. Main TĂNG giữ nguyên.",
-      "severity": "warning",
-      "source": "REV:S4,S8",
-      "refs": [
-        "SL-19"
-      ],
-      "data": {
-        "label": "C",
-        "direction": "down",
-        "mainTrend": "up",
-        "close": 104779.51,
-        "wick": 104161.37,
-        "brokenLevel": 104191.62,
-        "majorPivotId": "SL-19",
-        "confirmed": false,
-        "tolerance": 0
-      },
-      "bar_open_time_utc": "2025-06-18T15:15:00Z",
-      "available_at_utc": "2025-06-18T15:30:00.000Z"
-    },
-    {
-      "id": "major_updated:38:6",
-      "at": 38,
+      "id": "major_updated:34:6",
+      "at": 34,
       "kind": "major_updated",
       "layer": "external",
-      "title": "Đã cập nhật Major High / Major Low",
-      "detail": "Major High 105348.75; Major Low 103837.75. Cặp đỉnh/đáy mạnh nhất đã xác nhận cho nhịp phá Major; không chọn cực trị chỉ vì xuất hiện gần nhất.",
+      "title": "Cập nhật Major theo bằng chứng Swing đã đóng",
+      "detail": "Cập nhật độc lập MH ngay khi Swing được nhận diện; không chờ đủ cặp đối diện.",
       "severity": "success",
-      "source": "ADV:S11,S13-14",
+      "source": "ADV:S7,S11,S14",
       "refs": [
         "SH-33",
         "SL-30"
@@ -527,15 +596,69 @@
         "direction": "up",
         "majorHigh": 105348.75,
         "majorLow": 103837.75,
-        "majorHighIndex": 33,
-        "majorLowIndex": 30,
-        "selection": "strongest_confirmed_wave_provisional"
+        "changed": [
+          "MH"
+        ],
+        "selection": "USER-AMENDED V6 independent closed-bar roles"
       },
+      "primary": false,
+      "bar_open_time_utc": "2025-06-18T14:30:00Z",
+      "available_at_utc": "2025-06-18T14:45:00.000Z"
+    },
+    {
+      "id": "cisd:36:7",
+      "at": 36,
+      "kind": "cisd",
+      "layer": "delivery",
+      "title": "CISD B · thay đổi hành vi giá",
+      "detail": "Close 104445.51 vượt Open 104460.86 của nến đầu cụm TĂNG cuối cùng. Đây chỉ là tín hiệu sớm; Major vẫn TĂNG.",
+      "severity": "warning",
+      "source": "REV:S5-S8",
+      "refs": [],
+      "data": {
+        "label": "B",
+        "direction": "down",
+        "mainTrend": "up",
+        "close": 104445.51,
+        "referenceOpen": 104460.86,
+        "referenceStartIndex": 32,
+        "referenceEndIndex": 33,
+        "waveStartIndex": 32,
+        "confirmed": false,
+        "tolerance": 0
+      },
+      "primary": false,
+      "bar_open_time_utc": "2025-06-18T15:00:00Z",
+      "available_at_utc": "2025-06-18T15:15:00.000Z"
+    },
+    {
+      "id": "major_updated:38:8",
+      "at": 38,
+      "kind": "major_updated",
+      "layer": "external",
+      "title": "Cập nhật Major theo bằng chứng Swing đã đóng",
+      "detail": "Cập nhật độc lập ML ngay khi Swing được nhận diện; không chờ đủ cặp đối diện.",
+      "severity": "success",
+      "source": "ADV:S7,S11,S14",
+      "refs": [
+        "SH-33",
+        "SL-37"
+      ],
+      "data": {
+        "direction": "up",
+        "majorHigh": 105348.75,
+        "majorLow": 104161.37,
+        "changed": [
+          "ML"
+        ],
+        "selection": "USER-AMENDED V6 independent closed-bar roles"
+      },
+      "primary": false,
       "bar_open_time_utc": "2025-06-18T15:30:00Z",
       "available_at_utc": "2025-06-18T15:45:00.000Z"
     },
     {
-      "id": "cisd:41:7",
+      "id": "cisd:41:9",
       "at": 41,
       "kind": "cisd",
       "layer": "delivery",
@@ -556,11 +679,39 @@
         "confirmed": false,
         "tolerance": 0
       },
+      "primary": false,
       "bar_open_time_utc": "2025-06-18T16:15:00Z",
       "available_at_utc": "2025-06-18T16:30:00.000Z"
     },
     {
-      "id": "cisd:44:8",
+      "id": "mss_weak:44:10",
+      "at": 44,
+      "kind": "mss_weak",
+      "layer": "external",
+      "title": "MSS C · nỗ lực đảo chiều yếu",
+      "detail": "Râu nến vượt Major Low 104161.37, nhưng Close 104305.23 trở lại biên. Main TĂNG giữ nguyên.",
+      "severity": "warning",
+      "source": "REV:S4,S8",
+      "refs": [
+        "SL-37"
+      ],
+      "data": {
+        "label": "C",
+        "direction": "down",
+        "mainTrend": "up",
+        "close": 104305.23,
+        "wick": 104005,
+        "brokenLevel": 104161.37,
+        "majorPivotId": "SL-37",
+        "confirmed": false,
+        "tolerance": 0
+      },
+      "primary": false,
+      "bar_open_time_utc": "2025-06-18T17:00:00Z",
+      "available_at_utc": "2025-06-18T17:15:00.000Z"
+    },
+    {
+      "id": "cisd:44:11",
       "at": 44,
       "kind": "cisd",
       "layer": "delivery",
@@ -577,38 +728,110 @@
         "referenceOpen": 104415.99,
         "referenceStartIndex": 42,
         "referenceEndIndex": 42,
-        "waveStartIndex": 37,
+        "waveStartIndex": 41,
         "confirmed": false,
         "tolerance": 0
       },
+      "primary": false,
       "bar_open_time_utc": "2025-06-18T17:00:00Z",
       "available_at_utc": "2025-06-18T17:15:00.000Z"
     },
     {
-      "id": "mss_weak:46:9",
-      "at": 46,
-      "kind": "mss_weak",
+      "id": "major_reversal:45:12",
+      "at": 45,
+      "kind": "major_reversal",
       "layer": "external",
-      "title": "MSS C · nỗ lực đảo chiều yếu",
-      "detail": "Râu nến vượt Major Low 103837.75, nhưng Close 104211.56 trở lại biên. Main TĂNG giữ nguyên.",
-      "severity": "warning",
-      "source": "REV:S4,S8",
+      "title": "Cấu trúc chính đảo chiều TĂNG → GIẢM",
+      "detail": "Close 104104.1 < 104161.37; chờ Swing Low thực, dùng cực trị tạm thời trong lúc chờ.",
+      "severity": "error",
+      "source": "ADV:S3,S7,S13-14;REV:S3,S8",
       "refs": [
-        "SL-30"
+        "SL-37",
+        "SH-33"
       ],
       "data": {
-        "label": "C",
+        "label": "S+",
         "direction": "down",
-        "mainTrend": "up",
-        "close": 104211.56,
-        "wick": 103627,
-        "brokenLevel": 103837.75,
-        "majorPivotId": "SL-30",
-        "confirmed": false,
+        "close": 104104.1,
+        "brokenLevel": 104161.37,
+        "retainedLevel": 105348.75,
+        "majorPivotId": "SL-37",
+        "confirmed": true,
         "tolerance": 0
       },
-      "bar_open_time_utc": "2025-06-18T17:30:00Z",
-      "available_at_utc": "2025-06-18T17:45:00.000Z"
+      "primary": true,
+      "bar_open_time_utc": "2025-06-18T17:15:00Z",
+      "available_at_utc": "2025-06-18T17:30:00.000Z"
+    },
+    {
+      "id": "replace:45:13",
+      "at": 45,
+      "kind": "replace",
+      "layer": "local",
+      "title": "Thay SL-41 bằng SL-44",
+      "detail": "SL-44 cực trị hơn SL-41 trong đường Swing nhân quả.",
+      "severity": "info",
+      "source": "ADV:S14",
+      "refs": [
+        "SL-41",
+        "SL-44"
+      ],
+      "data": {
+        "oldId": "SL-41",
+        "newId": "SL-44",
+        "type": "SL"
+      },
+      "primary": false,
+      "bar_open_time_utc": "2025-06-18T17:15:00Z",
+      "available_at_utc": "2025-06-18T17:30:00.000Z"
+    },
+    {
+      "id": "major_updated:45:14",
+      "at": 45,
+      "kind": "major_updated",
+      "layer": "external",
+      "title": "Cập nhật Major theo bằng chứng Swing đã đóng",
+      "detail": "Cập nhật độc lập ML ngay khi Swing được nhận diện; không chờ đủ cặp đối diện.",
+      "severity": "success",
+      "source": "ADV:S7,S11,S14",
+      "refs": [
+        "SH-33",
+        "SL-44"
+      ],
+      "data": {
+        "direction": "down",
+        "majorHigh": 105348.75,
+        "majorLow": 104005,
+        "changed": [
+          "ML"
+        ],
+        "selection": "USER-AMENDED V6 independent closed-bar roles"
+      },
+      "primary": false,
+      "bar_open_time_utc": "2025-06-18T17:15:00Z",
+      "available_at_utc": "2025-06-18T17:30:00.000Z"
+    },
+    {
+      "id": "replace:47:15",
+      "at": 47,
+      "kind": "replace",
+      "layer": "local",
+      "title": "Thay SL-44 bằng SL-46",
+      "detail": "SL-46 cực trị hơn SL-44 trong đường Swing nhân quả.",
+      "severity": "info",
+      "source": "ADV:S14",
+      "refs": [
+        "SL-44",
+        "SL-46"
+      ],
+      "data": {
+        "oldId": "SL-44",
+        "newId": "SL-46",
+        "type": "SL"
+      },
+      "primary": false,
+      "bar_open_time_utc": "2025-06-18T17:45:00Z",
+      "available_at_utc": "2025-06-18T18:00:00.000Z"
     }
   ],
   "timeline": [
@@ -623,7 +846,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -632,19 +857,17 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": null,
+        "SL": null,
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -659,7 +882,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -668,19 +893,17 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": null,
+        "SL": null,
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -695,7 +918,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -704,19 +929,17 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": null,
+        "SL": null,
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -731,7 +954,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -740,19 +965,17 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": null,
+        "SL": null,
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -767,7 +990,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -776,19 +1001,17 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": null,
+        "SL": null,
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -803,7 +1026,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -812,21 +1037,21 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": null,
+        "SL": "SL-4",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
-      "confirmedPivots": []
+      "confirmedPivots": [
+        "SL-4"
+      ]
     },
     {
       "at": 6,
@@ -839,7 +1064,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -848,19 +1075,17 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": null,
+        "SL": "SL-4",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -875,7 +1100,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -884,22 +1111,20 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-6",
+        "SL": "SL-4",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": [
-        "SL-4"
+        "SH-6"
       ]
     },
     {
@@ -913,7 +1138,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -922,19 +1149,17 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-6",
+        "SL": "SL-4",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -949,7 +1174,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -958,21 +1185,42 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-8",
+        "SL": "SL-4",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
-      "eventsAt": [],
-      "confirmedPivots": []
+      "lastPrimary": null,
+      "eventsAt": [
+        {
+          "id": "replace:9:0",
+          "at": 9,
+          "kind": "replace",
+          "layer": "local",
+          "title": "Thay SH-6 bằng SH-8",
+          "detail": "SH-8 cực trị hơn SH-6 trong đường Swing nhân quả.",
+          "severity": "info",
+          "source": "ADV:S14",
+          "refs": [
+            "SH-6",
+            "SH-8"
+          ],
+          "data": {
+            "oldId": "SH-6",
+            "newId": "SH-8",
+            "type": "SH"
+          },
+          "primary": false
+        }
+      ],
+      "confirmedPivots": [
+        "SH-8"
+      ]
     },
     {
       "at": 10,
@@ -985,7 +1233,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -994,19 +1244,17 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-8",
+        "SL": "SL-4",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1021,7 +1269,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -1030,22 +1280,20 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-8",
+        "SL": "SL-10",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": [
-        "SH-8"
+        "SL-10"
       ]
     },
     {
@@ -1059,7 +1307,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -1068,19 +1318,17 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-8",
+        "SL": "SL-10",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1095,7 +1343,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -1104,22 +1354,20 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-12",
+        "SL": "SL-10",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": [
-        "SL-10"
+        "SH-12"
       ]
     },
     {
@@ -1133,7 +1381,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -1142,19 +1392,17 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-12",
+        "SL": "SL-10",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1169,7 +1417,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -1178,19 +1428,17 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-12",
+        "SL": "SL-10",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1205,7 +1453,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -1214,19 +1464,17 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-12",
+        "SL": "SL-10",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1241,7 +1489,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -1250,19 +1500,17 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-12",
+        "SL": "SL-10",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1277,7 +1525,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -1286,21 +1536,21 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-12",
+        "SL": "SL-10",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
-      "confirmedPivots": []
+      "confirmedPivots": [
+        "SH-17"
+      ]
     },
     {
       "at": 19,
@@ -1313,7 +1563,9 @@
         "majorHigh": null,
         "majorLow": null,
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -1322,19 +1574,17 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-12",
+        "SL": "SL-10",
+        "MH": null,
+        "ML": null,
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
-      },
+      "lastPrimary": null,
       "eventsAt": [],
       "confirmedPivots": []
     },
@@ -1342,72 +1592,155 @@
       "at": 20,
       "time": "2025-06-18T11:00:00Z",
       "available_at_utc": "2025-06-18T11:15:00.000Z",
-      "localTrend": "unknown",
+      "localTrend": "down",
       "external": {
-        "trend": "unknown",
-        "phase": "uninitialized",
-        "majorHigh": null,
-        "majorLow": null,
+        "trend": "down",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-12",
+          "index": 12,
+          "type": "SH",
+          "price": 105159.7,
+          "confirmedAt": 13
+        },
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 20
+        },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
-        "phase": "uninitialized",
+        "phase": "collecting",
         "internalHigh": null,
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-12",
+        "SL": "SL-19",
+        "MH": "SH-12",
+        "ML": "SL-19",
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
+      "lastPrimary": {
+        "id": "major_established:20:1",
+        "at": 20,
+        "kind": "major_established",
+        "layer": "external",
+        "title": "Khởi tạo cấu trúc chính GIẢM",
+        "detail": "Major High 105159.7; Major Low 104191.62.",
+        "severity": "success",
+        "source": "ADV:S5,S14",
+        "refs": [
+          "SH-12",
+          "SL-19"
+        ],
+        "data": {
+          "direction": "down",
+          "majorHigh": 105159.7,
+          "majorLow": 104191.62
+        },
+        "primary": true
       },
-      "eventsAt": [],
+      "eventsAt": [
+        {
+          "id": "major_established:20:1",
+          "at": 20,
+          "kind": "major_established",
+          "layer": "external",
+          "title": "Khởi tạo cấu trúc chính GIẢM",
+          "detail": "Major High 105159.7; Major Low 104191.62.",
+          "severity": "success",
+          "source": "ADV:S5,S14",
+          "refs": [
+            "SH-12",
+            "SL-19"
+          ],
+          "data": {
+            "direction": "down",
+            "majorHigh": 105159.7,
+            "majorLow": 104191.62
+          },
+          "primary": true
+        }
+      ],
       "confirmedPivots": [
-        "SH-12"
+        "SL-19"
       ]
     },
     {
       "at": 21,
       "time": "2025-06-18T11:15:00Z",
       "available_at_utc": "2025-06-18T11:30:00.000Z",
-      "localTrend": "unknown",
+      "localTrend": "down",
       "external": {
-        "trend": "unknown",
-        "phase": "uninitialized",
-        "majorHigh": null,
-        "majorLow": null,
+        "trend": "down",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-12",
+          "index": 12,
+          "type": "SH",
+          "price": 105159.7,
+          "confirmedAt": 13
+        },
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 20
+        },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
-        "phase": "uninitialized",
+        "phase": "collecting",
         "internalHigh": null,
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-12",
+        "SL": "SL-19",
+        "MH": "SH-12",
+        "ML": "SL-19",
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
+      "lastPrimary": {
+        "id": "major_established:20:1",
+        "at": 20,
+        "kind": "major_established",
+        "layer": "external",
+        "title": "Khởi tạo cấu trúc chính GIẢM",
+        "detail": "Major High 105159.7; Major Low 104191.62.",
+        "severity": "success",
+        "source": "ADV:S5,S14",
+        "refs": [
+          "SH-12",
+          "SL-19"
+        ],
+        "data": {
+          "direction": "down",
+          "majorHigh": 105159.7,
+          "majorLow": 104191.62
+        },
+        "primary": true
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -1416,70 +1749,157 @@
       "at": 22,
       "time": "2025-06-18T11:30:00Z",
       "available_at_utc": "2025-06-18T11:45:00.000Z",
-      "localTrend": "unknown",
+      "localTrend": "down",
       "external": {
-        "trend": "unknown",
-        "phase": "uninitialized",
-        "majorHigh": null,
-        "majorLow": null,
+        "trend": "down",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-12",
+          "index": 12,
+          "type": "SH",
+          "price": 105159.7,
+          "confirmedAt": 13
+        },
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 20
+        },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
-        "phase": "uninitialized",
+        "phase": "collecting",
         "internalHigh": null,
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-12",
+        "SL": "SL-19",
+        "MH": "SH-12",
+        "ML": "SL-19",
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
+      "lastPrimary": {
+        "id": "major_established:20:1",
+        "at": 20,
+        "kind": "major_established",
+        "layer": "external",
+        "title": "Khởi tạo cấu trúc chính GIẢM",
+        "detail": "Major High 105159.7; Major Low 104191.62.",
+        "severity": "success",
+        "source": "ADV:S5,S14",
+        "refs": [
+          "SH-12",
+          "SL-19"
+        ],
+        "data": {
+          "direction": "down",
+          "majorHigh": 105159.7,
+          "majorLow": 104191.62
+        },
+        "primary": true
       },
-      "eventsAt": [],
+      "eventsAt": [
+        {
+          "id": "cisd:22:2",
+          "at": 22,
+          "kind": "cisd",
+          "layer": "delivery",
+          "title": "CISD B · thay đổi hành vi giá",
+          "detail": "Close 104635.91 vượt Open 104483.22 của nến đầu cụm GIẢM cuối cùng. Đây chỉ là tín hiệu sớm; Major vẫn GIẢM.",
+          "severity": "warning",
+          "source": "REV:S5-S8",
+          "refs": [],
+          "data": {
+            "label": "B",
+            "direction": "up",
+            "mainTrend": "down",
+            "close": 104635.91,
+            "referenceOpen": 104483.22,
+            "referenceStartIndex": 21,
+            "referenceEndIndex": 21,
+            "waveStartIndex": 19,
+            "confirmed": false,
+            "tolerance": 0
+          },
+          "primary": false
+        }
+      ],
       "confirmedPivots": []
     },
     {
       "at": 23,
       "time": "2025-06-18T11:45:00Z",
       "available_at_utc": "2025-06-18T12:00:00.000Z",
-      "localTrend": "unknown",
+      "localTrend": "down",
       "external": {
-        "trend": "unknown",
-        "phase": "uninitialized",
-        "majorHigh": null,
-        "majorLow": null,
+        "trend": "down",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-12",
+          "index": 12,
+          "type": "SH",
+          "price": 105159.7,
+          "confirmedAt": 13
+        },
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 20
+        },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
-        "phase": "uninitialized",
+        "phase": "collecting",
         "internalHigh": null,
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-12",
+        "SL": "SL-19",
+        "MH": "SH-12",
+        "ML": "SL-19",
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
+      "lastPrimary": {
+        "id": "major_established:20:1",
+        "at": 20,
+        "kind": "major_established",
+        "layer": "external",
+        "title": "Khởi tạo cấu trúc chính GIẢM",
+        "detail": "Major High 105159.7; Major Low 104191.62.",
+        "severity": "success",
+        "source": "ADV:S5,S14",
+        "refs": [
+          "SH-12",
+          "SL-19"
+        ],
+        "data": {
+          "direction": "down",
+          "majorHigh": 105159.7,
+          "majorLow": 104191.62
+        },
+        "primary": true
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -1488,34 +1908,65 @@
       "at": 24,
       "time": "2025-06-18T12:00:00Z",
       "available_at_utc": "2025-06-18T12:15:00.000Z",
-      "localTrend": "unknown",
+      "localTrend": "down",
       "external": {
-        "trend": "unknown",
-        "phase": "uninitialized",
-        "majorHigh": null,
-        "majorLow": null,
+        "trend": "down",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-12",
+          "index": 12,
+          "type": "SH",
+          "price": 105159.7,
+          "confirmedAt": 13
+        },
+        "majorLow": {
+          "id": "SL-19",
+          "index": 19,
+          "type": "SL",
+          "price": 104191.62,
+          "confirmedAt": 20
+        },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
-        "phase": "uninitialized",
+        "phase": "collecting",
         "internalHigh": null,
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-12",
+        "SL": "SL-19",
+        "MH": "SH-12",
+        "ML": "SL-19",
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
+      "lastPrimary": {
+        "id": "major_established:20:1",
+        "at": 20,
+        "kind": "major_established",
+        "layer": "external",
+        "title": "Khởi tạo cấu trúc chính GIẢM",
+        "detail": "Major High 105159.7; Major Low 104191.62.",
+        "severity": "success",
+        "source": "ADV:S5,S14",
+        "refs": [
+          "SH-12",
+          "SL-19"
+        ],
+        "data": {
+          "direction": "down",
+          "majorHigh": 105159.7,
+          "majorLow": 104191.62
+        },
+        "primary": true
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -1533,61 +1984,66 @@
           "index": 12,
           "type": "SH",
           "price": 105159.7,
-          "confirmedAt": 20
+          "confirmedAt": 13
         },
         "majorLow": {
           "id": "SL-19",
           "index": 19,
           "type": "SL",
           "price": 104191.62,
-          "confirmedAt": 25
+          "confirmedAt": 20
         },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
         "phase": "collecting",
-        "internalHigh": null,
+        "internalHigh": {
+          "id": "SH-24",
+          "index": 24,
+          "type": "SH",
+          "price": 104932.84,
+          "confirmedAt": 25
+        },
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-24",
+        "SL": "SL-19",
+        "MH": "SH-12",
+        "ML": "SL-19",
+        "iSH": "SH-24",
+        "iSL": null
       },
-      "cisd": {
-        "reference": null,
-        "last": null
+      "lastPrimary": {
+        "id": "major_established:20:1",
+        "at": 20,
+        "kind": "major_established",
+        "layer": "external",
+        "title": "Khởi tạo cấu trúc chính GIẢM",
+        "detail": "Major High 105159.7; Major Low 104191.62.",
+        "severity": "success",
+        "source": "ADV:S5,S14",
+        "refs": [
+          "SH-12",
+          "SL-19"
+        ],
+        "data": {
+          "direction": "down",
+          "majorHigh": 105159.7,
+          "majorLow": 104191.62
+        },
+        "primary": true
       },
-      "eventsAt": [
-        {
-          "id": "major_established:25:0",
-          "at": 25,
-          "kind": "major_established",
-          "layer": "external",
-          "title": "Khởi tạo cấu trúc chính GIẢM",
-          "detail": "Major High 105159.7; Major Low 104191.62. Xác định từ Swing đã được chấp nhận theo HH+HL / LH+LL.",
-          "severity": "success",
-          "source": "ADV:S5,S14",
-          "refs": [
-            "SH-12",
-            "SL-19"
-          ],
-          "data": {
-            "direction": "down",
-            "majorHigh": 105159.7,
-            "majorLow": 104191.62
-          }
-        }
-      ],
+      "eventsAt": [],
       "confirmedPivots": [
-        "SL-19"
+        "SH-24"
       ]
     },
     {
@@ -1603,44 +2059,62 @@
           "index": 12,
           "type": "SH",
           "price": 105159.7,
-          "confirmedAt": 20
+          "confirmedAt": 13
         },
         "majorLow": {
           "id": "SL-19",
           "index": 19,
           "type": "SL",
           "price": 104191.62,
-          "confirmedAt": 25
+          "confirmedAt": 20
         },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
         "phase": "collecting",
-        "internalHigh": null,
+        "internalHigh": {
+          "id": "SH-24",
+          "index": 24,
+          "type": "SH",
+          "price": 104932.84,
+          "confirmedAt": 25
+        },
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-24",
+        "SL": "SL-19",
+        "MH": "SH-12",
+        "ML": "SL-19",
+        "iSH": "SH-24",
+        "iSL": null
       },
-      "cisd": {
-        "reference": {
+      "lastPrimary": {
+        "id": "major_established:20:1",
+        "at": 20,
+        "kind": "major_established",
+        "layer": "external",
+        "title": "Khởi tạo cấu trúc chính GIẢM",
+        "detail": "Major High 105159.7; Major Low 104191.62.",
+        "severity": "success",
+        "source": "ADV:S5,S14",
+        "refs": [
+          "SH-12",
+          "SL-19"
+        ],
+        "data": {
           "direction": "down",
-          "startIndex": 24,
-          "endIndex": 25,
-          "open": 104858.58,
-          "waveStartIndex": 19,
-          "opposingSwingId": "SH-12"
+          "majorHigh": 105159.7,
+          "majorLow": 104191.62
         },
-        "last": null
+        "primary": true
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -1658,44 +2132,62 @@
           "index": 12,
           "type": "SH",
           "price": 105159.7,
-          "confirmedAt": 20
+          "confirmedAt": 13
         },
         "majorLow": {
           "id": "SL-19",
           "index": 19,
           "type": "SL",
           "price": 104191.62,
-          "confirmedAt": 25
+          "confirmedAt": 20
         },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
         "phase": "collecting",
-        "internalHigh": null,
+        "internalHigh": {
+          "id": "SH-24",
+          "index": 24,
+          "type": "SH",
+          "price": 104932.84,
+          "confirmedAt": 25
+        },
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-24",
+        "SL": "SL-19",
+        "MH": "SH-12",
+        "ML": "SL-19",
+        "iSH": "SH-24",
+        "iSL": null
       },
-      "cisd": {
-        "reference": {
+      "lastPrimary": {
+        "id": "major_established:20:1",
+        "at": 20,
+        "kind": "major_established",
+        "layer": "external",
+        "title": "Khởi tạo cấu trúc chính GIẢM",
+        "detail": "Major High 105159.7; Major Low 104191.62.",
+        "severity": "success",
+        "source": "ADV:S5,S14",
+        "refs": [
+          "SH-12",
+          "SL-19"
+        ],
+        "data": {
           "direction": "down",
-          "startIndex": 24,
-          "endIndex": 26,
-          "open": 104858.58,
-          "waveStartIndex": 19,
-          "opposingSwingId": "SH-12"
+          "majorHigh": 105159.7,
+          "majorLow": 104191.62
         },
-        "last": null
+        "primary": true
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -1713,17 +2205,26 @@
           "index": 12,
           "type": "SH",
           "price": 105159.7,
-          "confirmedAt": 20
+          "confirmedAt": 13
         },
         "majorLow": {
           "id": "SL-19",
           "index": 19,
           "type": "SL",
           "price": 104191.62,
-          "confirmedAt": 25
+          "confirmedAt": 20
         },
         "breakAt": 28,
-        "breakLevel": 104191.62
+        "breakLevel": 104191.62,
+        "provisionalHigh": null,
+        "provisionalLow": {
+          "id": "PX-L-28",
+          "index": 28,
+          "type": "SL",
+          "price": 104060.29,
+          "provisional": true,
+          "confirmedAt": null
+        }
       },
       "internal": {
         "trend": "unknown",
@@ -1732,44 +2233,66 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-24",
+        "SL": "SL-19",
+        "MH": "SH-12",
+        "ML": "SL-19",
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": {
+      "lastPrimary": {
+        "id": "major_continuation:28:3",
+        "at": 28,
+        "kind": "major_continuation",
+        "layer": "external",
+        "title": "Cấu trúc chính tiếp diễn GIẢM",
+        "detail": "Close 104083.98 < 104191.62; chờ Swing Low thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "success",
+        "source": "ADV:S7,S11,S14",
+        "refs": [
+          "SL-19",
+          "SH-12"
+        ],
+        "data": {
+          "label": null,
           "direction": "down",
-          "startIndex": 24,
-          "endIndex": 26,
-          "open": 104858.58,
-          "waveStartIndex": 19,
-          "opposingSwingId": "SH-12"
+          "close": 104083.98,
+          "brokenLevel": 104191.62,
+          "retainedLevel": 105159.7,
+          "majorPivotId": "SL-19",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "last": null
+        "primary": true
       },
       "eventsAt": [
         {
-          "id": "major_continuation:28:1",
+          "id": "major_continuation:28:3",
           "at": 28,
           "kind": "major_continuation",
           "layer": "external",
           "title": "Cấu trúc chính tiếp diễn GIẢM",
-          "detail": "Close 104083.98 < Major Low 104191.62. Chờ Swing Low mới hợp lệ để cập nhật cặp Major.",
+          "detail": "Close 104083.98 < 104191.62; chờ Swing Low thực, dùng cực trị tạm thời trong lúc chờ.",
           "severity": "success",
-          "source": "ADV:S7,S14",
+          "source": "ADV:S7,S11,S14",
           "refs": [
-            "SL-19"
+            "SL-19",
+            "SH-12"
           ],
           "data": {
+            "label": null,
             "direction": "down",
             "close": 104083.98,
-            "brokenLevel": 104191.62
-          }
+            "brokenLevel": 104191.62,
+            "retainedLevel": 105159.7,
+            "majorPivotId": "SL-19",
+            "confirmed": true,
+            "tolerance": 0
+          },
+          "primary": true
         }
       ],
       "confirmedPivots": []
@@ -1787,17 +2310,26 @@
           "index": 12,
           "type": "SH",
           "price": 105159.7,
-          "confirmedAt": 20
+          "confirmedAt": 13
         },
         "majorLow": {
           "id": "SL-19",
           "index": 19,
           "type": "SL",
           "price": 104191.62,
-          "confirmedAt": 25
+          "confirmedAt": 20
         },
         "breakAt": 28,
-        "breakLevel": 104191.62
+        "breakLevel": 104191.62,
+        "provisionalHigh": null,
+        "provisionalLow": {
+          "id": "PX-L-29",
+          "index": 29,
+          "type": "SL",
+          "price": 103926.1,
+          "provisional": true,
+          "confirmedAt": null
+        }
       },
       "internal": {
         "trend": "unknown",
@@ -1806,25 +2338,40 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-24",
+        "SL": "SL-19",
+        "MH": "SH-12",
+        "ML": "SL-19",
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": {
+      "lastPrimary": {
+        "id": "major_continuation:28:3",
+        "at": 28,
+        "kind": "major_continuation",
+        "layer": "external",
+        "title": "Cấu trúc chính tiếp diễn GIẢM",
+        "detail": "Close 104083.98 < 104191.62; chờ Swing Low thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "success",
+        "source": "ADV:S7,S11,S14",
+        "refs": [
+          "SL-19",
+          "SH-12"
+        ],
+        "data": {
+          "label": null,
           "direction": "down",
-          "startIndex": 28,
-          "endIndex": 28,
-          "open": 104534.02,
-          "waveStartIndex": 19,
-          "opposingSwingId": "SH-12"
+          "close": 104083.98,
+          "brokenLevel": 104191.62,
+          "retainedLevel": 105159.7,
+          "majorPivotId": "SL-19",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "last": null
+        "primary": true
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -1842,17 +2389,26 @@
           "index": 12,
           "type": "SH",
           "price": 105159.7,
-          "confirmedAt": 20
+          "confirmedAt": 13
         },
         "majorLow": {
           "id": "SL-19",
           "index": 19,
           "type": "SL",
           "price": 104191.62,
-          "confirmedAt": 25
+          "confirmedAt": 20
         },
         "breakAt": 28,
-        "breakLevel": 104191.62
+        "breakLevel": 104191.62,
+        "provisionalHigh": null,
+        "provisionalLow": {
+          "id": "PX-L-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "provisional": true,
+          "confirmedAt": null
+        }
       },
       "internal": {
         "trend": "unknown",
@@ -1861,25 +2417,40 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-24",
+        "SL": "SL-19",
+        "MH": "SH-12",
+        "ML": "SL-19",
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": {
+      "lastPrimary": {
+        "id": "major_continuation:28:3",
+        "at": 28,
+        "kind": "major_continuation",
+        "layer": "external",
+        "title": "Cấu trúc chính tiếp diễn GIẢM",
+        "detail": "Close 104083.98 < 104191.62; chờ Swing Low thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "success",
+        "source": "ADV:S7,S11,S14",
+        "refs": [
+          "SL-19",
+          "SH-12"
+        ],
+        "data": {
+          "label": null,
           "direction": "down",
-          "startIndex": 28,
-          "endIndex": 29,
-          "open": 104534.02,
-          "waveStartIndex": 19,
-          "opposingSwingId": "SH-12"
+          "close": 104083.98,
+          "brokenLevel": 104191.62,
+          "retainedLevel": 105159.7,
+          "majorPivotId": "SL-19",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "last": null
+        "primary": true
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -1891,23 +2462,25 @@
       "localTrend": "down",
       "external": {
         "trend": "down",
-        "phase": "awaiting_major_low",
+        "phase": "confirmed",
         "majorHigh": {
-          "id": "SH-12",
-          "index": 12,
+          "id": "SH-24",
+          "index": 24,
           "type": "SH",
-          "price": 105159.7,
-          "confirmedAt": 20
-        },
-        "majorLow": {
-          "id": "SL-19",
-          "index": 19,
-          "type": "SL",
-          "price": 104191.62,
+          "price": 104932.84,
           "confirmedAt": 25
         },
-        "breakAt": 28,
-        "breakLevel": 104191.62
+        "majorLow": {
+          "id": "SL-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "confirmedAt": 31
+        },
+        "breakAt": null,
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -1916,29 +2489,70 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-24",
+        "SL": "SL-30",
+        "MH": "SH-24",
+        "ML": "SL-30",
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": {
+      "lastPrimary": {
+        "id": "major_continuation:28:3",
+        "at": 28,
+        "kind": "major_continuation",
+        "layer": "external",
+        "title": "Cấu trúc chính tiếp diễn GIẢM",
+        "detail": "Close 104083.98 < 104191.62; chờ Swing Low thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "success",
+        "source": "ADV:S7,S11,S14",
+        "refs": [
+          "SL-19",
+          "SH-12"
+        ],
+        "data": {
+          "label": null,
           "direction": "down",
-          "startIndex": 28,
-          "endIndex": 29,
-          "open": 104534.02,
-          "waveStartIndex": 19,
-          "opposingSwingId": "SH-12"
+          "close": 104083.98,
+          "brokenLevel": 104191.62,
+          "retainedLevel": 105159.7,
+          "majorPivotId": "SL-19",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "last": null
+        "primary": true
       },
-      "eventsAt": [],
+      "eventsAt": [
+        {
+          "id": "major_updated:31:4",
+          "at": 31,
+          "kind": "major_updated",
+          "layer": "external",
+          "title": "Cập nhật Major theo bằng chứng Swing đã đóng",
+          "detail": "Cập nhật độc lập ML + MH ngay khi Swing được nhận diện; không chờ đủ cặp đối diện.",
+          "severity": "success",
+          "source": "ADV:S7,S11,S14",
+          "refs": [
+            "SH-24",
+            "SL-30"
+          ],
+          "data": {
+            "direction": "down",
+            "majorHigh": 104932.84,
+            "majorLow": 103837.75,
+            "changed": [
+              "ML",
+              "MH"
+            ],
+            "selection": "USER-AMENDED V6 independent closed-bar roles"
+          },
+          "primary": false
+        }
+      ],
       "confirmedPivots": [
-        "SH-24"
+        "SL-30"
       ]
     },
     {
@@ -1947,24 +2561,27 @@
       "available_at_utc": "2025-06-18T14:15:00.000Z",
       "localTrend": "down",
       "external": {
-        "trend": "down",
-        "phase": "awaiting_major_low",
-        "majorHigh": {
-          "id": "SH-12",
-          "index": 12,
-          "type": "SH",
-          "price": 105159.7,
-          "confirmedAt": 20
-        },
+        "trend": "up",
+        "phase": "awaiting_major_high",
+        "majorHigh": null,
         "majorLow": {
-          "id": "SL-19",
-          "index": 19,
+          "id": "SL-30",
+          "index": 30,
           "type": "SL",
-          "price": 104191.62,
-          "confirmedAt": 25
+          "price": 103837.75,
+          "confirmedAt": 31
         },
-        "breakAt": 28,
-        "breakLevel": 104191.62
+        "breakAt": 32,
+        "breakLevel": 104932.84,
+        "provisionalHigh": {
+          "id": "PX-H-32",
+          "index": 32,
+          "type": "SH",
+          "price": 105138.66,
+          "provisional": true,
+          "confirmedAt": null
+        },
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -1973,56 +2590,66 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": null,
-        "lastWeak": null
+      "active": {
+        "SH": "SH-24",
+        "SL": "SL-30",
+        "MH": null,
+        "ML": "SL-30",
+        "iSH": null,
+        "iSL": null
       },
-      "cisd": {
-        "reference": {
-          "direction": "down",
-          "startIndex": 28,
-          "endIndex": 29,
-          "open": 104534.02,
-          "waveStartIndex": 24,
-          "opposingSwingId": "SH-24"
+      "lastPrimary": {
+        "id": "major_reversal:32:5",
+        "at": 32,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+        "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SH-24",
+          "SL-30"
+        ],
+        "data": {
+          "label": "S+",
+          "direction": "up",
+          "close": 105079.8,
+          "brokenLevel": 104932.84,
+          "retainedLevel": 103837.75,
+          "majorPivotId": "SH-24",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "last": {
-          "at": 32,
-          "label": "B",
-          "eventId": "cisd:32:2",
-          "referenceOpen": 104534.02,
-          "referenceStartIndex": 28,
-          "majorDirectionUnchanged": true
-        }
+        "primary": true
       },
       "eventsAt": [
         {
-          "id": "cisd:32:2",
+          "id": "major_reversal:32:5",
           "at": 32,
-          "kind": "cisd",
-          "layer": "delivery",
-          "title": "CISD B · thay đổi hành vi giá",
-          "detail": "Close 105079.8 vượt Open 104534.02 của nến đầu cụm GIẢM cuối cùng. Đây chỉ là tín hiệu sớm; Major vẫn GIẢM.",
-          "severity": "warning",
-          "source": "REV:S5-S8",
-          "refs": [],
+          "kind": "major_reversal",
+          "layer": "external",
+          "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+          "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+          "severity": "error",
+          "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+          "refs": [
+            "SH-24",
+            "SL-30"
+          ],
           "data": {
-            "label": "B",
+            "label": "S+",
             "direction": "up",
-            "mainTrend": "down",
             "close": 105079.8,
-            "referenceOpen": 104534.02,
-            "referenceStartIndex": 28,
-            "referenceEndIndex": 29,
-            "waveStartIndex": 24,
-            "confirmed": false,
+            "brokenLevel": 104932.84,
+            "retainedLevel": 103837.75,
+            "majorPivotId": "SH-24",
+            "confirmed": true,
             "tolerance": 0
-          }
+          },
+          "primary": true
         }
       ],
       "confirmedPivots": []
@@ -2037,14 +2664,23 @@
         "phase": "awaiting_major_high",
         "majorHigh": null,
         "majorLow": {
-          "id": "SL-19",
-          "index": 19,
+          "id": "SL-30",
+          "index": 30,
           "type": "SL",
-          "price": 104191.62,
-          "confirmedAt": 25
+          "price": 103837.75,
+          "confirmedAt": 31
         },
-        "breakAt": 33,
-        "breakLevel": 105159.7
+        "breakAt": 32,
+        "breakLevel": 104932.84,
+        "provisionalHigh": {
+          "id": "PX-H-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "provisional": true,
+          "confirmedAt": null
+        },
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -2053,388 +2689,70 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
+      "active": {
+        "SH": "SH-24",
+        "SL": "SL-30",
+        "MH": null,
+        "ML": "SL-30",
+        "iSH": null,
+        "iSL": null
+      },
+      "lastPrimary": {
+        "id": "major_reversal:32:5",
+        "at": 32,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+        "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SH-24",
+          "SL-30"
+        ],
+        "data": {
           "label": "S+",
           "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
+          "close": 105079.8,
+          "brokenLevel": 104932.84,
+          "retainedLevel": 103837.75,
+          "majorPivotId": "SH-24",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "lastWeak": null
+        "primary": true
       },
-      "cisd": {
-        "reference": null,
-        "last": {
-          "at": 32,
-          "label": "B",
-          "eventId": "cisd:32:2",
-          "referenceOpen": 104534.02,
-          "referenceStartIndex": 28,
-          "majorDirectionUnchanged": true
-        }
-      },
-      "eventsAt": [
-        {
-          "id": "major_reversal:33:3",
-          "at": 33,
-          "kind": "major_reversal",
-          "layer": "external",
-          "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
-          "detail": "Giá đóng 105196.32 cao hơn Major High 105159.7; giữ Major Low 104191.62, Major High mới chờ xác nhận.",
-          "severity": "success",
-          "source": "ADV:S3,S7,S14;REV:S3,S8",
-          "refs": [
-            "SH-12",
-            "SL-19"
-          ],
-          "data": {
-            "label": "S+",
-            "direction": "up",
-            "close": 105196.32,
-            "brokenLevel": 105159.7,
-            "retainedLevel": 104191.62,
-            "majorPivotId": "SH-12",
-            "confirmed": true,
-            "tolerance": 0
-          }
-        }
-      ],
+      "eventsAt": [],
       "confirmedPivots": []
     },
     {
       "at": 34,
       "time": "2025-06-18T14:30:00Z",
       "available_at_utc": "2025-06-18T14:45:00.000Z",
-      "localTrend": "down",
-      "external": {
-        "trend": "up",
-        "phase": "awaiting_major_high",
-        "majorHigh": null,
-        "majorLow": {
-          "id": "SL-19",
-          "index": 19,
-          "type": "SL",
-          "price": 104191.62,
-          "confirmedAt": 25
-        },
-        "breakAt": 33,
-        "breakLevel": 105159.7
-      },
-      "internal": {
-        "trend": "unknown",
-        "phase": "collecting",
-        "internalHigh": null,
-        "internalLow": null,
-        "protectedHigh": null,
-        "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
-        "confirmed": false
-      },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
-          "label": "S+",
-          "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
-        },
-        "lastWeak": null
-      },
-      "cisd": {
-        "reference": {
-          "direction": "up",
-          "startIndex": 33,
-          "endIndex": 33,
-          "open": 105071.92,
-          "waveStartIndex": 33,
-          "opposingSwingId": "SL-19"
-        },
-        "last": {
-          "at": 32,
-          "label": "B",
-          "eventId": "cisd:32:2",
-          "referenceOpen": 104534.02,
-          "referenceStartIndex": 28,
-          "majorDirectionUnchanged": true
-        }
-      },
-      "eventsAt": [],
-      "confirmedPivots": [
-        "SL-30"
-      ]
-    },
-    {
-      "at": 35,
-      "time": "2025-06-18T14:45:00Z",
-      "available_at_utc": "2025-06-18T15:00:00.000Z",
-      "localTrend": "down",
-      "external": {
-        "trend": "up",
-        "phase": "awaiting_major_high",
-        "majorHigh": null,
-        "majorLow": {
-          "id": "SL-19",
-          "index": 19,
-          "type": "SL",
-          "price": 104191.62,
-          "confirmedAt": 25
-        },
-        "breakAt": 33,
-        "breakLevel": 105159.7
-      },
-      "internal": {
-        "trend": "unknown",
-        "phase": "collecting",
-        "internalHigh": null,
-        "internalLow": null,
-        "protectedHigh": null,
-        "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
-        "confirmed": false
-      },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
-          "label": "S+",
-          "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
-        },
-        "lastWeak": null
-      },
-      "cisd": {
-        "reference": {
-          "direction": "up",
-          "startIndex": 33,
-          "endIndex": 33,
-          "open": 105071.92,
-          "waveStartIndex": 33,
-          "opposingSwingId": "SL-30"
-        },
-        "last": {
-          "at": 35,
-          "label": "B",
-          "eventId": "cisd:35:4",
-          "referenceOpen": 105071.92,
-          "referenceStartIndex": 33,
-          "majorDirectionUnchanged": true
-        }
-      },
-      "eventsAt": [
-        {
-          "id": "cisd:35:4",
-          "at": 35,
-          "kind": "cisd",
-          "layer": "delivery",
-          "title": "CISD B · thay đổi hành vi giá",
-          "detail": "Close 104646.82 vượt Open 105071.92 của nến đầu cụm TĂNG cuối cùng. Đây chỉ là tín hiệu sớm; Major vẫn TĂNG.",
-          "severity": "warning",
-          "source": "REV:S5-S8",
-          "refs": [],
-          "data": {
-            "label": "B",
-            "direction": "down",
-            "mainTrend": "up",
-            "close": 104646.82,
-            "referenceOpen": 105071.92,
-            "referenceStartIndex": 33,
-            "referenceEndIndex": 33,
-            "waveStartIndex": 33,
-            "confirmed": false,
-            "tolerance": 0
-          }
-        }
-      ],
-      "confirmedPivots": []
-    },
-    {
-      "at": 36,
-      "time": "2025-06-18T15:00:00Z",
-      "available_at_utc": "2025-06-18T15:15:00.000Z",
-      "localTrend": "down",
-      "external": {
-        "trend": "up",
-        "phase": "awaiting_major_high",
-        "majorHigh": null,
-        "majorLow": {
-          "id": "SL-19",
-          "index": 19,
-          "type": "SL",
-          "price": 104191.62,
-          "confirmedAt": 25
-        },
-        "breakAt": 33,
-        "breakLevel": 105159.7
-      },
-      "internal": {
-        "trend": "unknown",
-        "phase": "collecting",
-        "internalHigh": null,
-        "internalLow": null,
-        "protectedHigh": null,
-        "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
-        "confirmed": false
-      },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
-          "label": "S+",
-          "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
-        },
-        "lastWeak": null
-      },
-      "cisd": {
-        "reference": {
-          "direction": "up",
-          "startIndex": 33,
-          "endIndex": 33,
-          "open": 105071.92,
-          "waveStartIndex": 33,
-          "opposingSwingId": "SL-30"
-        },
-        "last": {
-          "at": 35,
-          "label": "B",
-          "eventId": "cisd:35:4",
-          "referenceOpen": 105071.92,
-          "referenceStartIndex": 33,
-          "majorDirectionUnchanged": true
-        }
-      },
-      "eventsAt": [],
-      "confirmedPivots": []
-    },
-    {
-      "at": 37,
-      "time": "2025-06-18T15:15:00Z",
-      "available_at_utc": "2025-06-18T15:30:00.000Z",
-      "localTrend": "down",
-      "external": {
-        "trend": "up",
-        "phase": "awaiting_major_high",
-        "majorHigh": null,
-        "majorLow": {
-          "id": "SL-19",
-          "index": 19,
-          "type": "SL",
-          "price": 104191.62,
-          "confirmedAt": 25
-        },
-        "breakAt": 33,
-        "breakLevel": 105159.7
-      },
-      "internal": {
-        "trend": "unknown",
-        "phase": "collecting",
-        "internalHigh": null,
-        "internalLow": null,
-        "protectedHigh": null,
-        "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
-        "confirmed": false
-      },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
-          "label": "S+",
-          "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
-        },
-        "lastWeak": {
-          "at": 37,
-          "label": "C",
-          "eventId": "mss_weak:37:5",
-          "majorPivotId": "SL-19"
-        }
-      },
-      "cisd": {
-        "reference": {
-          "direction": "up",
-          "startIndex": 33,
-          "endIndex": 33,
-          "open": 105071.92,
-          "waveStartIndex": 33,
-          "opposingSwingId": "SL-30"
-        },
-        "last": {
-          "at": 35,
-          "label": "B",
-          "eventId": "cisd:35:4",
-          "referenceOpen": 105071.92,
-          "referenceStartIndex": 33,
-          "majorDirectionUnchanged": true
-        }
-      },
-      "eventsAt": [
-        {
-          "id": "mss_weak:37:5",
-          "at": 37,
-          "kind": "mss_weak",
-          "layer": "external",
-          "title": "MSS C · nỗ lực đảo chiều yếu",
-          "detail": "Râu nến vượt Major Low 104191.62, nhưng Close 104779.51 trở lại biên. Main TĂNG giữ nguyên.",
-          "severity": "warning",
-          "source": "REV:S4,S8",
-          "refs": [
-            "SL-19"
-          ],
-          "data": {
-            "label": "C",
-            "direction": "down",
-            "mainTrend": "up",
-            "close": 104779.51,
-            "wick": 104161.37,
-            "brokenLevel": 104191.62,
-            "majorPivotId": "SL-19",
-            "confirmed": false,
-            "tolerance": 0
-          }
-        }
-      ],
-      "confirmedPivots": []
-    },
-    {
-      "at": 38,
-      "time": "2025-06-18T15:30:00Z",
-      "available_at_utc": "2025-06-18T15:45:00.000Z",
       "localTrend": "unknown",
       "external": {
         "trend": "up",
-        "phase": "confirmed",
+        "phase": "awaiting_corrective_low",
         "majorHigh": {
           "id": "SH-33",
           "index": 33,
           "type": "SH",
           "price": 105348.75,
-          "confirmedAt": 38
+          "confirmedAt": 34
         },
         "majorLow": {
           "id": "SL-30",
           "index": 30,
           "type": "SL",
           "price": 103837.75,
-          "confirmedAt": 34
+          "confirmedAt": 31
         },
-        "breakAt": null,
-        "breakLevel": null
+        "breakAt": 32,
+        "breakLevel": 104932.84,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -2443,54 +2761,51 @@
         "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
+      "active": {
+        "SH": "SH-33",
+        "SL": "SL-30",
+        "MH": "SH-33",
+        "ML": "SL-30",
+        "iSH": null,
+        "iSL": null
+      },
+      "lastPrimary": {
+        "id": "major_reversal:32:5",
+        "at": 32,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+        "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SH-24",
+          "SL-30"
+        ],
+        "data": {
           "label": "S+",
           "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
+          "close": 105079.8,
+          "brokenLevel": 104932.84,
+          "retainedLevel": 103837.75,
+          "majorPivotId": "SH-24",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "lastWeak": {
-          "at": 37,
-          "label": "C",
-          "eventId": "mss_weak:37:5",
-          "majorPivotId": "SL-19"
-        }
-      },
-      "cisd": {
-        "reference": {
-          "direction": "up",
-          "startIndex": 37,
-          "endIndex": 37,
-          "open": 104447.33,
-          "waveStartIndex": 33,
-          "opposingSwingId": "SL-30"
-        },
-        "last": {
-          "at": 35,
-          "label": "B",
-          "eventId": "cisd:35:4",
-          "referenceOpen": 105071.92,
-          "referenceStartIndex": 33,
-          "majorDirectionUnchanged": true
-        }
+        "primary": true
       },
       "eventsAt": [
         {
-          "id": "major_updated:38:6",
-          "at": 38,
+          "id": "major_updated:34:6",
+          "at": 34,
           "kind": "major_updated",
           "layer": "external",
-          "title": "Đã cập nhật Major High / Major Low",
-          "detail": "Major High 105348.75; Major Low 103837.75. Cặp đỉnh/đáy mạnh nhất đã xác nhận cho nhịp phá Major; không chọn cực trị chỉ vì xuất hiện gần nhất.",
+          "title": "Cập nhật Major theo bằng chứng Swing đã đóng",
+          "detail": "Cập nhật độc lập MH ngay khi Swing được nhận diện; không chờ đủ cặp đối diện.",
           "severity": "success",
-          "source": "ADV:S11,S13-14",
+          "source": "ADV:S7,S11,S14",
           "refs": [
             "SH-33",
             "SL-30"
@@ -2499,10 +2814,12 @@
             "direction": "up",
             "majorHigh": 105348.75,
             "majorLow": 103837.75,
-            "majorHighIndex": 33,
-            "majorLowIndex": 30,
-            "selection": "strongest_confirmed_wave_provisional"
-          }
+            "changed": [
+              "MH"
+            ],
+            "selection": "USER-AMENDED V6 independent closed-bar roles"
+          },
+          "primary": false
         }
       ],
       "confirmedPivots": [
@@ -2510,9 +2827,454 @@
       ]
     },
     {
+      "at": 35,
+      "time": "2025-06-18T14:45:00Z",
+      "available_at_utc": "2025-06-18T15:00:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "up",
+        "phase": "awaiting_corrective_low",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 34
+        },
+        "majorLow": {
+          "id": "SL-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "confirmedAt": 31
+        },
+        "breakAt": 32,
+        "breakLevel": 104932.84,
+        "provisionalHigh": {
+          "id": "PX-H-35",
+          "index": 35,
+          "type": "SH",
+          "price": 105177.94,
+          "provisional": true,
+          "confirmedAt": null
+        },
+        "provisionalLow": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "confirmed": false
+      },
+      "active": {
+        "SH": "SH-33",
+        "SL": "SL-30",
+        "MH": "SH-33",
+        "ML": "SL-30",
+        "iSH": null,
+        "iSL": null
+      },
+      "lastPrimary": {
+        "id": "major_reversal:32:5",
+        "at": 32,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+        "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SH-24",
+          "SL-30"
+        ],
+        "data": {
+          "label": "S+",
+          "direction": "up",
+          "close": 105079.8,
+          "brokenLevel": 104932.84,
+          "retainedLevel": 103837.75,
+          "majorPivotId": "SH-24",
+          "confirmed": true,
+          "tolerance": 0
+        },
+        "primary": true
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 36,
+      "time": "2025-06-18T15:00:00Z",
+      "available_at_utc": "2025-06-18T15:15:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "up",
+        "phase": "awaiting_corrective_low",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 34
+        },
+        "majorLow": {
+          "id": "SL-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "confirmedAt": 31
+        },
+        "breakAt": 32,
+        "breakLevel": 104932.84,
+        "provisionalHigh": {
+          "id": "PX-H-35",
+          "index": 35,
+          "type": "SH",
+          "price": 105177.94,
+          "provisional": true,
+          "confirmedAt": null
+        },
+        "provisionalLow": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "confirmed": false
+      },
+      "active": {
+        "SH": "SH-33",
+        "SL": "SL-30",
+        "MH": "SH-33",
+        "ML": "SL-30",
+        "iSH": null,
+        "iSL": null
+      },
+      "lastPrimary": {
+        "id": "major_reversal:32:5",
+        "at": 32,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+        "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SH-24",
+          "SL-30"
+        ],
+        "data": {
+          "label": "S+",
+          "direction": "up",
+          "close": 105079.8,
+          "brokenLevel": 104932.84,
+          "retainedLevel": 103837.75,
+          "majorPivotId": "SH-24",
+          "confirmed": true,
+          "tolerance": 0
+        },
+        "primary": true
+      },
+      "eventsAt": [
+        {
+          "id": "cisd:36:7",
+          "at": 36,
+          "kind": "cisd",
+          "layer": "delivery",
+          "title": "CISD B · thay đổi hành vi giá",
+          "detail": "Close 104445.51 vượt Open 104460.86 của nến đầu cụm TĂNG cuối cùng. Đây chỉ là tín hiệu sớm; Major vẫn TĂNG.",
+          "severity": "warning",
+          "source": "REV:S5-S8",
+          "refs": [],
+          "data": {
+            "label": "B",
+            "direction": "down",
+            "mainTrend": "up",
+            "close": 104445.51,
+            "referenceOpen": 104460.86,
+            "referenceStartIndex": 32,
+            "referenceEndIndex": 33,
+            "waveStartIndex": 32,
+            "confirmed": false,
+            "tolerance": 0
+          },
+          "primary": false
+        }
+      ],
+      "confirmedPivots": []
+    },
+    {
+      "at": 37,
+      "time": "2025-06-18T15:15:00Z",
+      "available_at_utc": "2025-06-18T15:30:00.000Z",
+      "localTrend": "unknown",
+      "external": {
+        "trend": "up",
+        "phase": "awaiting_corrective_low",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 34
+        },
+        "majorLow": {
+          "id": "SL-30",
+          "index": 30,
+          "type": "SL",
+          "price": 103837.75,
+          "confirmedAt": 31
+        },
+        "breakAt": 32,
+        "breakLevel": 104932.84,
+        "provisionalHigh": {
+          "id": "PX-H-35",
+          "index": 35,
+          "type": "SH",
+          "price": 105177.94,
+          "provisional": true,
+          "confirmedAt": null
+        },
+        "provisionalLow": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": null,
+        "protectedHigh": null,
+        "protectedLow": null,
+        "confirmed": false
+      },
+      "active": {
+        "SH": "SH-33",
+        "SL": "SL-30",
+        "MH": "SH-33",
+        "ML": "SL-30",
+        "iSH": null,
+        "iSL": null
+      },
+      "lastPrimary": {
+        "id": "major_reversal:32:5",
+        "at": 32,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+        "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SH-24",
+          "SL-30"
+        ],
+        "data": {
+          "label": "S+",
+          "direction": "up",
+          "close": 105079.8,
+          "brokenLevel": 104932.84,
+          "retainedLevel": 103837.75,
+          "majorPivotId": "SH-24",
+          "confirmed": true,
+          "tolerance": 0
+        },
+        "primary": true
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 38,
+      "time": "2025-06-18T15:30:00Z",
+      "available_at_utc": "2025-06-18T15:45:00.000Z",
+      "localTrend": "up",
+      "external": {
+        "trend": "up",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 34
+        },
+        "majorLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 38
+        },
+        "breakAt": null,
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 38
+        },
+        "protectedHigh": null,
+        "protectedLow": null,
+        "confirmed": false
+      },
+      "active": {
+        "SH": "SH-33",
+        "SL": "SL-37",
+        "MH": "SH-33",
+        "ML": "SL-37",
+        "iSH": null,
+        "iSL": "SL-37"
+      },
+      "lastPrimary": {
+        "id": "major_reversal:32:5",
+        "at": 32,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+        "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SH-24",
+          "SL-30"
+        ],
+        "data": {
+          "label": "S+",
+          "direction": "up",
+          "close": 105079.8,
+          "brokenLevel": 104932.84,
+          "retainedLevel": 103837.75,
+          "majorPivotId": "SH-24",
+          "confirmed": true,
+          "tolerance": 0
+        },
+        "primary": true
+      },
+      "eventsAt": [
+        {
+          "id": "major_updated:38:8",
+          "at": 38,
+          "kind": "major_updated",
+          "layer": "external",
+          "title": "Cập nhật Major theo bằng chứng Swing đã đóng",
+          "detail": "Cập nhật độc lập ML ngay khi Swing được nhận diện; không chờ đủ cặp đối diện.",
+          "severity": "success",
+          "source": "ADV:S7,S11,S14",
+          "refs": [
+            "SH-33",
+            "SL-37"
+          ],
+          "data": {
+            "direction": "up",
+            "majorHigh": 105348.75,
+            "majorLow": 104161.37,
+            "changed": [
+              "ML"
+            ],
+            "selection": "USER-AMENDED V6 independent closed-bar roles"
+          },
+          "primary": false
+        }
+      ],
+      "confirmedPivots": [
+        "SL-37"
+      ]
+    },
+    {
       "at": 39,
       "time": "2025-06-18T15:45:00Z",
       "available_at_utc": "2025-06-18T16:00:00.000Z",
+      "localTrend": "up",
+      "external": {
+        "trend": "up",
+        "phase": "confirmed",
+        "majorHigh": {
+          "id": "SH-33",
+          "index": 33,
+          "type": "SH",
+          "price": 105348.75,
+          "confirmedAt": 34
+        },
+        "majorLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 38
+        },
+        "breakAt": null,
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
+      },
+      "internal": {
+        "trend": "unknown",
+        "phase": "collecting",
+        "internalHigh": null,
+        "internalLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 38
+        },
+        "protectedHigh": null,
+        "protectedLow": null,
+        "confirmed": false
+      },
+      "active": {
+        "SH": "SH-33",
+        "SL": "SL-37",
+        "MH": "SH-33",
+        "ML": "SL-37",
+        "iSH": null,
+        "iSL": "SL-37"
+      },
+      "lastPrimary": {
+        "id": "major_reversal:32:5",
+        "at": 32,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+        "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SH-24",
+          "SL-30"
+        ],
+        "data": {
+          "label": "S+",
+          "direction": "up",
+          "close": 105079.8,
+          "brokenLevel": 104932.84,
+          "retainedLevel": 103837.75,
+          "majorPivotId": "SH-24",
+          "confirmed": true,
+          "tolerance": 0
+        },
+        "primary": true
+      },
+      "eventsAt": [],
+      "confirmedPivots": []
+    },
+    {
+      "at": 40,
+      "time": "2025-06-18T16:00:00Z",
+      "available_at_utc": "2025-06-18T16:15:00.000Z",
       "localTrend": "unknown",
       "external": {
         "trend": "up",
@@ -2522,152 +3284,84 @@
           "index": 33,
           "type": "SH",
           "price": 105348.75,
-          "confirmedAt": 38
-        },
-        "majorLow": {
-          "id": "SL-30",
-          "index": 30,
-          "type": "SL",
-          "price": 103837.75,
           "confirmedAt": 34
         },
+        "majorLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 38
+        },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
         "phase": "collecting",
-        "internalHigh": null,
-        "internalLow": null,
-        "protectedHigh": null,
-        "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
-        "confirmed": false
-      },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
-          "label": "S+",
-          "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
-        },
-        "lastWeak": {
-          "at": 37,
-          "label": "C",
-          "eventId": "mss_weak:37:5",
-          "majorPivotId": "SL-19"
-        }
-      },
-      "cisd": {
-        "reference": {
-          "direction": "up",
-          "startIndex": 37,
-          "endIndex": 38,
-          "open": 104447.33,
-          "waveStartIndex": 33,
-          "opposingSwingId": "SL-30"
-        },
-        "last": {
-          "at": 35,
-          "label": "B",
-          "eventId": "cisd:35:4",
-          "referenceOpen": 105071.92,
-          "referenceStartIndex": 33,
-          "majorDirectionUnchanged": true
-        }
-      },
-      "eventsAt": [],
-      "confirmedPivots": []
-    },
-    {
-      "at": 40,
-      "time": "2025-06-18T16:00:00Z",
-      "available_at_utc": "2025-06-18T16:15:00.000Z",
-      "localTrend": "up",
-      "external": {
-        "trend": "up",
-        "phase": "confirmed",
-        "majorHigh": {
-          "id": "SH-33",
-          "index": 33,
+        "internalHigh": {
+          "id": "SH-39",
+          "index": 39,
           "type": "SH",
-          "price": 105348.75,
-          "confirmedAt": 38
+          "price": 105014.67,
+          "confirmedAt": 40
         },
-        "majorLow": {
-          "id": "SL-30",
-          "index": 30,
-          "type": "SL",
-          "price": 103837.75,
-          "confirmedAt": 34
-        },
-        "breakAt": null,
-        "breakLevel": null
-      },
-      "internal": {
-        "trend": "unknown",
-        "phase": "collecting",
-        "internalHigh": null,
         "internalLow": {
           "id": "SL-37",
           "index": 37,
           "type": "SL",
           "price": 104161.37,
-          "confirmedAt": 40
+          "confirmedAt": 38
         },
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
+      "active": {
+        "SH": "SH-39",
+        "SL": "SL-37",
+        "MH": "SH-33",
+        "ML": "SL-37",
+        "iSH": "SH-39",
+        "iSL": "SL-37"
+      },
+      "lastPrimary": {
+        "id": "major_reversal:32:5",
+        "at": 32,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+        "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SH-24",
+          "SL-30"
+        ],
+        "data": {
           "label": "S+",
           "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
+          "close": 105079.8,
+          "brokenLevel": 104932.84,
+          "retainedLevel": 103837.75,
+          "majorPivotId": "SH-24",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "lastWeak": {
-          "at": 37,
-          "label": "C",
-          "eventId": "mss_weak:37:5",
-          "majorPivotId": "SL-19"
-        }
-      },
-      "cisd": {
-        "reference": {
-          "direction": "up",
-          "startIndex": 37,
-          "endIndex": 38,
-          "open": 104447.33,
-          "waveStartIndex": 33,
-          "opposingSwingId": "SL-30"
-        },
-        "last": {
-          "at": 35,
-          "label": "B",
-          "eventId": "cisd:35:4",
-          "referenceOpen": 105071.92,
-          "referenceStartIndex": 33,
-          "majorDirectionUnchanged": true
-        }
+        "primary": true
       },
       "eventsAt": [],
       "confirmedPivots": [
-        "SL-37"
+        "SH-39"
       ]
     },
     {
       "at": 41,
       "time": "2025-06-18T16:15:00Z",
       "available_at_utc": "2025-06-18T16:30:00.000Z",
-      "localTrend": "up",
+      "localTrend": "unknown",
       "external": {
         "trend": "up",
         "phase": "confirmed",
@@ -2676,72 +3370,77 @@
           "index": 33,
           "type": "SH",
           "price": 105348.75,
-          "confirmedAt": 38
-        },
-        "majorLow": {
-          "id": "SL-30",
-          "index": 30,
-          "type": "SL",
-          "price": 103837.75,
           "confirmedAt": 34
         },
+        "majorLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 38
+        },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
         "phase": "collecting",
-        "internalHigh": null,
+        "internalHigh": {
+          "id": "SH-39",
+          "index": 39,
+          "type": "SH",
+          "price": 105014.67,
+          "confirmedAt": 40
+        },
         "internalLow": {
           "id": "SL-37",
           "index": 37,
           "type": "SL",
           "price": 104161.37,
-          "confirmedAt": 40
+          "confirmedAt": 38
         },
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
+      "active": {
+        "SH": "SH-39",
+        "SL": "SL-37",
+        "MH": "SH-33",
+        "ML": "SL-37",
+        "iSH": "SH-39",
+        "iSL": "SL-37"
+      },
+      "lastPrimary": {
+        "id": "major_reversal:32:5",
+        "at": 32,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+        "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SH-24",
+          "SL-30"
+        ],
+        "data": {
           "label": "S+",
           "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
+          "close": 105079.8,
+          "brokenLevel": 104932.84,
+          "retainedLevel": 103837.75,
+          "majorPivotId": "SH-24",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "lastWeak": {
-          "at": 37,
-          "label": "C",
-          "eventId": "mss_weak:37:5",
-          "majorPivotId": "SL-19"
-        }
-      },
-      "cisd": {
-        "reference": {
-          "direction": "up",
-          "startIndex": 37,
-          "endIndex": 38,
-          "open": 104447.33,
-          "waveStartIndex": 37,
-          "opposingSwingId": "SL-37"
-        },
-        "last": {
-          "at": 41,
-          "label": "B",
-          "eventId": "cisd:41:7",
-          "referenceOpen": 104447.33,
-          "referenceStartIndex": 37,
-          "majorDirectionUnchanged": true
-        }
+        "primary": true
       },
       "eventsAt": [
         {
-          "id": "cisd:41:7",
+          "id": "cisd:41:9",
           "at": 41,
           "kind": "cisd",
           "layer": "delivery",
@@ -2761,7 +3460,8 @@
             "waveStartIndex": 37,
             "confirmed": false,
             "tolerance": 0
-          }
+          },
+          "primary": false
         }
       ],
       "confirmedPivots": []
@@ -2779,17 +3479,19 @@
           "index": 33,
           "type": "SH",
           "price": 105348.75,
-          "confirmedAt": 38
-        },
-        "majorLow": {
-          "id": "SL-30",
-          "index": 30,
-          "type": "SL",
-          "price": 103837.75,
           "confirmedAt": 34
         },
+        "majorLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 38
+        },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -2799,58 +3501,55 @@
           "index": 39,
           "type": "SH",
           "price": 105014.67,
-          "confirmedAt": 42
+          "confirmedAt": 40
         },
         "internalLow": {
-          "id": "SL-37",
-          "index": 37,
+          "id": "SL-41",
+          "index": 41,
           "type": "SL",
-          "price": 104161.37,
-          "confirmedAt": 40
+          "price": 104366.46,
+          "confirmedAt": 42
         },
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
+      "active": {
+        "SH": "SH-39",
+        "SL": "SL-41",
+        "MH": "SH-33",
+        "ML": "SL-37",
+        "iSH": "SH-39",
+        "iSL": "SL-41"
+      },
+      "lastPrimary": {
+        "id": "major_reversal:32:5",
+        "at": 32,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+        "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SH-24",
+          "SL-30"
+        ],
+        "data": {
           "label": "S+",
           "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
+          "close": 105079.8,
+          "brokenLevel": 104932.84,
+          "retainedLevel": 103837.75,
+          "majorPivotId": "SH-24",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "lastWeak": {
-          "at": 37,
-          "label": "C",
-          "eventId": "mss_weak:37:5",
-          "majorPivotId": "SL-19"
-        }
-      },
-      "cisd": {
-        "reference": {
-          "direction": "up",
-          "startIndex": 37,
-          "endIndex": 38,
-          "open": 104447.33,
-          "waveStartIndex": 37,
-          "opposingSwingId": "SL-37"
-        },
-        "last": {
-          "at": 41,
-          "label": "B",
-          "eventId": "cisd:41:7",
-          "referenceOpen": 104447.33,
-          "referenceStartIndex": 37,
-          "majorDirectionUnchanged": true
-        }
+        "primary": true
       },
       "eventsAt": [],
       "confirmedPivots": [
-        "SH-39"
+        "SL-41"
       ]
     },
     {
@@ -2866,17 +3565,19 @@
           "index": 33,
           "type": "SH",
           "price": 105348.75,
-          "confirmedAt": 38
-        },
-        "majorLow": {
-          "id": "SL-30",
-          "index": 30,
-          "type": "SL",
-          "price": 103837.75,
           "confirmedAt": 34
         },
+        "majorLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 38
+        },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -2886,54 +3587,51 @@
           "index": 39,
           "type": "SH",
           "price": 105014.67,
-          "confirmedAt": 42
+          "confirmedAt": 40
         },
         "internalLow": {
-          "id": "SL-37",
-          "index": 37,
+          "id": "SL-41",
+          "index": 41,
           "type": "SL",
-          "price": 104161.37,
-          "confirmedAt": 40
+          "price": 104366.46,
+          "confirmedAt": 42
         },
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
+      "active": {
+        "SH": "SH-39",
+        "SL": "SL-41",
+        "MH": "SH-33",
+        "ML": "SL-37",
+        "iSH": "SH-39",
+        "iSL": "SL-41"
+      },
+      "lastPrimary": {
+        "id": "major_reversal:32:5",
+        "at": 32,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+        "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SH-24",
+          "SL-30"
+        ],
+        "data": {
           "label": "S+",
           "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
+          "close": 105079.8,
+          "brokenLevel": 104932.84,
+          "retainedLevel": 103837.75,
+          "majorPivotId": "SH-24",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "lastWeak": {
-          "at": 37,
-          "label": "C",
-          "eventId": "mss_weak:37:5",
-          "majorPivotId": "SL-19"
-        }
-      },
-      "cisd": {
-        "reference": {
-          "direction": "up",
-          "startIndex": 42,
-          "endIndex": 42,
-          "open": 104415.99,
-          "waveStartIndex": 37,
-          "opposingSwingId": "SL-37"
-        },
-        "last": {
-          "at": 41,
-          "label": "B",
-          "eventId": "cisd:41:7",
-          "referenceOpen": 104447.33,
-          "referenceStartIndex": 37,
-          "majorDirectionUnchanged": true
-        }
+        "primary": true
       },
       "eventsAt": [],
       "confirmedPivots": []
@@ -2951,17 +3649,19 @@
           "index": 33,
           "type": "SH",
           "price": 105348.75,
-          "confirmedAt": 38
-        },
-        "majorLow": {
-          "id": "SL-30",
-          "index": 30,
-          "type": "SL",
-          "price": 103837.75,
           "confirmedAt": 34
         },
+        "majorLow": {
+          "id": "SL-37",
+          "index": 37,
+          "type": "SL",
+          "price": 104161.37,
+          "confirmedAt": 38
+        },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
@@ -2971,58 +3671,80 @@
           "index": 39,
           "type": "SH",
           "price": 105014.67,
-          "confirmedAt": 42
+          "confirmedAt": 40
         },
         "internalLow": {
-          "id": "SL-37",
-          "index": 37,
+          "id": "SL-41",
+          "index": 41,
           "type": "SL",
-          "price": 104161.37,
-          "confirmedAt": 40
+          "price": 104366.46,
+          "confirmedAt": 42
         },
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
+      "active": {
+        "SH": "SH-39",
+        "SL": "SL-41",
+        "MH": "SH-33",
+        "ML": "SL-37",
+        "iSH": "SH-39",
+        "iSL": "SL-41"
+      },
+      "lastPrimary": {
+        "id": "major_reversal:32:5",
+        "at": 32,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều GIẢM → TĂNG",
+        "detail": "Close 105079.8 > 104932.84; chờ Swing High thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SH-24",
+          "SL-30"
+        ],
+        "data": {
           "label": "S+",
           "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
+          "close": 105079.8,
+          "brokenLevel": 104932.84,
+          "retainedLevel": 103837.75,
+          "majorPivotId": "SH-24",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "lastWeak": {
-          "at": 37,
-          "label": "C",
-          "eventId": "mss_weak:37:5",
-          "majorPivotId": "SL-19"
-        }
-      },
-      "cisd": {
-        "reference": {
-          "direction": "up",
-          "startIndex": 42,
-          "endIndex": 42,
-          "open": 104415.99,
-          "waveStartIndex": 37,
-          "opposingSwingId": "SL-37"
-        },
-        "last": {
-          "at": 44,
-          "label": "B",
-          "eventId": "cisd:44:8",
-          "referenceOpen": 104415.99,
-          "referenceStartIndex": 42,
-          "majorDirectionUnchanged": true
-        }
+        "primary": true
       },
       "eventsAt": [
         {
-          "id": "cisd:44:8",
+          "id": "mss_weak:44:10",
+          "at": 44,
+          "kind": "mss_weak",
+          "layer": "external",
+          "title": "MSS C · nỗ lực đảo chiều yếu",
+          "detail": "Râu nến vượt Major Low 104161.37, nhưng Close 104305.23 trở lại biên. Main TĂNG giữ nguyên.",
+          "severity": "warning",
+          "source": "REV:S4,S8",
+          "refs": [
+            "SL-37"
+          ],
+          "data": {
+            "label": "C",
+            "direction": "down",
+            "mainTrend": "up",
+            "close": 104305.23,
+            "wick": 104005,
+            "brokenLevel": 104161.37,
+            "majorPivotId": "SL-37",
+            "confirmed": false,
+            "tolerance": 0
+          },
+          "primary": false
+        },
+        {
+          "id": "cisd:44:11",
           "at": 44,
           "kind": "cisd",
           "layer": "delivery",
@@ -3039,10 +3761,11 @@
             "referenceOpen": 104415.99,
             "referenceStartIndex": 42,
             "referenceEndIndex": 42,
-            "waveStartIndex": 37,
+            "waveStartIndex": 41,
             "confirmed": false,
             "tolerance": 0
-          }
+          },
+          "primary": false
         }
       ],
       "confirmedPivots": []
@@ -3051,281 +3774,312 @@
       "at": 45,
       "time": "2025-06-18T17:15:00Z",
       "available_at_utc": "2025-06-18T17:30:00.000Z",
-      "localTrend": "unknown",
+      "localTrend": "down",
       "external": {
-        "trend": "up",
+        "trend": "down",
         "phase": "confirmed",
         "majorHigh": {
           "id": "SH-33",
           "index": 33,
           "type": "SH",
           "price": 105348.75,
-          "confirmedAt": 38
-        },
-        "majorLow": {
-          "id": "SL-30",
-          "index": 30,
-          "type": "SL",
-          "price": 103837.75,
           "confirmedAt": 34
         },
+        "majorLow": {
+          "id": "SL-44",
+          "index": 44,
+          "type": "SL",
+          "price": 104005,
+          "confirmedAt": 45
+        },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
         "phase": "collecting",
-        "internalHigh": {
-          "id": "SH-39",
-          "index": 39,
-          "type": "SH",
-          "price": 105014.67,
-          "confirmedAt": 42
-        },
-        "internalLow": {
-          "id": "SL-37",
-          "index": 37,
-          "type": "SL",
-          "price": 104161.37,
-          "confirmedAt": 40
-        },
+        "internalHigh": null,
+        "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
+      "active": {
+        "SH": "SH-39",
+        "SL": "SL-44",
+        "MH": "SH-33",
+        "ML": "SL-44",
+        "iSH": null,
+        "iSL": null
+      },
+      "lastPrimary": {
+        "id": "major_reversal:45:12",
+        "at": 45,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều TĂNG → GIẢM",
+        "detail": "Close 104104.1 < 104161.37; chờ Swing Low thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SL-37",
+          "SH-33"
+        ],
+        "data": {
           "label": "S+",
-          "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
+          "direction": "down",
+          "close": 104104.1,
+          "brokenLevel": 104161.37,
+          "retainedLevel": 105348.75,
+          "majorPivotId": "SL-37",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "lastWeak": {
-          "at": 37,
-          "label": "C",
-          "eventId": "mss_weak:37:5",
-          "majorPivotId": "SL-19"
-        }
+        "primary": true
       },
-      "cisd": {
-        "reference": {
-          "direction": "up",
-          "startIndex": 42,
-          "endIndex": 42,
-          "open": 104415.99,
-          "waveStartIndex": 37,
-          "opposingSwingId": "SL-37"
+      "eventsAt": [
+        {
+          "id": "major_reversal:45:12",
+          "at": 45,
+          "kind": "major_reversal",
+          "layer": "external",
+          "title": "Cấu trúc chính đảo chiều TĂNG → GIẢM",
+          "detail": "Close 104104.1 < 104161.37; chờ Swing Low thực, dùng cực trị tạm thời trong lúc chờ.",
+          "severity": "error",
+          "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+          "refs": [
+            "SL-37",
+            "SH-33"
+          ],
+          "data": {
+            "label": "S+",
+            "direction": "down",
+            "close": 104104.1,
+            "brokenLevel": 104161.37,
+            "retainedLevel": 105348.75,
+            "majorPivotId": "SL-37",
+            "confirmed": true,
+            "tolerance": 0
+          },
+          "primary": true
         },
-        "last": {
-          "at": 44,
-          "label": "B",
-          "eventId": "cisd:44:8",
-          "referenceOpen": 104415.99,
-          "referenceStartIndex": 42,
-          "majorDirectionUnchanged": true
+        {
+          "id": "replace:45:13",
+          "at": 45,
+          "kind": "replace",
+          "layer": "local",
+          "title": "Thay SL-41 bằng SL-44",
+          "detail": "SL-44 cực trị hơn SL-41 trong đường Swing nhân quả.",
+          "severity": "info",
+          "source": "ADV:S14",
+          "refs": [
+            "SL-41",
+            "SL-44"
+          ],
+          "data": {
+            "oldId": "SL-41",
+            "newId": "SL-44",
+            "type": "SL"
+          },
+          "primary": false
+        },
+        {
+          "id": "major_updated:45:14",
+          "at": 45,
+          "kind": "major_updated",
+          "layer": "external",
+          "title": "Cập nhật Major theo bằng chứng Swing đã đóng",
+          "detail": "Cập nhật độc lập ML ngay khi Swing được nhận diện; không chờ đủ cặp đối diện.",
+          "severity": "success",
+          "source": "ADV:S7,S11,S14",
+          "refs": [
+            "SH-33",
+            "SL-44"
+          ],
+          "data": {
+            "direction": "down",
+            "majorHigh": 105348.75,
+            "majorLow": 104005,
+            "changed": [
+              "ML"
+            ],
+            "selection": "USER-AMENDED V6 independent closed-bar roles"
+          },
+          "primary": false
         }
-      },
-      "eventsAt": [],
-      "confirmedPivots": []
+      ],
+      "confirmedPivots": [
+        "SL-44"
+      ]
     },
     {
       "at": 46,
       "time": "2025-06-18T17:30:00Z",
       "available_at_utc": "2025-06-18T17:45:00.000Z",
-      "localTrend": "unknown",
+      "localTrend": "down",
       "external": {
-        "trend": "up",
+        "trend": "down",
         "phase": "confirmed",
         "majorHigh": {
           "id": "SH-33",
           "index": 33,
           "type": "SH",
           "price": 105348.75,
-          "confirmedAt": 38
-        },
-        "majorLow": {
-          "id": "SL-30",
-          "index": 30,
-          "type": "SL",
-          "price": 103837.75,
           "confirmedAt": 34
         },
+        "majorLow": {
+          "id": "SL-44",
+          "index": 44,
+          "type": "SL",
+          "price": 104005,
+          "confirmedAt": 45
+        },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
         "phase": "collecting",
-        "internalHigh": {
-          "id": "SH-39",
-          "index": 39,
-          "type": "SH",
-          "price": 105014.67,
-          "confirmedAt": 42
-        },
-        "internalLow": {
-          "id": "SL-37",
-          "index": 37,
-          "type": "SL",
-          "price": 104161.37,
-          "confirmedAt": 40
-        },
+        "internalHigh": null,
+        "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
+      "active": {
+        "SH": "SH-39",
+        "SL": "SL-44",
+        "MH": "SH-33",
+        "ML": "SL-44",
+        "iSH": null,
+        "iSL": null
+      },
+      "lastPrimary": {
+        "id": "major_reversal:45:12",
+        "at": 45,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều TĂNG → GIẢM",
+        "detail": "Close 104104.1 < 104161.37; chờ Swing Low thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SL-37",
+          "SH-33"
+        ],
+        "data": {
           "label": "S+",
-          "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
+          "direction": "down",
+          "close": 104104.1,
+          "brokenLevel": 104161.37,
+          "retainedLevel": 105348.75,
+          "majorPivotId": "SL-37",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "lastWeak": {
-          "at": 46,
-          "label": "C",
-          "eventId": "mss_weak:46:9",
-          "majorPivotId": "SL-30"
-        }
+        "primary": true
       },
-      "cisd": {
-        "reference": {
-          "direction": "up",
-          "startIndex": 42,
-          "endIndex": 42,
-          "open": 104415.99,
-          "waveStartIndex": 37,
-          "opposingSwingId": "SL-37"
-        },
-        "last": {
-          "at": 44,
-          "label": "B",
-          "eventId": "cisd:44:8",
-          "referenceOpen": 104415.99,
-          "referenceStartIndex": 42,
-          "majorDirectionUnchanged": true
-        }
-      },
-      "eventsAt": [
-        {
-          "id": "mss_weak:46:9",
-          "at": 46,
-          "kind": "mss_weak",
-          "layer": "external",
-          "title": "MSS C · nỗ lực đảo chiều yếu",
-          "detail": "Râu nến vượt Major Low 103837.75, nhưng Close 104211.56 trở lại biên. Main TĂNG giữ nguyên.",
-          "severity": "warning",
-          "source": "REV:S4,S8",
-          "refs": [
-            "SL-30"
-          ],
-          "data": {
-            "label": "C",
-            "direction": "down",
-            "mainTrend": "up",
-            "close": 104211.56,
-            "wick": 103627,
-            "brokenLevel": 103837.75,
-            "majorPivotId": "SL-30",
-            "confirmed": false,
-            "tolerance": 0
-          }
-        }
-      ],
+      "eventsAt": [],
       "confirmedPivots": []
     },
     {
       "at": 47,
       "time": "2025-06-18T17:45:00Z",
       "available_at_utc": "2025-06-18T18:00:00.000Z",
-      "localTrend": "unknown",
+      "localTrend": "down",
       "external": {
-        "trend": "up",
+        "trend": "down",
         "phase": "confirmed",
         "majorHigh": {
           "id": "SH-33",
           "index": 33,
           "type": "SH",
           "price": 105348.75,
-          "confirmedAt": 38
-        },
-        "majorLow": {
-          "id": "SL-30",
-          "index": 30,
-          "type": "SL",
-          "price": 103837.75,
           "confirmedAt": 34
         },
+        "majorLow": {
+          "id": "SL-44",
+          "index": 44,
+          "type": "SL",
+          "price": 104005,
+          "confirmedAt": 45
+        },
         "breakAt": null,
-        "breakLevel": null
+        "breakLevel": null,
+        "provisionalHigh": null,
+        "provisionalLow": null
       },
       "internal": {
         "trend": "unknown",
         "phase": "collecting",
-        "internalHigh": {
-          "id": "SH-39",
-          "index": 39,
-          "type": "SH",
-          "price": 105014.67,
-          "confirmedAt": 42
-        },
-        "internalLow": {
-          "id": "SL-37",
-          "index": 37,
-          "type": "SL",
-          "price": 104161.37,
-          "confirmedAt": 40
-        },
+        "internalHigh": null,
+        "internalLow": null,
         "protectedHigh": null,
         "protectedLow": null,
-        "pendingDirection": null,
-        "pendingBreakAt": null,
         "confirmed": false
       },
-      "mss": {
-        "tolerance": 0,
-        "last": {
-          "at": 33,
+      "active": {
+        "SH": "SH-39",
+        "SL": "SL-46",
+        "MH": "SH-33",
+        "ML": "SL-44",
+        "iSH": null,
+        "iSL": null
+      },
+      "lastPrimary": {
+        "id": "major_reversal:45:12",
+        "at": 45,
+        "kind": "major_reversal",
+        "layer": "external",
+        "title": "Cấu trúc chính đảo chiều TĂNG → GIẢM",
+        "detail": "Close 104104.1 < 104161.37; chờ Swing Low thực, dùng cực trị tạm thời trong lúc chờ.",
+        "severity": "error",
+        "source": "ADV:S3,S7,S13-14;REV:S3,S8",
+        "refs": [
+          "SL-37",
+          "SH-33"
+        ],
+        "data": {
           "label": "S+",
-          "direction": "up",
-          "eventId": "major_reversal:33:3",
-          "brokenLevel": 105159.7
+          "direction": "down",
+          "close": 104104.1,
+          "brokenLevel": 104161.37,
+          "retainedLevel": 105348.75,
+          "majorPivotId": "SL-37",
+          "confirmed": true,
+          "tolerance": 0
         },
-        "lastWeak": {
-          "at": 46,
-          "label": "C",
-          "eventId": "mss_weak:46:9",
-          "majorPivotId": "SL-30"
-        }
+        "primary": true
       },
-      "cisd": {
-        "reference": {
-          "direction": "up",
-          "startIndex": 46,
-          "endIndex": 46,
-          "open": 104104.11,
-          "waveStartIndex": 37,
-          "opposingSwingId": "SL-37"
-        },
-        "last": {
-          "at": 44,
-          "label": "B",
-          "eventId": "cisd:44:8",
-          "referenceOpen": 104415.99,
-          "referenceStartIndex": 42,
-          "majorDirectionUnchanged": true
+      "eventsAt": [
+        {
+          "id": "replace:47:15",
+          "at": 47,
+          "kind": "replace",
+          "layer": "local",
+          "title": "Thay SL-44 bằng SL-46",
+          "detail": "SL-46 cực trị hơn SL-44 trong đường Swing nhân quả.",
+          "severity": "info",
+          "source": "ADV:S14",
+          "refs": [
+            "SL-44",
+            "SL-46"
+          ],
+          "data": {
+            "oldId": "SL-44",
+            "newId": "SL-46",
+            "type": "SL"
+          },
+          "primary": false
         }
-      },
-      "eventsAt": [],
-      "confirmedPivots": []
+      ],
+      "confirmedPivots": [
+        "SL-46"
+      ]
     }
   ]
 }

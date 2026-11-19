@@ -6,7 +6,9 @@ const f=JSON.parse(fs.readFileSync(path.join(root,'fixtures/advanced_slide13_syn
 const candles=Array.from({length:f.bars},(_,i)=>({index:i,time:new Date(Date.UTC(2025,5,18,6,i*15)).toISOString(),close:f.close_overrides[i]??f.default_close}));
 function result(upto){return A.analysisFromAccepted(candles,f.pivots,upto);}
 const observed=result(candles.length-1);
-for(const x of f.expected){
+for(const original of f.expected){
+ // V6 user amendment 2026-11-19: at 29, ML SL-25 -> retained SL-5 until a corrective SL after SH-27; at 34, old reversal -> no reversal without that active corrective ML.
+ const x=original.at===29?{...original,major_low:'SL-5'}:original.at===34?{...original,external_trend:'up',major_low:'SL-5',event:null}:original;
  const state=result(x.at),ex=state.external,inn=state.internal,evAt=state.events.filter(e=>e.at===x.at);
  if(x.external_trend)assert.equal(ex.trend,x.external_trend,`major direction at ${x.at}`);
  if(x.internal_trend)assert.equal(inn.trend,x.internal_trend,`minor direction at ${x.at}`);
@@ -59,9 +61,13 @@ assert.equal(md(19).internal.trend,'up');
 assert.equal(md(21).internal.protectedLow?.id,'SL-15');
 assert(md(23).events.some(e=>e.at===23&&e.kind==='internal_reversal'));
 assert(md(28).events.some(e=>e.at===28&&e.kind==='major_continuation'));
-assert.equal(md(34).external.trend,'up');
+// V6 round-2 invariant 2026-11-19: the former SH-25 assignment at 29 was
+// already Close-violated (113 > 108). The latest valid corrective is SH-21
+// at 114, so Close 111 at 34 is not an S+; the false reversal is removed.
+assert.equal(md(34).external.trend,'down');
 assert.equal(md(34).external.majorLow?.id,'SL-27');
-assert.equal(md(34).external.majorHigh,null);
+assert.equal(md(34).external.majorHigh?.id,'SH-21');
+assert(!md(34).events.some(e=>e.at===34&&e.kind==='major_reversal'));
 // A wick-only excursion or exact boundary touch is not a Major close break.
 const wickOnly=candles.map(x=>({...x}));wickOnly[28].high=145;wickOnly[28].close=124;
 assert(!A.analysisFromAccepted(wickOnly,f.pivots,28).events.some(e=>e.at===28&&e.kind==='major_continuation'));

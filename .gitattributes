@@ -4,3 +4,6 @@ samples/raw/*.csv -text
 
 # Keep normalized/generated CSV output consistent across platforms.
 samples/normalized/*.csv text eol=lf
+
+# Generated stress fixtures are hashed in manifest.json: keep LF bytes on Windows.
+fixtures/generated/* text eol=lf

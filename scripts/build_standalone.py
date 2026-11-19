@@ -20,7 +20,7 @@ BUILTINS=[
  ('btcusd-20250618','BTCUSD · M15 · 18/06/2025 UTC','samples/raw/BTCUSD_M15_12h_2025-06-18_UTC.csv'),
  ('xauusd-20250618','XAUUSD · M15 · 18/06/2025 UTC','samples/raw/XAUUSD_M15_12h_2025-06-18_UTC.csv'),
 ]
-JS=['chart-theme.js','i18n.js','engine.js','advanced_engine.js','studio.js']
+JS=['vendor/lightweight-charts-4.2.3.standalone.production.js','chart-theme.js','i18n.js','engine.js','advanced_engine.js','studio.js']
 
 def build() -> str:
     content=(ROOT/'static/index.html').read_text(encoding='utf8')
@@ -44,6 +44,7 @@ def build() -> str:
     json_data=json.dumps(bundled,separators=(',',':'),ensure_ascii=False).replace('<','\\u003c')
     prefix=("<script>window.MSAS_BUNDLED_DATASETS="+json_data+";</script>\n"
             +"<script>\n"+(ROOT/'scripts/offline_adapter.js').read_text('utf8')+"\n</script>\n")
+    # Datasets + adapter go right after the vendored chart library, before the app modules.
     marker='<script defer="" src="/chart-theme.js"></script>'
     if content.count(marker)!=1:raise RuntimeError('Expected chart theme script')
     content=content.replace(marker,prefix+marker)
@@ -55,6 +56,7 @@ def build() -> str:
         content=content.replace(marker,f'<script data-module="{name}">\n{src}\n</script>')
     assert '<script defer=' not in content
     assert 'href="/studio.css"' not in content
+    assert 'src="/vendor/' not in content
     assert 'window.MSAS_BUNDLED_DATASETS=' in content
     return content
 
@@ -64,5 +66,5 @@ if __name__=='__main__':
     args=parser.parse_args()
     args.output.parent.mkdir(parents=True,exist_ok=True)
     content=build()
-    args.output.write_text(content,encoding='utf8')
+    args.output.write_bytes(content.encode('utf8'))   # LF on every platform: byte-reproducible
     print(f'Built {args.output} ({len(content.encode("utf8"))} bytes; {len(BUILTINS)} bundled samples; 100% local)')

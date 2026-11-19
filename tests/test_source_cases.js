@@ -34,15 +34,19 @@ assert(invalid&&invalid.confirmedAt===21&&invalid.status==='inside_rejected');
 assert(after.zones.some(z=>z.mother===18&&z.brokenAt===21&&z.breakDirection==='tr\u00ean'));
 const end=analyzePrefix(data);
 assert(end.swings.find(x=>x.index===20&&x.type==='SL').status==='inside_rejected');
-assert(end.swings.find(x=>x.index===38&&x.type==='SL').structStatus==='pending');
+// V6 user amendment 2026-11-19: pending indefinitely -> confirmed at right-bar close 39.
+assert.equal(end.swings.find(x=>x.index===38&&x.type==='SL').structConfirmedAt,39);
 // PPT 1, slides 5/9: do not force up/down without two same-type pairs.
 assert.equal(analyzePrefix(data,0).trend,'unknown');
 assert.equal(analyzePrefix(data,5).trend,'unknown');
-// PPT 2, slides 2/3: lack of opposing eligible pivots cannot confirm a turn.
+// USER-AMENDED V6: lack of an opposing pivot no longer delays a strict swing;
+// alternation/replacement is a separate causal selected-path concern.
 const consecutive=[candle(0,10,2),candle(1,12,3),candle(2,11,4),candle(3,14,5),candle(4,13,6)];
 const noPair=analyzePrefix(consecutive);
-assert.equal(noPair.summary.confirmed,0);
-assert.equal(noPair.swings.find(x=>x.index===1&&x.type==='SH').structStatus,'superseded');
+// V6 user amendment 2026-11-19: 0 delayed confirmations -> 2 immediate detections / 1 selected replacement.
+assert.equal(noPair.detected.length,2);assert.equal(noPair.summary.confirmed,1);
+assert.equal(noPair.swings.find(x=>x.index===1&&x.type==='SH').structStatus,'confirmed');
+assert(noPair.events.some(e=>e.kind==='replace'&&e.at===4));
 // Chronological causality: prefix recomputation is identical to truncated input.
 for(let t=0;t<data.length;t++){
  const a=analyzePrefix(data,t),b=analyzePrefix(data.slice(0,t+1));
@@ -50,4 +54,4 @@ for(let t=0;t<data.length;t++){
  assert.deepEqual(a.events.map(e=>[e.at,e.kind]),b.events.map(e=>[e.at,e.kind]));
  assert(a.events.every(e=>e.at<=t));
 }
-console.log('PASS PPT slide 3 M5 aggregation, slide 4 pivots, slide 6/7 mother and invalid SL, PPT 2 paired reversals, 40 causal prefixes');
+console.log('PASS PPT slide 3 M5 aggregation, slide 4 pivots, slide 6/7 mother and invalid SL, V6 immediate/replacement path, 40 causal prefixes');

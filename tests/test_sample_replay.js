@@ -4,8 +4,10 @@ const fs=require('node:fs');
 const path=require('node:path');
 const E=require('../static/engine.js');
 const specs=[
- {name:'BTCUSD_M15_sample',raw:17,confirmed:11,insideRejected:1,events:52,trend:'up'},
- {name:'XAUUSD_M15_10Hours',raw:17,confirmed:14,insideRejected:0,events:56,trend:'unknown'},
+ // V6 user amendment 2026-11-19: delayed 11 -> immediate/causal selected 12; 52 -> 50 append-only events; final local trend up -> unknown.
+ {name:'BTCUSD_M15_sample',raw:17,confirmed:12,insideRejected:1,events:50,trend:'unknown'},
+ // V6 user amendment 2026-11-19: delayed 14 -> immediate/causal selected 15; 56 -> 47 append-only events.
+ {name:'XAUUSD_M15_10Hours',raw:17,confirmed:15,insideRejected:0,events:47,trend:'unknown'},
 ];
 for(const spec of specs){
  const data=JSON.parse(fs.readFileSync(path.join(__dirname,'../docs',spec.name+'.canonical.json'),'utf8'));

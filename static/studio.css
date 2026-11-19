@@ -26,8 +26,7 @@ button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8
 .layer i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#59788b;margin-right:6px;vertical-align:1px}.layer[aria-pressed=true] i{background:#8daeff}.layer[data-color=gold][aria-pressed=true] i{background:var(--gold)}
 .error{display:none;margin:12px 24px 0;border-radius:8px;padding:9px 12px;border:1px solid #88505b;color:#ffc1c6;background:#38272f}.error.show{display:block}
 .graph{height:auto;flex:1;min-height:450px;position:relative;min-width:0;background:#c6d2df;overflow:hidden;user-select:none}
-.graph canvas{display:block;width:100%;height:100%;touch-action:pan-y;cursor:crosshair}
-.axis-legend{position:absolute;left:25px;bottom:12px;font:10px ui-monospace,monospace;letter-spacing:.035em;color:#647f90;pointer-events:none}
+.axis-legend{font:10px ui-monospace,monospace;letter-spacing:.035em;color:#647f90;pointer-events:none}
 .tooltip{position:absolute;min-width:180px;z-index:6;pointer-events:none;border:1px solid #41677a;border-radius:10px;padding:11px 12px;background:#152735f2;box-shadow:0 12px 28px #000b;color:#a6bfcb;font-size:11px}
 .tooltip.hidden{display:none}.tooltip header{font-weight:760;color:#ecf7ff;margin-bottom:8px}.tip-rows{display:grid;grid-template-columns:50px 1fr;gap:2px 12px}.tip-rows b{color:#edf6fa}
 .controls{border-top:1px solid #233542;padding:15px 23px 16px;background:#0b141c}
@@ -102,7 +101,6 @@ button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8
 
 /* V5 visual contract: solid canvas with light surface; header/panels remain dark. */
 .graph{background:#c6d2df}
-.graph canvas{background:#c6d2df}
 .lang-control{display:inline-flex;align-items:center;margin-left:1px}
 .lang-control select{height:29px;min-width:58px;padding:2px 6px;border:1px solid #476577;border-radius:7px;background:#182b38;color:#eaf8ff;font-size:11px;font-weight:760;cursor:pointer}
 .lang-control select:hover{border-color:#76a8bb}
@@ -156,7 +154,18 @@ button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8
 
 .chart-signal.hidden{display:none}
 
-/* Compact status: structural prices and internal swings are chart-only. */
-.structure-pivots,.snapshot-pivots,.snapshot-internal{display:none!important}
-#chart{cursor:crosshair;touch-action:none}
-#chart:active{cursor:grabbing}
+/* V6 user amendment 2026-11-19: TradingView Lightweight Charts surface.
+   Structure prices live on the chart only; panels render trend state only (no hidden rows). */
+.graph{background:#c6d2df;touch-action:pan-y}
+.graph #chart{position:absolute;inset:0;width:100%;height:100%;background:#c6d2df}
+.graph #zoneLayer{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.chart-legend{position:absolute;z-index:3;left:12px;top:8px;pointer-events:none;display:flex;flex-direction:column;gap:3px;max-width:calc(100% - 96px);color:#243746}
+.chart-legend .axis-legend{position:static;font:10px ui-monospace,monospace;letter-spacing:.035em;color:#3d5668}
+.chart-legend .ohlc{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:#3d5668}
+.chart-legend .ohlc b{color:#0f2231;font-weight:720}.chart-legend .ohlc[data-dir=down] b{color:#1f6b2b}.chart-legend .ohlc[data-dir=up] b{color:#0f2231}
+.chart-legend .ohlc em{font-style:normal;margin-right:4px;color:#5a7183}
+.go-live{position:absolute;z-index:5;right:76px;bottom:38px;height:30px;padding:0 12px;border:1px solid #1d4e6e;border-radius:6px;background:#1c3b53;color:#f1f9ff;font-size:11px;font-weight:760;box-shadow:0 3px 12px #0003}
+.go-live:hover{background:#27506e}.go-live[hidden]{display:none}
+.attrib{padding:6px 23px 9px;background:#0b141c;font-size:10px;color:#6d8999}.attrib a{color:#8fb3c4}
+.chart-panel #chart canvas{touch-action:pan-y}
+@media(max-width:550px){.chart-legend{left:8px;top:5px;max-width:calc(100% - 70px)}.chart-legend .ohlc{font-size:10px;gap:2px 8px}.go-live{right:60px;bottom:34px;height:28px;font-size:10px}.attrib{padding:5px 12px 8px}}

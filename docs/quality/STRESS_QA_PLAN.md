@@ -70,3 +70,15 @@ Optional QA-only dependencies (never required for the app or normal stress tests
 - Multiple levels of nested Internal waves and competing Major candidates remain implementation policies requiring examples signed off by the user. A successful test with 46,080 random candles **does not approve these rules**.
 - CI's 128-candle case size is not a performance benchmark for the application's accepted maximum of 25k candles.
 - If any gate fails, archive seed, case ID, first offending closed candle and error stack; **never alter a sample hash to make tests pass, never auto-merge a failed gate**, and do not hide REVIEW states.
+
+## V6 stress-oracle amendment (2026-11-19)
+
+The deterministic oracle now checks every eligible detected pivot, not only the final alternating path. For `three_bar`, `structConfirmedAt === confirmedAt === index + 1`; for `inside_compressed`, recognition must be later than `index + 1` and exactly at the cluster breakout close. Same-type path replacement is append-only evidence and does not mutate the replaced pivot's fields. This replaces the V5 delayed-opposite-pivot oracle.
+
+Every event is also checked against the V6 primary whitelist: only Major established/continuation/reversal may be primary. The independent strict-Close S+ stream is fed all causally detected eligible pivots in recognition order, including pivots later ignored or replaced in the selected path. Stress PASS continues to mean causal/contract consistency only; the asymmetric corrective-side Major policy and competing candidates remain provisional human-review items.
+
+### V6 round 2 gates
+
+For every generated role change into `major_high` or `major_low`, the stress oracle independently scans Close values from the pivot's source index through its assignment close. An MH assignment fails if any intervening Close is greater than its price; an ML assignment fails if any is lower. Initialization-pending states are distinguished from post-break pending states: they may expose one valid side plus PX for the missing side but cannot emit S+/continuation before `major_established`.
+
+Inside-cluster fixtures cover a prefix before breakout, the breakout prefix, walking left across a prior inside child, a both-side breakout with no compressed pivot, and reuse of a breakout bar as the next mother. `tests/test_v6_perf.js` separately generates 25,000 deterministic random-walk bars in memory, runs `replayAll` once, rejects frame-level pivot-ledger arrays, prints duration and heap usage, and enforces the 3,000 ms budget. These are software invariants and scale evidence, not trading-accuracy evidence.

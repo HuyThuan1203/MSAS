@@ -78,7 +78,7 @@ function eventText(e,lang='en'){
  case 'swing':return {title:`Local Swing ${d.type==='SH'?'High':'Low'} · ${d.pivotTime}`,detail:`Price ${price(d.price)}; candidate known when the ${d.confirmationTime} candle closed. ${d.status==='inside_rejected'?`REJECTED: the pivot lies inside the ${d.motherTime} mother range.`:d.status==='ambiguous'?'AMBIGUOUS: the same bar qualifies as SH and SL; OHLC does not reveal intrabar order.':'Inside-bar filter passed; waiting for an eligible opposing pivot.'}`};
  case 'replace':return d.action==='ignore'?
   {title:`Skipped competing ${d.type}`,detail:`A stronger ${d.type} already exists at ${d.previousTime}; no eligible opposing swing has appeared.`}:
-  {title:`Replaced ${d.type} candidate`,detail:`The ${d.previousTime} pivot was replaced by the ${d.newTime} pivot with a more extreme ${d.type==='SH'?'high':'low'}, before an eligible opposing swing.`};
+  {title:`Replaced ${d.type} candidate`,detail:`The ${d.previousTime??d.oldId} pivot was replaced by the ${d.newTime??d.newId} pivot with a more extreme ${d.type==='SH'?'high':'low'}, before an eligible opposing swing.`};
  case 'pair':return {title:`${d.previousType} confirmed by opposite swing`,detail:`${d.previousType} at ${d.previousTime} was structurally accepted when the opposing ${d.oppositeType} at ${d.oppositeTime} was identified.`};
  case 'classification':return {title:`Classified ${d.classification} · ${d.pivotTime}`,detail:`${d.type} ${price(d.price)} compared against ${price(d.previousPrice)} at ${d.previousTime}.`};
  case 'trend':return {title:d.direction==='up'?'UP structure confirmed':d.direction==='down'?'DOWN structure confirmed':'Structure returned to UNKNOWN',detail:d.direction==='up'?'Latest accepted pivots satisfy HH + HL.':d.direction==='down'?'Latest accepted pivots satisfy LH + LL.':'The latest pivot pairs are not aligned; do not infer a sideways market.'};
@@ -94,12 +94,74 @@ function eventText(e,lang='en'){
  default:return {title:'Structural event',detail:`Event recorded at closed candle ${e.at}. See the event audit for technical details.`};
  }
 }
+// V6 user amendment 2026-11-19: notifications show only primary Main-trend
+// events; keys below replace the old per-engine event wording for that feed.
+Object.assign(UI.en,{
+ goLive:'Go to live',goLiveTitle:'Follow the latest closed candle (double-click the chart)',diagnostics:'Diagnostics',
+ legendAria:'Values of the inspected candle',attribution:'Charts by TradingView',
+ phaseConfirmed:'confirmed',phasePending:'awaiting confirmation',phaseAwaiting:'awaiting new swing',phaseCollecting:'collecting swings',
+ heroEstablished:'Main trend confirmed {dir}',heroContinued:'Main trend continues {dir}',heroReversed:'Main trend reversed {dir}',
+ heroMajors:'Major High and Major Low identified',heroBreakUp:'Close crossed above the Major High',heroBreakDown:'Close crossed below the Major Low',heroGeneric:'Confirmed on a closed candle.',
+ offlineReplay:'OFFLINE REPLAY',attributionSuffix:' · Lightweight Charts™ (Apache-2.0)',chartLibMissing:'The chart library failed to load. Reload the page; no data was changed.',
+ noneCategory:'MAIN TREND',noneCount:'NO EVENT YET',noSignal:'No Main trend event yet',
+ noSignalDetail:'A Main trend event appears when a closed candle confirms, continues or reverses it.',
+ latestEvents:'MAIN TREND HISTORY',emptyEvents:'No earlier Main trend events.'
+});
+Object.assign(UI.vi,{
+ goLive:'Về hiện tại',goLiveTitle:'Theo dõi nến đóng mới nhất (bấm đúp vào biểu đồ)',diagnostics:'Chẩn đoán',
+ legendAria:'Giá trị của nến đang xem',attribution:'Biểu đồ bởi TradingView',
+ phaseConfirmed:'đã xác nhận',phasePending:'chờ xác nhận',phaseAwaiting:'chờ swing mới',phaseCollecting:'đang thu thập swing',
+ heroEstablished:'Xu hướng chính xác nhận {dir}',heroContinued:'Xu hướng chính tiếp diễn {dir}',heroReversed:'Xu hướng chính đảo chiều {dir}',
+ heroMajors:'Đã xác định Đỉnh chính và Đáy chính',heroBreakUp:'Giá đóng cửa vượt lên trên Đỉnh chính',heroBreakDown:'Giá đóng cửa xuống dưới Đáy chính',heroGeneric:'Xác nhận khi nến đóng.',
+ offlineReplay:'PHÁT LẠI NGOẠI TUYẾN',attributionSuffix:' · Lightweight Charts™ (Apache-2.0)',chartLibMissing:'Không tải được thư viện biểu đồ. Hãy tải lại trang; dữ liệu không bị thay đổi.',
+ noneCategory:'XU HƯỚNG CHÍNH',noneCount:'CHƯA CÓ SỰ KIỆN',noSignal:'Chưa có sự kiện xu hướng chính',
+ noSignalDetail:'Sự kiện xuất hiện khi một nến đã đóng xác nhận, tiếp diễn hoặc đảo chiều xu hướng chính.',
+ latestEvents:'LỊCH SỬ XU HƯỚNG CHÍNH',emptyEvents:'Chưa có sự kiện xu hướng chính trước đó.'
+});
+const PRIMARY_KINDS=['major_established','major_continuation','major_reversal'];
+// An event without an explicit `primary` flag falls back to the three Main-trend kinds.
+const isPrimary=e=>e.primary===true||(e.primary===undefined&&PRIMARY_KINDS.includes(e.kind));
+const trim=x=>String(+Number(x).toFixed(6));
+function level(x){const n=Number(x);const dec=Math.max(2,((+n.toFixed(6)).toString().split('.')[1]||'').length);return n.toFixed(dec);}
+const num=x=>x&&typeof x==='object'?x.price:x;
+function phaseText(phase,lang='en'){
+ if(!phase||phase==='uninitialized'||phase==='collecting')return text('phaseCollecting',lang);
+ if(phase==='confirmed')return text('phaseConfirmed',lang);
+ if(phase==='pending_confirmation')return text('phasePending',lang);
+ if(String(phase).startsWith('awaiting'))return text('phaseAwaiting',lang);
+ return String(phase).replace(/_/g,' ');
+}
+function dirWord(d,lang){return text(d==='up'?'metaUp':d==='down'?'metaDown':'metaUnknown',lang);}
+function primaryText(e,lang='en'){
+ const d=e.data||{},dr=d.direction||d.trend,key={major_established:'heroEstablished',major_continuation:'heroContinued',major_reversal:'heroReversed'}[e.kind];
+ if(!key)return eventText(e,lang);
+ const title=text(key,lang,{dir:dirWord(dr,lang)});
+ // Prices live on the chart only: feed text never carries MH/ML/iSH/iSL values.
+ let detail;
+ if(e.kind==='major_established')detail=text('heroMajors',lang);
+ else if(dr==='up'||dr==='down')detail=text(dr==='up'?'heroBreakUp':'heroBreakDown',lang);
+ else detail=text('heroGeneric',lang);
+ return {title,detail};
+}
+// Latest primary event first; consecutive duplicates (same kind, direction and level) collapse.
+function primaryFeed(events,max=5){
+ const list=events.filter(isPrimary).sort((a,b)=>a.at-b.at||String(a.id).localeCompare(String(b.id)));
+ const out=[];
+ for(const e of list){
+  const d=e.data||{},sig=[e.kind,d.direction||d.trend,num(d.brokenLevel)??'',num(d.majorHigh)??'',num(d.majorLow)??''].join('|');
+  const last=out[out.length-1];
+  if(last&&last.sig===sig){last.event=e;continue;}
+  out.push({event:e,sig});
+ }
+ const items=out.map(x=>x.event).reverse();
+ return {total:items.length,lead:items[0]||null,history:items.slice(1,1+max)};
+}
 function serverError(error,lang='en'){
  const code=error?.payload?.code;
  const known={NEEDS_MAPPING:'errorMapping',DATE_ORDER_REQUIRED:'errorDate',INVALID_OHLC:'errorOHLC',INVALID_TIMESTAMPS:'errorTimes',TOO_LARGE:'errorLarge',TOO_MANY_ROWS:'errorLarge',UNSUPPORTED:'errorUnsupported'};
  if(lang==='en')return text(known[code]||'errorGeneral','en')+(code?` [${code}]`:'');
  return error?.message||text(known[code]||'errorGeneral','vi');
 }
-return {UI,KIND,text,eventLabel,eventText,serverError};
+return {UI,KIND,text,eventLabel,eventText,serverError,isPrimary,primaryText,primaryFeed,phaseText,fmtLevel:level,PRIMARY_KINDS};
 });
 
