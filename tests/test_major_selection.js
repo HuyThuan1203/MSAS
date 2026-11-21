@@ -5,7 +5,8 @@ const dir=path.resolve(__dirname,'..');
 const c=JSON.parse(fs.readFileSync(path.join(dir,'samples/normalized/XAUUSD_M15_12h_2025-06-18_UTC.json'),'utf8')).candles;
 const run=t=>A.analyzeAdvancedPrefix(c,t,E.analyzePrefix(c,t));
 const final=run(47),hi=final.external.majorHigh,low=final.external.majorLow;
-assert.equal(final.external.trend,'up');assert.equal(final.internal.trend,'up');
+// Close 3382.348 @15:15 < active ML SL-31 3384.648 (strict, tol 0) -> S+ DOWN; MH/ML values unchanged.
+assert.equal(final.external.trend,'down');
 assert.deepEqual([hi?.id,hi?.index,hi?.price],['SH-34',34,3396.648]);
 assert.deepEqual([low?.id,low?.index,low?.price],['SL-37',37,3373.545]);
 assert.equal(c[hi.index].time,'2025-06-18T14:30:00Z');

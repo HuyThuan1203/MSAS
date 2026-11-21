@@ -17,26 +17,33 @@ assert.equal(sample40.length,40);
 // already falls below 3995.80: no artificial *second* crossing is required.
 assert.equal(sample40[15].close,3995.2);
 assert.deepEqual(active(state(sample40,15).external),['SH-9',4013.4,'SL-12',3995.8]);
-assert.deepEqual(active(state(sample40,18).external),['SH-9',4013.4,'SL-12',3995.8]);
-const rolled=state(sample40,19);
+// User rule 2026-11-21: Major updates on the SAME candle that confirms a swing
+// outside it (no delay). SL-17 is confirmed at index 18 -> ML SL-17, MH SH-14.
+assert.deepEqual(active(state(sample40,17).external),['SH-9',4013.4,'SL-12',3995.8]);
+const rolled=state(sample40,18);
 assert.equal(rolled.external.trend,'down');
 assert.deepEqual(active(rolled.external),['SH-14',4001.5,'SL-17',3991.1]);
-assert(rolled.events.some(e=>e.kind==='major_updated'&&e.at===19&&e.refs.includes('SL-17')));
+assert(rolled.events.some(e=>e.kind==='major_updated'&&e.at===18&&e.refs.includes('SL-17')));
+// SL-21=3991.0 (below ML 3991.1): its right candle
+// 22 is an Inside Bar, so it is only known when 23 breaks the mother range.
+assert.deepEqual(active(state(sample40,22).external),['SH-14',4001.5,'SL-17',3991.1]);
+const at23=state(sample40,23);
+assert.deepEqual(active(at23.external),['SH-18',3996.5,'SL-21',3991.0]);
+assert(at23.events.some(e=>e.kind==='major_updated'&&e.at===23));
 const screenshot=state(sample40,24); // 25 / 40 at 21:00 screenshot
 assert.equal(sample40[24].time.slice(11,16),'21:00');
 assert.equal(screenshot.external.trend,'down');
-assert.deepEqual(active(screenshot.external),['SH-14',4001.5,'SL-17',3991.1]);
-// Newest local SL-21=3991.0 is only a wick below ML=3991.1; Close
-// 3991.3 is not below 3991.1, so don't silently ratify it as a Major.
-assert.equal(sample40[24].close,3991.3);
-assert(!screenshot.events.some(e=>e.at===24&&e.kind==='major_updated'));
-// The independently annotated 48-bar sample must NOT regress: MH SH34,
-// corrective ML SL37. These can only be promoted after confirmations.
-const at39=state(fixture48,39),at40=state(fixture48,40),end48=state(fixture48,47);
-assert.notEqual(at39.external.majorLow?.id,'SL-37','correction promoted early');
-assert.deepEqual(active(at40.external),['SH-34',3396.648,'SL-37',3373.545]);
+assert.deepEqual(active(screenshot.external),['SH-18',3996.5,'SL-21',3991.0]);
+// The annotated 48-bar sample keeps MH SH-34 / ML SL-37. With immediate
+// updates, SH-34 makes ML = SL-31 (3384.648) at index 35; Close 3382.348 at
+// index 37 is strictly below it -> S+ DOWN, MH SH-34 retained; SL-37 becomes
+// ML when it is confirmed at index 38, never earlier.
+const at35=state(fixture48,35),at37=state(fixture48,37),at38=state(fixture48,38),end48=state(fixture48,47);
+assert.deepEqual(active(at35.external),['SH-34',3396.648,'SL-31',3384.648]);
+assert.equal(at37.external.trend,'down');assert.equal(at37.external.majorLow,null);
+assert.deepEqual(active(at38.external),['SH-34',3396.648,'SL-37',3373.545]);
 assert.deepEqual(active(end48.external),['SH-34',3396.648,'SL-37',3373.545]);
-assert.equal(end48.external.trend,'up');
+assert.equal(end48.external.trend,'down');
 // Deterministic no-lookahead of *both* Major values and event timing.
 for(const [name,bars] of [['XAU40',sample40],['XAU48',fixture48]]){
  const full=state(bars,bars.length-1);

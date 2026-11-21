@@ -4,8 +4,8 @@ const fs=require('node:fs');
 const path=require('node:path');
 const E=require('../static/engine.js');
 const specs=[
- {name:'BTCUSD_M15_sample',raw:17,confirmed:11,insideRejected:1,events:52,trend:'up'},
- {name:'XAUUSD_M15_10Hours',raw:17,confirmed:14,insideRejected:0,events:56,trend:'unknown'},
+ {name:'BTCUSD_M15_sample',raw:17,confirmed:12,insideRejected:1,events:51,trend:'unknown'},
+ {name:'XAUUSD_M15_10Hours',raw:17,confirmed:15,insideRejected:0,events:57,trend:'unknown'},
 ];
 for(const spec of specs){
  const data=JSON.parse(fs.readFileSync(path.join(__dirname,'../docs',spec.name+'.canonical.json'),'utf8'));
