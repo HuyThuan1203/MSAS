@@ -97,7 +97,9 @@ const ids=out=>out.confirmed.map(p=>p.id);
    .map((c,i)=>({...c,time:'2026-11-21T0'+i+':00:00Z'})));
  assert.deepEqual(ids(out),['SH-1']);assert.equal(out.confirmed[0].structConfirmedAt,3);
 }
-// Codex review P0: a pair that becomes active on THIS candle is checked against THIS Close.
+// Codex review P0 proposed testing THIS Close against a pair that becomes active on
+// this candle. REJECTED (MSS_CISD_RULEBOOK: judge a Close against the Major active
+// BEFORE the candle). The new pair is tested by the NEXT closed candle instead.
 {
  const rows=[[98.6,99.0,94.9,98.2],[99.2,110.5,94.9,99.4],[98.1,108.4,89.6,106.7],[110.1,118.4,103.2,108.1],
    [106.2,115.0,96.4,102.0],[104.6,110.4,100.7,109.2],[112.1,119.0,101.1,101.3],[98.9,99.4,93.6,93.7]];
@@ -109,9 +111,11 @@ const ids=out=>out.confirmed.map(p=>p.id);
  s.external={trend:'up',phase:'confirmed',majorHigh:{id:'SH-3',index:3,type:'SH',price:118.4,confirmedAt:4},
    majorLow:{id:'SL-2',index:2,type:'SL',price:89.6,confirmedAt:3},breakAt:null,breakLevel:null};
  A.advance(s,7,data[7],[{id:'SH-6',index:6,type:'SH',price:119,structConfirmedAt:7}]);
- assert.equal(s.external.trend,'down','Close 93.7 < newly active ML 96.4 must be S+');
- assert.equal(s.external.majorHigh.price,119);assert.equal(s.external.majorLow,null);
- assert(!s.events.some(e=>e.at===7&&(e.kind==='cisd'||e.kind==='mss_weak')),'S+ withdraws same-candle B/C');
+ assert.equal(s.external.trend,'up','roll candle: Close judged against the PREVIOUS ML 89.6');
+ assert.deepEqual([s.external.majorHigh.price,s.external.majorLow.price],[119,96.4]);
+ A.advance(s,8,{time:'2026-11-21T08:00:00Z',open:93.7,high:95,low:92,close:93});
+ assert.equal(s.external.trend,'down','next Close below the now-active ML 96.4 -> S+');
+ assert(s.events.some(e=>e.at===8&&e.kind==='major_reversal'));
 }
 // Codex review P1: a base without the causal `accepted` log is recomputed, never replayed from `confirmed`.
 {
@@ -125,12 +129,13 @@ const ids=out=>out.confirmed.map(p=>p.id);
  assert.throws(()=>A.advance(s,1,{close:100}));
  assert.equal(s.closed.length,0);A.advance(s,0,{close:100});assert.equal(s.closed.length,1);
 }
-// Codex review P2: wick through MH with Close exactly ON MH is a C, not S+.
+// Codex review P2 suggested labelling Close == MH as C; REJECTED: the rulebook
+// (REV slide 4, MSS_CISD_RULEBOOK) defines C with Close strictly back inside.
 {
  const s=A.makeState();
  s.external={trend:'down',phase:'confirmed',majorHigh:{id:'SH-m',index:0,type:'SH',price:110,confirmedAt:0},
    majorLow:{id:'SL-m',index:0,type:'SL',price:90,confirmedAt:0},breakAt:null,breakLevel:null};
  A.advance(s,0,{open:108,high:112,low:107,close:110});
- assert.equal(s.external.trend,'down');assert(s.events.some(e=>e.kind==='mss_weak'));
+ assert.equal(s.external.trend,'down');assert(!s.events.some(e=>e.kind==='mss_weak'||e.kind==='major_reversal'));
 }
 console.log('immediate swing + ISB breakout + causal alternation + immediate Major roll + Codex review regressions: PASS');

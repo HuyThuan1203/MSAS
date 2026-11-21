@@ -178,9 +178,10 @@ function scanReversalSignals(s,at,bar,previousMajor){
  if(threshold&&Number.isFinite(isDown?bar.high:bar.low)){
   // C: only wick crosses the Major boundary; the body stays inside it.
   const wickBreak=isDown?bar.high>threshold.price+MSS_TOLERANCE:bar.low<threshold.price-MSS_TOLERANCE;
-  // Close exactly ON the level did not cross it (S+ is strict) -> still C.
-  const bodyInside=isDown?bar.open<=threshold.price && bar.close<=threshold.price:
-                           bar.open>=threshold.price && bar.close>=threshold.price;
+  // REV slide 4 / MSS_CISD_RULEBOOK: C needs Close strictly back inside
+  // (Close < MH in Main DOWN). Close exactly on the level is neither S+ nor C.
+  const bodyInside=isDown?bar.open<=threshold.price && bar.close<threshold.price:
+                           bar.open>=threshold.price && bar.close>threshold.price;
   const weak=wickBreak&&bodyInside;
   const key=trend+':'+threshold.id;
   if(weak&&s.mss.weakAttempt!==key){
@@ -311,8 +312,6 @@ function advance(s,at,candleOrClose,newlyConfirmed=[],supersededIds=[]){
  }
  // A confirmed S+ takes priority over weak C / early B on this same candle.
  // C and B never switch external.trend and never create Major pivots.
- const signalSnapshot={events:s.events.length,lastWeak:s.mss.lastWeak,weakAttempt:s.mss.weakAttempt,
-   cisdLast:s.cisd.last,cisdRef:s.cisd.reference,cisdEmitted:s.cisd.emitted.length};
  if(majorBefore.trend!=='unknown'&&external.trend!==majorBefore.trend){
   const ev=s.events.find(e=>e.at===at&&e.kind==='major_reversal');
   s.mss.last={at,label:'S+',direction:external.trend,eventId:ev?.id??null,
@@ -346,19 +345,9 @@ function advance(s,at,candleOrClose,newlyConfirmed=[],supersededIds=[]){
   changeRole(s,at,r,'confirmed_swing',key==='majorHigh'?'major_high':'major_low','same_leg_replaced');
   external[key]=level(r);
  }
- // The Close of THIS candle must also respect a Major pair that became
- // active on this candle (initialization or immediate roll). If it is
- // already strictly beyond the opposing side, S+ fires now; same-candle
- // C/B labels are withdrawn because S+ takes priority.
- const reversedEarlier=majorBefore.trend!=='unknown'&&majorBefore.trend!==external.trend;
- if(!reversedEarlier&&strictReversal(s,at,close)){
-  const ev=s.events.at(-1);
-  s.events=s.events.filter((e,i)=>i<signalSnapshot.events||!(e.at===at&&(e.kind==='cisd'||e.kind==='mss_weak')));
-  s.mss.lastWeak=signalSnapshot.lastWeak;s.mss.weakAttempt=null;
-  s.cisd.last=signalSnapshot.cisdLast;s.cisd.reference=null;s.cisd.emitted.length=signalSnapshot.cisdEmitted;
-  s.mss.last={at,label:'S+',direction:external.trend,eventId:ev.id,brokenLevel:ev.data.brokenLevel};
-  for(const q of added)rollMajorOnSwing(s,at,q);
- }
+ // MSS_CISD_RULEBOOK: a candle's Close is judged against the Major that was
+ // active BEFORE that candle. A pair that becomes active on this candle (roll
+ // or initialization) is first tested by the NEXT closed candle.
  if(external.phase==='confirmed')refreshInternal(s,at);
  s.at=at;s.previousClose=close;
  if(!VALID_TRENDS.has(external.trend)||!VALID_TRENDS.has(s.internal.trend))throw Error('Xu hướng không hợp lệ.');
