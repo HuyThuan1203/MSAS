@@ -1,0 +1,28 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 8080,
+    "open_browser": true
+  },
+  "realtime": {
+    "enabled": true,
+    "default_provider": "binance",
+    "fallback_providers": ["bybit"],
+    "fallback_after_failures": 5,
+    "poll_seconds": 2.0,
+    "history_limit": 500,
+    "max_subscriptions": 16,
+    "idle_release_minutes": 10,
+    "request_timeout_seconds": 10,
+    "autostart": [
+      {"provider": "binance", "symbol": "BTCUSDT", "timeframes": ["M1", "M15", "M30", "H1", "D1"]},
+      {"provider": "binance", "symbol": "ETHUSDT", "timeframes": ["M15"]}
+    ]
+  },
+  "storage": {
+    "data_dir": "market_data",
+    "retention_days": 30,
+    "retention_days_by_timeframe": {"D1": 3650, "W1": 3650, "MN1": 3650},
+    "cleanup_interval_minutes": 60
+  }
+}

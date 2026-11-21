@@ -20,7 +20,7 @@ BUILTINS=[
  ('btcusd-20250618','BTCUSD · M15 · 18/06/2025 UTC','samples/raw/BTCUSD_M15_12h_2025-06-18_UTC.csv'),
  ('xauusd-20250618','XAUUSD · M15 · 18/06/2025 UTC','samples/raw/XAUUSD_M15_12h_2025-06-18_UTC.csv'),
 ]
-JS=['chart-theme.js','i18n.js','engine.js','advanced_engine.js','studio.js']
+JS=['chart-theme.js','i18n.js','engine.js','advanced_engine.js','live_controller.js','studio.js']
 
 def build() -> str:
     content=(ROOT/'static/index.html').read_text(encoding='utf8')

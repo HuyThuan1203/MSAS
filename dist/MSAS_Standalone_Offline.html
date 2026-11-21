@@ -167,6 +167,20 @@ button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8
 
 .chart-signal.hidden{display:none}
 
+/* Compact status: structural prices and internal swings are chart-only. */
+.structure-pivots,.snapshot-pivots,.snapshot-internal{display:none!important}
+#chart{cursor:crosshair;touch-action:none}
+#chart:active{cursor:grabbing}
+/* Live market-data controls (hidden unless the server runs with realtime enabled) */
+.live-bar{display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap}
+.live-bar select,.live-bar input{height:29px;border:1px solid #476577;border-radius:7px;background:#182b38;color:#eaf8ff;font-size:11px;font-weight:700;padding:0 6px}
+.live-bar input{width:84px;text-transform:uppercase}
+.live-status{height:22px;display:inline-flex;align-items:center;padding:0 8px;border-radius:11px;font-size:10px;font-weight:800;letter-spacing:.04em;background:#3a4b57;color:#e9f3f8}
+.live-status[data-status="live"]{background:#0f6b55;color:#fff}
+.live-status[data-status="backfilling"],.live-status[data-status="connecting"],.live-status[data-status="source_changed"]{background:#7a5a1e;color:#fff}
+.live-status[data-status="reconnecting"],.live-status[data-status="gap"],.live-status[data-status="error"],.live-status[data-status="offline"]{background:#8d2f3f;color:#fff}
+@media (max-width:550px){.live-bar input{width:70px}.live-bar select{max-width:90px}}
+
 </style>
 </head>
 <body>
@@ -215,7 +229,7 @@ button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8
 </div>
 </section>
 <aside aria-label="Replay event notifications" class="stream" data-i18n-aria="feedAria">
-<div class="stream-top"><div><div class="stream-heading"><i class="beacon" id="livePulse"></i><h2 data-i18n="notifications">Notifications</h2></div><p data-i18n="updatedOnClose">Updated after each candle closes</p></div><span class="mode">OFFLINE REPLAY</span></div>
+<div class="stream-top"><div><div class="stream-heading"><i class="beacon" id="livePulse"></i><h2 data-i18n="notifications">Notifications</h2></div><p data-i18n="updatedOnClose">Updated after each candle closes</p></div><span class="mode" id="modeBadge">OFFLINE REPLAY</span></div>
 <div class="asof"><span data-i18n="candleClose">LAST CLOSED CANDLE</span><b class="mono" id="feedTime">--</b></div>
 <div aria-live="polite" class="structure-snapshot" id="structureSnapshot">
 <div class="snapshot-title" data-i18n="currentStatus">STRUCTURE AT THIS CANDLE CLOSE</div>
@@ -470,10 +484,10 @@ root.MSASOfflineAPI=api;
 'use strict';
 const UI={
  en:{
-  data:'DATA',chooseDataset:'Select dataset',connecting:'Connecting…',upload:'+ Import',uploadTitle:'Import CSV, TSV, TXT, JSON or XLSX',removeTitle:'Remove imported dataset',chartTitle:'Market structure',loading:'Loading data…',indicators:'INDICATORS',structure:'Structure',inside:'Inside bar',candidates:'Candidates',timeline:'Replay timeline',replaySpeed:'SPEED',play:'Play',pause:'Pause',firstCandle:'First candle',previousCandle:'Previous candle',nextCandle:'Next candle',closed:'CLOSED CANDLES',notifications:'Notifications',updatedOnClose:'Updated after each candle closes',candleClose:'LAST CLOSED CANDLE',latestEvents:'RECENT EVENTS',awaiting:'AWAITING DATA',noneCategory:'CANDLE CLOSED',noneCount:'NO NEW SIGNAL',noSignal:'No new structural event',noSignalDetail:'The candle has closed. No new Swing or market-structure change has been confirmed.',closeMeta:'CLOSED CANDLE {time}',eventCount:'{count} events',atCandle:'{count} ON THIS CANDLE',emptyEvents:'No previous structural events. Move forward to see events when candles close.',jumpTo:'Jump to {time}',replay:'REPLAY',chartAria:'Candlestick chart and market-structure overlays',feedAria:'Replay event notifications',timeframeAria:'Replay timeline',mappingTitle:'Confirm column mapping',mappingReason:'Could not identify the source columns with confidence.',timestamp:'Timestamp',volumeOptional:'Volume (optional)',dateOrder:'Date format',dateAuto:'Auto-detect',dateDMY:'DD/MM/YYYY',dateMDY:'MM/DD/YYYY',mappingPreview:'Preview of the first three rows · verify column assignments before applying',cancel:'Cancel',applyMapping:'Apply mapping',noVolume:'(No volume)',chooseColumn:'-- Select a column --',unnamedColumn:'(unnamed)',dateAndTime:'Date + time',dragHint:'Drop a data file to import',loadingDataset:'Loading dataset',metaCandles:'{count} candles',metaGap:'{count} irregular interval(s)',metaMain:'Main',metaInternal:'Internal',metaPending:'pending confirmation',metaUp:'UP',metaDown:'DOWN',metaUnknown:'UNKNOWN',imported:'Imported {name} · {count} candles · {volume} volume.',volumeYes:'with',volumeNo:'without',gapsWarning:'Imported {count} candles. {gaps} irregular time interval(s); no synthetic candles were created.',loadFailed:'Could not open dataset: {message}',uploadFailed:'Could not import {name}: {message}',serverUnavailable:'Cannot connect to the application server: {message}',invalidServer:'The server returned an invalid response.',requestFailed:'The request failed.',invalidCandles:'No valid candles in this dataset.',invalidOHLC:'Invalid normalized OHLC data.',importRemoved:'Imported dataset removed.',confirmRemove:'Remove the selected imported dataset? The original file on your computer will not be affected.',mappingMissing:'Choose Timestamp, Open, High, Low and Close before continuing.',mappingHint:'Confirm the source columns to avoid incorrectly assigning prices.',fileNotRecognized:'Input could not be validated. Check the file, column mapping, timestamp or OHLC values.',errorMapping:'Column mapping is required.',errorDate:'Ambiguous date order. Select DMY or MDY.',errorOHLC:'OHLC values are inconsistent. Check the affected source row.',errorTimes:'Timestamps are duplicated or not in ascending order.',errorLarge:'File exceeds the allowed size or row limit.',errorUnsupported:'Unsupported input format.',errorGeneral:'Unable to process the input. Check source file and format.',tooltipOpen:'Open',tooltipHigh:'High',tooltipLow:'Low',tooltipClose:'Close',tooltipVolume:'Volume'
+  data:'DATA',chooseDataset:'Select dataset',connecting:'Connecting…',upload:'+ Import',uploadTitle:'Import CSV, TSV, TXT, JSON or XLSX',removeTitle:'Remove imported dataset',chartTitle:'Market structure',loading:'Loading data…',indicators:'INDICATORS',structure:'Structure',inside:'Inside bar',candidates:'Candidates',timeline:'Replay timeline',replaySpeed:'SPEED',play:'Play',pause:'Pause',firstCandle:'First candle',previousCandle:'Previous candle',nextCandle:'Next candle',closed:'CLOSED CANDLES',notifications:'Notifications',updatedOnClose:'Updated after each candle closes',candleClose:'LAST CLOSED CANDLE',latestEvents:'RECENT EVENTS',awaiting:'AWAITING DATA',noneCategory:'CANDLE CLOSED',noneCount:'NO NEW SIGNAL',noSignal:'No new structural event',noSignalDetail:'The candle has closed. No new Swing or market-structure change has been confirmed.',closeMeta:'CLOSED CANDLE {time}',eventCount:'{count} events',atCandle:'{count} ON THIS CANDLE',emptyEvents:'No previous structural events. Move forward to see events when candles close.',jumpTo:'Jump to {time}',replay:'REPLAY',chartAria:'Candlestick chart and market-structure overlays',feedAria:'Replay event notifications',timeframeAria:'Replay timeline',mappingTitle:'Confirm column mapping',mappingReason:'Could not identify the source columns with confidence.',timestamp:'Timestamp',volumeOptional:'Volume (optional)',dateOrder:'Date format',dateAuto:'Auto-detect',dateDMY:'DD/MM/YYYY',dateMDY:'MM/DD/YYYY',mappingPreview:'Preview of the first three rows · verify column assignments before applying',cancel:'Cancel',applyMapping:'Apply mapping',noVolume:'(No volume)',chooseColumn:'-- Select a column --',unnamedColumn:'(unnamed)',dateAndTime:'Date + time',dragHint:'Drop a data file to import',loadingDataset:'Loading dataset',metaCandles:'{count} candles',metaGap:'{count} irregular interval(s)',metaMain:'Main',metaInternal:'Internal',metaPending:'pending confirmation',metaUp:'UP',metaDown:'DOWN',metaUnknown:'UNKNOWN',imported:'Imported {name} · {count} candles · {volume} volume.',volumeYes:'with',volumeNo:'without',gapsWarning:'Imported {count} candles. {gaps} irregular time interval(s); no synthetic candles were created.',loadFailed:'Could not open dataset: {message}',uploadFailed:'Could not import {name}: {message}',serverUnavailable:'Cannot connect to the application server: {message}',invalidServer:'The server returned an invalid response.',requestFailed:'The request failed.',invalidCandles:'No valid candles in this dataset.',invalidOHLC:'Invalid normalized OHLC data.',importRemoved:'Imported dataset removed.',confirmRemove:'Remove the selected imported dataset? The original file on your computer will not be affected.',mappingMissing:'Choose Timestamp, Open, High, Low and Close before continuing.',mappingHint:'Confirm the source columns to avoid incorrectly assigning prices.',fileNotRecognized:'Input could not be validated. Check the file, column mapping, timestamp or OHLC values.',errorMapping:'Column mapping is required.',errorDate:'Ambiguous date order. Select DMY or MDY.',errorOHLC:'OHLC values are inconsistent. Check the affected source row.',errorTimes:'Timestamps are duplicated or not in ascending order.',errorLarge:'File exceeds the allowed size or row limit.',errorUnsupported:'Unsupported input format.',errorGeneral:'Unable to process the input. Check source file and format.',tooltipOpen:'Open',tooltipHigh:'High',tooltipLow:'Low',tooltipClose:'Close',tooltipVolume:'Volume',liveGroup:'Live market data',samplesGroup:'Samples & imports',liveProvider:'Provider',liveSymbol:'Symbol',liveTimeframe:'Timeframe',liveConnect:'Open live',liveCustom:'Live: custom symbol…',live_connecting:'CONNECTING',live_backfilling:'BACKFILLING',live_live:'LIVE',live_reconnecting:'RECONNECTING',live_source_changed:'SOURCE CHANGED',live_gap:'GAP',live_offline:'OFFLINE',live_error:'ERROR',live_stale:'STALE',liveFormingCandle:'forming (not analysed)',liveSourceChanged:'Data source changed: history reloaded as a new series.',liveFailed:'Live data error: {message}',liveStorage:'Stored in {path}'
  },
  vi:{
-  data:'DỮ LIỆU',chooseDataset:'Chọn bộ dữ liệu',connecting:'Đang kết nối…',upload:'+ Nạp file',uploadTitle:'Nạp CSV, TSV, TXT, JSON hoặc XLSX',removeTitle:'Xóa bộ dữ liệu đã nhập',chartTitle:'Biểu đồ cấu trúc',loading:'Đang tải dữ liệu…',indicators:'CHỈ BÁO',structure:'Cấu trúc',inside:'Inside bar',candidates:'Ứng viên',timeline:'Thanh thời gian phát lại',replaySpeed:'TỐC ĐỘ',play:'Phát',pause:'Dừng',firstCandle:'Nến đầu tiên',previousCandle:'Nến trước',nextCandle:'Nến tiếp theo',closed:'NẾN ĐÃ ĐÓNG',notifications:'Thông báo',updatedOnClose:'Cập nhật khi nến đóng',candleClose:'MỐC NẾN ĐÃ ĐÓNG',latestEvents:'SỰ KIỆN GẦN ĐÂY',awaiting:'ĐANG CHỜ DỮ LIỆU',noneCategory:'NẾN ĐÃ ĐÓNG',noneCount:'CHƯA CÓ TÍN HIỆU',noSignal:'Chưa có tín hiệu cấu trúc mới',noSignalDetail:'Nến đã đóng. Không phát sinh Swing hoặc thay đổi cấu trúc mới tại thời điểm này.',closeMeta:'NẾN {time} ĐÃ ĐÓNG',eventCount:'{count} sự kiện',atCandle:'{count} TẠI NẾN NÀY',emptyEvents:'Chưa có sự kiện cấu trúc trước đó. Tiến thêm nến để quan sát diễn biến.',jumpTo:'Chuyển đến {time}',replay:'PHÁT LẠI',chartAria:'Biểu đồ nến và cấu trúc thị trường',feedAria:'Thông báo sự kiện phát lại',timeframeAria:'Thanh thời gian phát lại',mappingTitle:'Xác nhận ánh xạ cột',mappingReason:'Không thể tự nhận diện tên cột một cách chắc chắn.',timestamp:'Thời gian',volumeOptional:'Volume (tùy chọn)',dateOrder:'Thứ tự ngày/tháng',dateAuto:'Tự nhận diện',dateDMY:'DD/MM/YYYY',dateMDY:'MM/DD/YYYY',mappingPreview:'Xem trước ba hàng đầu · đối chiếu cột trước khi áp dụng',cancel:'Hủy',applyMapping:'Áp dụng ánh xạ',noVolume:'(Không có Volume)',chooseColumn:'-- Chọn cột --',unnamedColumn:'(không tên)',dateAndTime:'Ngày + giờ',dragHint:'Thả file dữ liệu để nạp',loadingDataset:'Đang tải dữ liệu',metaCandles:'{count} nến',metaGap:'{count} khoảng lệch nhịp',metaMain:'Chính',metaInternal:'Phụ',metaPending:'chờ xác nhận',metaUp:'TĂNG',metaDown:'GIẢM',metaUnknown:'CHƯA RÕ',imported:'Đã nạp {name} · {count} nến · {volume} Volume.',volumeYes:'có',volumeNo:'không có',gapsWarning:'Đã nạp {count} nến. Có {gaps} khoảng lệch nhịp; không tạo nến giả.',loadFailed:'Không thể mở dữ liệu: {message}',uploadFailed:'Không thể nạp {name}: {message}',serverUnavailable:'Không kết nối được máy chủ: {message}',invalidServer:'Máy chủ trả về dữ liệu không hợp lệ.',requestFailed:'Yêu cầu thất bại.',invalidCandles:'Nguồn dữ liệu không có nến hợp lệ.',invalidOHLC:'OHLC không hợp lệ sau chuẩn hóa.',importRemoved:'Đã xóa bộ dữ liệu đã nạp.',confirmRemove:'Xóa bộ dữ liệu đã chọn? File gốc trên máy không bị ảnh hưởng.',mappingMissing:'Cần chọn đủ Timestamp, Open, High, Low và Close.',mappingHint:'Hãy xác nhận ánh xạ cột để tránh chọn nhầm giá.',fileNotRecognized:'Không thể kiểm tra dữ liệu. Hãy kiểm tra file, ánh xạ cột, timestamp hoặc OHLC.',errorMapping:'Cần xác nhận ánh xạ cột.',errorDate:'Ngày tháng không rõ thứ tự. Chọn DMY hoặc MDY.',errorOHLC:'Dữ liệu OHLC không nhất quán. Kiểm tra dòng nguồn.',errorTimes:'Timestamp bị trùng hoặc không tăng.',errorLarge:'File vượt giới hạn dung lượng hoặc số nến.',errorUnsupported:'Định dạng chưa hỗ trợ.',errorGeneral:'Không thể xử lý dữ liệu. Kiểm tra nguồn và định dạng.',tooltipOpen:'Open',tooltipHigh:'High',tooltipLow:'Low',tooltipClose:'Close',tooltipVolume:'Volume'
+  data:'DỮ LIỆU',chooseDataset:'Chọn bộ dữ liệu',connecting:'Đang kết nối…',upload:'+ Nạp file',uploadTitle:'Nạp CSV, TSV, TXT, JSON hoặc XLSX',removeTitle:'Xóa bộ dữ liệu đã nhập',chartTitle:'Biểu đồ cấu trúc',loading:'Đang tải dữ liệu…',indicators:'CHỈ BÁO',structure:'Cấu trúc',inside:'Inside bar',candidates:'Ứng viên',timeline:'Thanh thời gian phát lại',replaySpeed:'TỐC ĐỘ',play:'Phát',pause:'Dừng',firstCandle:'Nến đầu tiên',previousCandle:'Nến trước',nextCandle:'Nến tiếp theo',closed:'NẾN ĐÃ ĐÓNG',notifications:'Thông báo',updatedOnClose:'Cập nhật khi nến đóng',candleClose:'MỐC NẾN ĐÃ ĐÓNG',latestEvents:'SỰ KIỆN GẦN ĐÂY',awaiting:'ĐANG CHỜ DỮ LIỆU',noneCategory:'NẾN ĐÃ ĐÓNG',noneCount:'CHƯA CÓ TÍN HIỆU',noSignal:'Chưa có tín hiệu cấu trúc mới',noSignalDetail:'Nến đã đóng. Không phát sinh Swing hoặc thay đổi cấu trúc mới tại thời điểm này.',closeMeta:'NẾN {time} ĐÃ ĐÓNG',eventCount:'{count} sự kiện',atCandle:'{count} TẠI NẾN NÀY',emptyEvents:'Chưa có sự kiện cấu trúc trước đó. Tiến thêm nến để quan sát diễn biến.',jumpTo:'Chuyển đến {time}',replay:'PHÁT LẠI',chartAria:'Biểu đồ nến và cấu trúc thị trường',feedAria:'Thông báo sự kiện phát lại',timeframeAria:'Thanh thời gian phát lại',mappingTitle:'Xác nhận ánh xạ cột',mappingReason:'Không thể tự nhận diện tên cột một cách chắc chắn.',timestamp:'Thời gian',volumeOptional:'Volume (tùy chọn)',dateOrder:'Thứ tự ngày/tháng',dateAuto:'Tự nhận diện',dateDMY:'DD/MM/YYYY',dateMDY:'MM/DD/YYYY',mappingPreview:'Xem trước ba hàng đầu · đối chiếu cột trước khi áp dụng',cancel:'Hủy',applyMapping:'Áp dụng ánh xạ',noVolume:'(Không có Volume)',chooseColumn:'-- Chọn cột --',unnamedColumn:'(không tên)',dateAndTime:'Ngày + giờ',dragHint:'Thả file dữ liệu để nạp',loadingDataset:'Đang tải dữ liệu',metaCandles:'{count} nến',metaGap:'{count} khoảng lệch nhịp',metaMain:'Chính',metaInternal:'Phụ',metaPending:'chờ xác nhận',metaUp:'TĂNG',metaDown:'GIẢM',metaUnknown:'CHƯA RÕ',imported:'Đã nạp {name} · {count} nến · {volume} Volume.',volumeYes:'có',volumeNo:'không có',gapsWarning:'Đã nạp {count} nến. Có {gaps} khoảng lệch nhịp; không tạo nến giả.',loadFailed:'Không thể mở dữ liệu: {message}',uploadFailed:'Không thể nạp {name}: {message}',serverUnavailable:'Không kết nối được máy chủ: {message}',invalidServer:'Máy chủ trả về dữ liệu không hợp lệ.',requestFailed:'Yêu cầu thất bại.',invalidCandles:'Nguồn dữ liệu không có nến hợp lệ.',invalidOHLC:'OHLC không hợp lệ sau chuẩn hóa.',importRemoved:'Đã xóa bộ dữ liệu đã nạp.',confirmRemove:'Xóa bộ dữ liệu đã chọn? File gốc trên máy không bị ảnh hưởng.',mappingMissing:'Cần chọn đủ Timestamp, Open, High, Low và Close.',mappingHint:'Hãy xác nhận ánh xạ cột để tránh chọn nhầm giá.',fileNotRecognized:'Không thể kiểm tra dữ liệu. Hãy kiểm tra file, ánh xạ cột, timestamp hoặc OHLC.',errorMapping:'Cần xác nhận ánh xạ cột.',errorDate:'Ngày tháng không rõ thứ tự. Chọn DMY hoặc MDY.',errorOHLC:'Dữ liệu OHLC không nhất quán. Kiểm tra dòng nguồn.',errorTimes:'Timestamp bị trùng hoặc không tăng.',errorLarge:'File vượt giới hạn dung lượng hoặc số nến.',errorUnsupported:'Định dạng chưa hỗ trợ.',errorGeneral:'Không thể xử lý dữ liệu. Kiểm tra nguồn và định dạng.',tooltipOpen:'Open',tooltipHigh:'High',tooltipLow:'Low',tooltipClose:'Close',tooltipVolume:'Volume',liveGroup:'Dữ liệu thị trường trực tiếp',samplesGroup:'Dữ liệu mẫu & file nạp',liveProvider:'Nguồn',liveSymbol:'Mã',liveTimeframe:'Khung',liveConnect:'Mở trực tiếp',liveCustom:'Trực tiếp: mã tự chọn…',live_connecting:'ĐANG KẾT NỐI',live_backfilling:'ĐANG BÙ DỮ LIỆU',live_live:'TRỰC TIẾP',live_reconnecting:'ĐANG KẾT NỐI LẠI',live_source_changed:'ĐỔI NGUỒN',live_gap:'THIẾU NẾN',live_offline:'NGOẠI TUYẾN',live_error:'LỖI',live_stale:'CHẬM',liveFormingCandle:'đang hình thành (không phân tích)',liveSourceChanged:'Đã đổi nguồn dữ liệu: tải lại lịch sử như chuỗi mới.',liveFailed:'Lỗi dữ liệu trực tiếp: {message}',liveStorage:'Lưu tại {path}'
  }
 };
 // Current-state labels live outside the event translator, so a candle without
@@ -535,11 +549,11 @@ function eventText(e,lang='en'){
   {title:'Inside bar continues',detail:`Original mother range at ${d.motherTime}: ${price(d.low)}–${price(d.high)} remains active.`}:
   {title:'Inside bar detected',detail:`Candle ${d.candleTime} is within the ${d.motherTime} mother range [${price(d.low)}, ${price(d.high)}].`};
  case 'breakout':return {title:`Mother range broken ${d.direction==='up'?'↑':d.direction==='down'?'↓':'↕'}`,detail:`Candle ${d.candleTime} crossed the ${d.direction==='up'?'upper':d.direction==='down'?'lower':'upper and lower'} boundary of the ${d.motherTime} mother candle. Previously rejected swings stay invalid.`};
- case 'swing':return {title:`Local Swing ${d.type==='SH'?'High':'Low'} · ${d.pivotTime}`,detail:`Price ${price(d.price)}; candidate known when the ${d.confirmationTime} candle closed. ${d.status==='inside_rejected'?`REJECTED: the pivot lies inside the ${d.motherTime} mother range.`:d.status==='ambiguous'?'AMBIGUOUS: the same bar qualifies as SH and SL; OHLC does not reveal intrabar order.':'Inside-bar filter passed; waiting for an eligible opposing pivot.'}`};
+ case 'swing':return {title:`Local Swing ${d.type==='SH'?'High':'Low'} · ${d.pivotTime}`,detail:`Price ${price(d.price)}; ${d.isbBreakTime?`known when the ${d.isbBreakTime} candle broke the inside-bar range of the ${d.pivotTime} mother candle.`:`known when the ${d.confirmationTime} candle closed.`} ${d.status==='inside_rejected'?`REJECTED: the pivot lies inside the ${d.motherTime} mother range.`:d.status==='isb_rejected'?'REJECTED: the inside-bar breakout went beyond this extreme.':d.status==='ambiguous'?'AMBIGUOUS: the same bar qualifies as SH and SL; OHLC does not reveal intrabar order.':'Inside-bar filter passed; checking SH/SL alternation.'}`};
  case 'replace':return d.action==='ignore'?
-  {title:`Skipped competing ${d.type}`,detail:`A stronger ${d.type} already exists at ${d.previousTime}; no eligible opposing swing has appeared.`}:
-  {title:`Replaced ${d.type} candidate`,detail:`The ${d.previousTime} pivot was replaced by the ${d.newTime} pivot with a more extreme ${d.type==='SH'?'high':'low'}, before an eligible opposing swing.`};
- case 'pair':return {title:`${d.previousType} confirmed by opposite swing`,detail:`${d.previousType} at ${d.previousTime} was structurally accepted when the opposing ${d.oppositeType} at ${d.oppositeTime} was identified.`};
+  {title:`Skipped same-type ${d.type}`,detail:`No eligible ${d.type==='SH'?'Swing Low':'Swing High'} since the ${d.type} at ${d.previousTime}; the ${d.newTime} ${d.type} is not a structural ${d.type==='SH'?'top':'bottom'}.`}:
+  {title:`Moved ${d.type} to new point`,detail:`The ${d.previousTime} pivot was replaced by the ${d.newTime} pivot with a more extreme ${d.type==='SH'?'high':'low'}, before an eligible opposing swing.`};
+ case 'pair':return {title:`Alternation ${d.previousType} → ${d.oppositeType}`,detail:`${d.oppositeType} at ${d.oppositeTime} confirmed after ${d.previousType} at ${d.previousTime}.`};
  case 'classification':return {title:`Classified ${d.classification} · ${d.pivotTime}`,detail:`${d.type} ${price(d.price)} compared against ${price(d.previousPrice)} at ${d.previousTime}.`};
  case 'trend':return {title:d.direction==='up'?'UP structure confirmed':d.direction==='down'?'DOWN structure confirmed':'Structure returned to UNKNOWN',detail:d.direction==='up'?'Latest accepted pivots satisfy HH + HL.':d.direction==='down'?'Latest accepted pivots satisfy LH + LL.':'The latest pivot pairs are not aligned; do not infer a sideways market.'};
  case 'major_established':return {title:`Main ${direction} structure established`,detail:`Major High ${price(d.majorHigh)}; Major Low ${price(d.majorLow)}. Based on accepted alternating swings and HH+HL / LH+LL.`};
@@ -547,7 +561,7 @@ function eventText(e,lang='en'){
  case 'major_reversal':return {title:`S+ · Strong MSS: Main shifts to ${direction}`,detail:`Close ${price(d.close)} ${up?'exceeds Major High':'breaks below Major Low'} ${price(d.brokenLevel)} (tolerance 0). Opposite Major retained at ${price(d.retainedLevel)}; new pivot waits for an eligible swing.`};
  case 'mss_weak':return {title:'C · Weak MSS attempt (wick only)',detail:`Wick ${price(d.wick)} crossed ${up?'Major High':'Major Low'} ${price(d.brokenLevel)}, but the candle body closed back inside at ${price(d.close)}. Main ${dir(d.mainTrend)} is unchanged.`};
  case 'cisd':return {title:'B · CISD (early delivery shift)',detail:`Close ${price(d.close)} crossed the first Open ${price(d.referenceOpen)} of the last ${d.mainTrend==='down'?'bearish':'bullish'} candle cluster (bar ${d.referenceStartIndex}). Main ${dir(d.mainTrend)} is NOT reversed.`};
- case 'major_updated':return {title:'Major High / Low updated',detail:`Major High ${price(d.majorHigh)}; Major Low ${price(d.majorLow)}. Levels use the strongest already confirmed eligible swing of the break wave and its confirmed corrective or preceding opposite pivot.`};
+ case 'major_updated':return {title:'Major High / Low updated',detail:`Major High ${price(d.majorHigh)}; Major Low ${price(d.majorLow)}. ${d.selection==='confirmed_swing_outside_major'?`A confirmed swing outside the previous ${up?'Major High':'Major Low'} ${price(d.previousEdge)} becomes the new edge; the opposite Major moves to the swing immediately preceding it.`:'Levels use accepted swings of the confirmed wave.'}`};
  case 'internal_established':return {title:`Internal ${direction} structure identified`,detail:`Accepted internal pivots satisfy ${up?'HH + HL':'LH + LL'} inside the Major range; main trend is unchanged.`};
  case 'internal_reversal':return {title:`Internal reversal to ${direction} · pending`,detail:`Close ${price(d.close)} crossed ${up?'Internal SH':'Internal SL'} ${price(d.brokenLevel)}. Main ${dir(d.majorDirection)} is unchanged; waiting for ${up?'HH + HL':'LH + LL'} confirmation.`};
  case 'internal_confirmed':return {title:`Internal ${direction} structure confirmed`,detail:'An eligible sequence of internal pivots confirms HH + HL or LH + LL in the new direction.'};
@@ -617,87 +631,113 @@ return {UI,KIND,text,eventLabel,eventText,serverError};
       }
     }
 
+    // Swing confirmation (closed candles only, user rule 2026-11-21):
+    // a candidate center is valid only after the market has BROKEN OUT of the
+    // Inside-Bar range. Inside children are collapsed into their mother:
+    //  - left reference  = previous candle, or its mother if it is an inside child
+    //  - right reference = next candle, or, if the next candle is inside the
+    //    center (the center is a mother), the first candle that breaks out.
+    // SH needs center.high > both references; SL needs center.low < both.
+    // The event time is the right reference candle; while every candle after the
+    // center is still inside it, nothing is known and nothing is emitted.
     const swings=[];
+    const motherOf=j=>insideByIndex[j]!==null?c[zones[insideByIndex[j]].mother]:c[j];
     for(let i=1;i<n-1;i++){
-      const a=c[i-1],b=c[i],z=c[i+1];
-      const isHigh=b.high>a.high && b.high>z.high;
-      const isLow=b.low<a.low && b.low<z.low;
-      if(!isHigh&&!isLow) continue;
-      const ambiguous=isHigh && isLow;
+      const b=c[i],raw=c[i-1],rawRight=c[i+1];
+      const zIndex=insideByIndex[i];
+      if(zIndex!==null){
+        // Inside child: rejected (A6). Keep the audit record for raw 3-bar turns.
+        const rawHigh=b.high>raw.high&&b.high>rawRight.high,rawLow=b.low<raw.low&&b.low<rawRight.low;
+        for(const type of ['SH','SL']){
+          if((type==='SH'&&!rawHigh)||(type==='SL'&&!rawLow))continue;
+          const value=type==='SH'?b.high:b.low,mother=c[zones[zIndex].mother];
+          swings.push({id:type+'-'+i,index:i,confirmedAt:i+1,type,price:value,status:'inside_rejected',
+            structStatus:'rejected',structConfirmedAt:null,supersededAt:null,comp:'',zoneId:zIndex});
+          emit(i+1,'swing',(type==='SH'?'Swing High':'Swing Low')+' cục bộ · '+hhmm(b.time),
+            'Giá '+value.toFixed(2)+'. VÔ HIỆU: điểm nằm trong biên nến mẹ '+hhmm(mother.time)+'.','error',i,
+            {type,pivotTime:hhmm(b.time),confirmationTime:hhmm(rawRight.time),price:value,status:'inside_rejected',motherTime:hhmm(mother.time)});
+        }
+        continue;
+      }
+      const left=motherOf(i-1);
+      const leftHigh=b.high>left.high,leftLow=b.low<left.low;
+      if(!leftHigh&&!leftLow)continue;
+      let r=i+1;
+      const childZone=insideByIndex[i+1];
+      if(childZone!==null&&zones[childZone].mother===i)r=zones[childZone].brokenAt;
+      if(r===null||r===undefined)continue; // ISB not broken yet: unknown, never shown early
+      const right=c[r],viaIsb=r!==i+1;
       for(const type of ['SH','SL']){
-        if((type==='SH'&&!isHigh)||(type==='SL'&&!isLow)) continue;
+        if((type==='SH'&&!leftHigh)||(type==='SL'&&!leftLow))continue;
         const value=type==='SH'?b.high:b.low;
-        const zIndex=insideByIndex[i];
-        const status=ambiguous?'ambiguous':zIndex!==null?'inside_rejected':'eligible';
-        const swing={id:type+'-'+i,index:i,confirmedAt:i+1,type,price:value,status,
-          structStatus:status==='eligible'?'pending':'rejected',structConfirmedAt:null,comp:'',
-          zoneId:zIndex};
-        swings.push(swing);
-        emit(i+1,'swing',(type==='SH'?'Swing High':'Swing Low')+' cục bộ · '+hhmm(b.time),
-          'Giá '+value.toFixed(2)+'; xác nhận khi nến '+hhmm(z.time)+' đóng. '+
-          (ambiguous?'Cùng nến hình thành SH và SL: OHLC không biết thứ tự biến động, loại khỏi cấu trúc.':
-           zIndex!==null?'VÔ HIỆU: điểm nằm trong biên nến mẹ '+hhmm(c[zones[zIndex].mother].time)+'.':
-           'Qua bộ lọc Inside Bar; chờ kiểm tra đỉnh–đáy luân phiên.'),
-          ambiguous?'neutral':zIndex!==null?'error':'info',i,{type,pivotTime:hhmm(b.time),confirmationTime:hhmm(z.time),price:value,status,motherTime:zIndex!==null?hhmm(c[zones[zIndex].mother].time):null});
+        // Ordinary 3-bar test is strict. After an ISB, the breakout only has to
+        // NOT exceed the extreme (equal high/low means it broke the other side).
+        const ok=viaIsb?(type==='SH'?right.high<=b.high:right.low>=b.low):
+                        (type==='SH'?b.high>right.high:b.low<right.low);
+        if(!ok&&!viaIsb)continue; // ordinary non-turn, not a candidate
+        const status=ok?'eligible':'isb_rejected';
+        swings.push({id:type+'-'+i,index:i,confirmedAt:r,type,price:value,status,
+          structStatus:ok?'pending':'rejected',structConfirmedAt:null,supersededAt:null,comp:'',zoneId:null,
+          isbBreakAt:viaIsb?r:null});
+        emit(r,'swing',(type==='SH'?'Swing High':'Swing Low')+' cục bộ · '+hhmm(b.time),
+          'Giá '+value.toFixed(2)+'; '+(viaIsb?'nến '+hhmm(right.time)+' phá biên Inside Bar của nến mẹ '+hhmm(b.time)+'. ':'xác nhận khi nến '+hhmm(right.time)+' đóng. ')+
+          (ok?'Qua bộ lọc Inside Bar; kiểm tra đỉnh–đáy luân phiên.':'VÔ HIỆU: nến phá biên vượt qua cực trị này.'),
+          ok?'info':'error',i,{type,pivotTime:hhmm(b.time),confirmationTime:hhmm(right.time),price:value,status,isbBreakTime:viaIsb?hhmm(right.time):null});
       }
     }
 
-    // Project interpretation: a structurally confirmed turn must be followed by
-    // an opposite eligible turn. Consecutive same-type turns retain only the
-    // more extreme one; the last turn remains pending (never backdated).
-    const eligible=swings.filter(s=>s.status==='eligible').sort((x,y)=>x.index-y.index);
-    const path=[];
+    // Causal alternation (B2/B3): SH and SL must alternate. Processed in
+    // confirmation order, exactly as a live feed would deliver them:
+    //  - opposite type      -> accepted at its own confirmation candle;
+    //  - same type, more extreme -> the previous one is superseded AT THIS
+    //    candle (supersededAt), the new one is accepted;
+    //  - same type, not more extreme -> ignored, never shown as structure
+    //    (e.g. a lower SH in a falling leg with no SL in between).
+    // Earlier prefixes are never rewritten: `accepted` keeps superseded pivots
+    // with their supersededAt so downstream replay can be reproduced causally.
+    const eligible=swings.filter(p=>p.status==='eligible').sort((x,y)=>x.confirmedAt-y.confirmedAt||x.index-y.index);
+    const path=[],accepted=[];
     for(const p of eligible){
-      if(!path.length){path.push(p);continue;}
-      const last=path[path.length-1];
-      if(p.type===last.type){
-        const extreme=p.type==='SH'?p.price>last.price:p.price<last.price;
-        if(extreme){
-          last.structStatus='superseded';
-          p.structStatus='pending';
-          path[path.length-1]=p;
-          emit(p.confirmedAt,'replace','Dời '+p.type+' sang mốc mới',
-            'Mốc '+hhmm(c[last.index].time)+' bị thay bằng '+hhmm(c[p.index].time)+' do cực trị '+
-            (p.type==='SH'?'cao hơn':'thấp hơn')+' trước khi xuất hiện swing đối ứng hợp lệ.','warning',p.index,{type:p.type,action:'replace',previousTime:hhmm(c[last.index].time),newTime:hhmm(c[p.index].time)});
-        }else{
-          p.structStatus='superseded';
+      const previous=path[path.length-1];
+      if(previous&&previous.type===p.type){
+        const moreExtreme=p.type==='SH'?p.price>previous.price:p.price<previous.price;
+        if(!moreExtreme){
+          p.structStatus='ignored';
           emit(p.confirmedAt,'replace','Không dùng '+p.type+' trùng loại',
-            'Đã có '+p.type+' cực trị mạnh hơn tại '+hhmm(c[last.index].time)+'; chưa có swing đối ứng hợp lệ.','warning',p.index,{type:p.type,action:'ignore',previousTime:hhmm(c[last.index].time),newTime:hhmm(c[p.index].time)});
+            'Chưa có '+(p.type==='SH'?'Swing Low':'Swing High')+' hợp lệ kể từ '+p.type+' '+hhmm(c[previous.index].time)+' ('+previous.price.toFixed(2)+'); '+p.type+' '+hhmm(c[p.index].time)+' không phải đỉnh/đáy cấu trúc.',
+            'warning',p.index,{type:p.type,action:'ignore',previousTime:hhmm(c[previous.index].time),newTime:hhmm(c[p.index].time)});
+          continue;
         }
+        previous.structStatus='superseded';previous.supersededAt=p.confirmedAt;
+        p.structStatus='confirmed';p.structConfirmedAt=p.confirmedAt;
+        path[path.length-1]=p;accepted.push(p);
+        emit(p.confirmedAt,'replace','Dời '+p.type+' sang mốc mới',
+          'Mốc '+hhmm(c[previous.index].time)+' được thay bằng '+hhmm(c[p.index].time)+' do cực trị '+(p.type==='SH'?'cao hơn':'thấp hơn')+' trước khi có swing đối ứng hợp lệ.',
+          'warning',p.index,{type:p.type,action:'replace',previousTime:hhmm(c[previous.index].time),newTime:hhmm(c[p.index].time)});
       }else{
-        last.structStatus='confirmed';
-        last.structConfirmedAt=p.confirmedAt;
-        p.structStatus='pending';
-        path.push(p);
-        emit(p.confirmedAt,'pair','Xác thực '+last.type+' bằng swing đối ứng',
-          last.type+' '+hhmm(c[last.index].time)+' được xác thực cấu trúc khi '+p.type+' '+hhmm(c[p.index].time)+' được nhận diện.','success',last.index,{previousType:last.type,previousTime:hhmm(c[last.index].time),oppositeType:p.type,oppositeTime:hhmm(c[p.index].time)});
+        p.structStatus='confirmed';p.structConfirmedAt=p.confirmedAt;
+        path.push(p);accepted.push(p);
+        if(previous)emit(p.confirmedAt,'pair','Luân phiên '+previous.type+' → '+p.type,
+          p.type+' '+hhmm(c[p.index].time)+' xác nhận sau '+previous.type+' '+hhmm(c[previous.index].time)+'.','success',p.index,
+          {previousType:previous.type,previousTime:hhmm(c[previous.index].time),oppositeType:p.type,oppositeTime:hhmm(c[p.index].time)});
       }
     }
-    const confirmed=path.filter(p=>p.structStatus==='confirmed');
-    let priorHigh=null,priorLow=null;
-    for(const p of confirmed){
-      if(p.type==='SH'){
-        p.comp=priorHigh?(p.price>priorHigh.price?'HH':p.price<priorHigh.price?'LH':'EQH'):'SH';
-        priorHigh=p;
-      }else{
-        p.comp=priorLow?(p.price>priorLow.price?'HL':p.price<priorLow.price?'LL':'EQL'):'SL';
-        priorLow=p;
-      }
-    }
-    // Explanatory notifications for classification and causal trend changes.
-    for(let i=0;i<confirmed.length;i++){
-      const p=confirmed[i];
-      const prior=confirmed.slice(0,i).reverse().find(x=>x.type===p.type);
+    const confirmed=path;
+    // Classification and trend are replayed in acceptance order over the
+    // running path, so a later replacement never rewrites an earlier message.
+    const running=[];let previousTrend='unknown';
+    for(const p of accepted){
+      const last=running[running.length-1];
+      if(last&&last.type===p.type)running[running.length-1]=p;else running.push(p);
+      const prior=running.slice(0,-1).reverse().find(x=>x.type===p.type);
+      p.comp=!prior?p.type:p.type==='SH'?(p.price>prior.price?'HH':p.price<prior.price?'LH':'EQH'):
+        (p.price>prior.price?'HL':p.price<prior.price?'LL':'EQL');
       if(prior){
         const short=p.comp,kind=(short==='HH'||short==='HL')?'success':(short==='LH'||short==='LL')?'warning':'neutral';
         emit(p.structConfirmedAt,'classification','Nhận diện '+short+' · '+hhmm(c[p.index].time),
           p.type+' '+p.price.toFixed(2)+' so với '+prior.price.toFixed(2)+' tại '+hhmm(c[prior.index].time)+'.',kind,p.index,{type:p.type,classification:short,pivotTime:hhmm(c[p.index].time),price:p.price,previousPrice:prior.price,previousTime:hhmm(c[prior.index].time)});
       }
-    }
-    let previousTrend='unknown',checked=[];
-    for(const p of confirmed){
-      checked.push(p);
-      const vH=checked.filter(x=>x.type==='SH'),vL=checked.filter(x=>x.type==='SL');
+      const vH=running.filter(x=>x.type==='SH'),vL=running.filter(x=>x.type==='SL');
       const curH=vH.at(-1)?.comp,curL=vL.at(-1)?.comp;
       const next=vH.length>=2&&vL.length>=2 ?
           (curH==='HH'&&curL==='HL'?'up':curH==='LH'&&curL==='LL'?'down':'unknown') : 'unknown';
@@ -721,13 +761,14 @@ return {UI,KIND,text,eventLabel,eventText,serverError};
         trend='unknown'; reason='Các cặp SH/SL không đồng thuận theo HH+HL hoặc LH+LL; không tự gán đi ngang.';
       }
     }
-    events.sort((a,b)=>a.at-b.at||['breakout','inside','swing','replace','pair','start'].indexOf(a.kind)-['breakout','inside','swing','replace','pair','start'].indexOf(b.kind));
+    const ORDER=['start','breakout','inside','swing','replace','pair','classification','trend'];
+    events.sort((a,b)=>a.at-b.at||ORDER.indexOf(a.kind)-ORDER.indexOf(b.kind));
     const summary={raw:swings.length,insideRejected:swings.filter(s=>s.status==='inside_rejected').length,
       ambiguous:swings.filter(s=>s.status==='ambiguous').length,
-      superseded:swings.filter(s=>s.structStatus==='superseded').length,
+      superseded:swings.filter(s=>s.structStatus==='superseded').length,ignored:swings.filter(s=>s.structStatus==='ignored').length,isbRejected:swings.filter(s=>s.status==='isb_rejected').length,
       confirmed:confirmed.length,pending:swings.filter(s=>s.structStatus==='pending').length,
       insideCandles:insideByIndex.filter(x=>x!==null).length};
-    return {candles:c,zones,insideByIndex,swings,path,confirmed,events,trend,reason,summary,lastH,lastL,end};
+    return {candles:c,zones,insideByIndex,swings,path,confirmed,accepted,events,trend,reason,summary,lastH,lastL,end};
   }
 
   return {analyzePrefix};
@@ -857,40 +898,34 @@ function initialize(s,at){
      `Major High ${H.price}; Major Low ${L.price}. Xác định từ Swing đã được chấp nhận theo HH+HL / LH+LL.`,
      [H.id,L.id],'ADV:S5,S14','success',{direction:trend,majorHigh:H.price,majorLow:L.price});
 }
-/** Choose the strongest ALREADY CONFIRMED structural extreme of the pending
- * break wave, not the last swing to happen to confirm after a Close breakout.
- * A major role is assigned only at `at`, never at the historical pivot time.
- * Slide 11/13: major expansion 10/9 or 14/13; source does not fully specify
- * competing pivot tie-breaks, so this remains an explicit provisional policy.
+/** Major update on a newly CONFIRMED swing (user rule 2026-11-21; ADV slide 11).
+ * Main UP: an accepted SH strictly above the active Major High (or above the
+ * broken level while the new MH is still unknown after S+) immediately becomes
+ * the Major High, and the Major Low moves to the latest accepted SL preceding
+ * that SH (the low the new leg started from). Main DOWN is symmetric.
+ * Runs at the candle that confirms the swing; never earlier, never later.
  */
-function pendingMajorPair(s,direction){
- const e=s.external,kind=direction==='up'?'SH':'SL';
- if(e.breakAt===null||e.breakLevel===null)return null;
- const anchor=direction==='up'?(e.majorHigh?.index??s.segmentStart-1):(e.majorLow?.index??s.segmentStart-1);
- const eligible=s.history.filter(p=>p.type===kind&&p.index>anchor&&
-  (direction==='up'?p.price>e.breakLevel:p.price<e.breakLevel));
- // An accepted extreme may be known BEFORE the Close crosses the old Major
- // boundary. Prefer the strongest price across the wave, not the latest pivot.
- eligible.sort((a,b)=>direction==='up'?b.price-a.price||a.index-b.index:a.price-b.price||a.index-b.index);
- for(const extreme of eligible){
-  // If the new extreme was already confirmed BEFORE the closing breakout,
-  // the protected counter-extreme can form AFTER it but BEFORE the breakout.
-  // XAU source user annotation: MH SH-34 followed by corrective ML SL-37.
-  // Otherwise use the latest preceding opposite pivot (PPT 14/13 case).
-  const opposites=s.history.filter(p=>p.type!==kind && p.index>anchor);
-  const follow=opposites.filter(p=>p.index>extreme.index && p.index<=e.breakAt);
-  follow.sort((a,b)=>direction==='up'?a.price-b.price||a.index-b.index:b.price-a.price||a.index-b.index);
-  const opposite=follow[0]||earlierOpposite(s.history,extreme);
-  if(opposite){
-   if(direction==='down'&&e.majorHigh&&opposite.price>=e.majorHigh.price){
-    // Higher opposing wick is NOT a new bearish Lower High. The protected
-    // prior Major High stays active until a real lower high is confirmed.
-    return {high:e.majorHigh,low:extreme};
-   }
-   return direction==='up'?{high:extreme,low:opposite}:{high:opposite,low:extreme};
-  }
- }
- return null;
+function rollMajorOnSwing(s,at,p){
+ const e=s.external;
+ if(e.trend!=='up'&&e.trend!=='down')return false;
+ const up=e.trend==='up';
+ if(p.type!==(up?'SH':'SL'))return false;
+ const edge=up?(e.majorHigh?e.majorHigh.price:e.breakLevel):(e.majorLow?e.majorLow.price:e.breakLevel);
+ if(edge===null||edge===undefined)return false;
+ if(!(up?p.price>edge+MSS_TOLERANCE:p.price<edge-MSS_TOLERANCE))return false;
+ const opposite=s.history.filter(q=>q.type!==p.type&&q.index<p.index).at(-1);
+ const keep=up?e.majorLow:e.majorHigh;
+ if(!opposite&&!keep)return false;
+ const high=up?p:(opposite||keep),low=up?(opposite||keep):p;
+ const wasPending=e.phase!=='confirmed';
+ setMajor(s,at,e.trend,high,low,'swing_outside_major');
+ log(s,at,'major_updated','external','Đã cập nhật Major High / Major Low',
+     up?`Swing High ${p.price} đã xác nhận nằm ngoài Major High ${edge}: Major High → ${high.price}; Major Low dời về Swing Low liền trước ${low.price}.`:
+        `Swing Low ${p.price} đã xác nhận nằm ngoài Major Low ${edge}: Major Low → ${low.price}; Major High dời về Swing High liền trước ${high.price}.`,
+     [high.id,low.id],'ADV:S11,S13-14;USER:2026-11-21','success',
+     {direction:e.trend,majorHigh:high.price,majorLow:low.price,majorHighIndex:high.index,majorLowIndex:low.index,
+      previousEdge:edge,afterPending:wasPending,selection:'confirmed_swing_outside_major'});
+ return true;
 }
 /** Most recent candle cluster moving in the OLD main trend, within the latest
  * eligible swing wave. The Open of its FIRST candle is the CISD reference.
@@ -920,6 +955,8 @@ function scanReversalSignals(s,at,bar,previousMajor){
  if(threshold&&Number.isFinite(isDown?bar.high:bar.low)){
   // C: only wick crosses the Major boundary; the body stays inside it.
   const wickBreak=isDown?bar.high>threshold.price+MSS_TOLERANCE:bar.low<threshold.price-MSS_TOLERANCE;
+  // REV slide 4 / MSS_CISD_RULEBOOK: C needs Close strictly back inside
+  // (Close < MH in Main DOWN). Close exactly on the level is neither S+ nor C.
   const bodyInside=isDown?bar.open<=threshold.price && bar.close<threshold.price:
                            bar.open>=threshold.price && bar.close>threshold.price;
   const weak=wickBreak&&bodyInside;
@@ -956,65 +993,45 @@ function scanReversalSignals(s,at,bar,previousMajor){
                 referenceStartIndex:ref.startIndex,majorDirectionUnchanged:true};
  }
 }
-/** Refresh a CONFIRMED Major pair from a fully accepted continuation wave.
- *
- * A breakout already observed after an old Major became active counts as
- * price confirmation (even if the boundary was assigned with price already
- * outside it). Promotion still REQUIRES accepted Swing evidence; this is
- * independent from S+ reversal and never invents a pivot at the breakout.
- *
- * REV:S8 + ADV:S7,S11,S14 establish Close and rolling role semantics. Which
- * eligible corrective pivot to pair is not completely defined by the PPT;
- * these deterministic tie-breaks are provisional and regression-tested.
+/** S+ : strict Close beyond the ACTIVE opposing Major (tolerance 0).
+ * Main UP and Close < Major Low -> DOWN (retain MH, ML pending); symmetric.
+ * Returns true when Main was reversed on this candle.
  */
-function rollMajorFromConfirmed(s,at){
- const e=s.external;
- if(e.phase!=='confirmed'||!e.majorHigh||!e.majorLow)return false;
- const up=e.trend==='up',oldEdge=up?e.majorHigh:e.majorLow;
- const from=Math.max(0,s.majorRoleAt+1);
- const priceProved=s.closed.slice(from,at+1).some(b=>
-    up?b.close>oldEdge.price+MSS_TOLERANCE:b.close<oldEdge.price-MSS_TOLERANCE);
- if(!priceProved)return false;
- let high=null,low=null;
- if(up){
-  const highs=s.history.filter(p=>p.type==='SH'&&p.index>e.majorHigh.index&&p.price>e.majorHigh.price&&p.structConfirmedAt>s.majorRoleAt)
-        .sort((a,b)=>b.price-a.price||a.index-b.index);
-  for(const newHigh of highs){
-   // The user-labeled XAU48 main swing includes an accepted corrective SL
-   // AFTER the major high. Never choose the old preceding low while that
-   // corrective pivot is not yet known (it would lock a premature ML).
-   const corrective=s.history.filter(p=>p.type==='SL'&&p.index>newHigh.index&&p.structConfirmedAt>s.majorRoleAt)
-         .sort((a,b)=>a.price-b.price||a.index-b.index)[0];
-   if(corrective){high=newHigh;low=corrective;break;}
-  }
- }else{
-  const lows=s.history.filter(p=>p.type==='SL'&&p.index>e.majorLow.index&&p.price<e.majorLow.price&&p.structConfirmedAt>s.majorRoleAt)
-       .sort((a,b)=>a.price-b.price||a.index-b.index);
-  for(const newLow of lows){
-   // A lower HIGH must precede the fresh LL, otherwise retain the old
-   // protected MH. A wick-only higher SH cannot become a new bearish MH.
-   const highs=s.history.filter(p=>p.type==='SH'&&p.index>e.majorLow.index&&
-       p.index<newLow.index&&p.price<e.majorHigh.price)
-       .sort((a,b)=>b.index-a.index);
-   const newHigh=highs[0];
-   if(newHigh){high=newHigh;low=newLow;break;}
-  }
+function strictReversal(s,at,close){
+ const external=s.external,h=external.majorHigh,l=external.majorLow;
+ if(external.trend==='up'&&l&&close<l.price-MSS_TOLERANCE){
+  const oldLow=l;
+  changeRole(s,at,l,'major_low','broken_major_low','external_reversal');
+  external.trend='down';external.phase='awaiting_major_low';external.majorLow=null;
+  external.breakAt=at;external.breakLevel=oldLow.price;
+  s.segmentStart=at;clearInternal(s);
+  log(s,at,'major_reversal','external','Cấu trúc chính đảo chiều TĂNG → GIẢM',
+      `Giá đóng ${close} thấp hơn Major Low ${oldLow.price}; giữ Major High ${h?.price??'chưa có'}, Major Low mới chờ xác nhận.`,
+      [h?.id,oldLow.id].filter(Boolean),'ADV:S3,S7,S13-14;REV:S3,S8','error',
+      {label:'S+',direction:'down',close,brokenLevel:oldLow.price,retainedLevel:h?.price??null,
+       majorPivotId:oldLow.id,confirmed:true,tolerance:MSS_TOLERANCE});
+  return true;
  }
- if(!high||!low)return false;
- setMajor(s,at,e.trend,high,low,'close_confirmed_rolling_major_provisional');
- log(s,at,'major_updated','external','Cập nhật Major theo sóng đã xác nhận',
-     `Đã xác nhận ${e.trend==='up'?'tiếp diễn tăng':'tiếp diễn giảm'} bằng Close; Major High ${high.price}, Major Low ${low.price}.`,
-     [high.id,low.id],'ADV:S7,S11,S14','success',
-     {direction:e.trend,majorHigh:high.price,majorLow:low.price,
-      majorHighIndex:high.index,majorLowIndex:low.index,
-      selection:'close_confirmed_roll_provisional'});
- return true;
+ if(external.trend==='down'&&h&&close>h.price+MSS_TOLERANCE){
+  const oldHigh=h;
+  changeRole(s,at,h,'major_high','broken_major_high','external_reversal');
+  external.trend='up';external.phase='awaiting_major_high';external.majorHigh=null;
+  external.breakAt=at;external.breakLevel=oldHigh.price;
+  s.segmentStart=at;clearInternal(s);
+  log(s,at,'major_reversal','external','Cấu trúc chính đảo chiều GIẢM → TĂNG',
+      `Giá đóng ${close} cao hơn Major High ${oldHigh.price}; giữ Major Low ${l?.price??'chưa có'}, Major High mới chờ xác nhận.`,
+      [oldHigh.id,l?.id].filter(Boolean),'ADV:S3,S7,S14;REV:S3,S8','success',
+      {label:'S+',direction:'up',close,brokenLevel:oldHigh.price,retainedLevel:l?.price??null,
+       majorPivotId:oldHigh.id,confirmed:true,tolerance:MSS_TOLERANCE});
+  return true;
+ }
+ return false;
 }
 function cross(prev,now,threshold,direction){
  if(threshold===null||threshold===undefined)return false;
  return direction==='up'?(now>threshold&&(prev===null||prev<=threshold)):(now<threshold&&(prev===null||prev>=threshold));
 }
-function advance(s,at,candleOrClose,newlyConfirmed=[]){
+function advance(s,at,candleOrClose,newlyConfirmed=[],supersededIds=[]){
  // Numeric close-only synthetic fixtures are supported for structural tests.
  // They cannot generate candle-shape (C) or Open/Close (B) labels.
  const raw=typeof candleOrClose==='number'?{close:candleOrClose}:candleOrClose;
@@ -1023,35 +1040,25 @@ function advance(s,at,candleOrClose,newlyConfirmed=[]){
  const bar={open:Number.isFinite(raw.open)?raw.open:null,
             high:Number.isFinite(raw.high)?raw.high:null,
             low:Number.isFinite(raw.low)?raw.low:null,close};
- s.closed.push(bar);
  if(at!==s.at+1)throw Error('Phải xử lý từng nến đã đóng theo thứ tự, không bỏ qua hoặc quay ngược.');
+ // Validate every input BEFORE any state mutation (state stays reusable on error).
+ const superseded=new Set(supersededIds);
+ for(const id of superseded)if(!s.history.some(x=>x.id===id))throw Error(`Swing ${id} bị thay thế nhưng chưa từng được chấp nhận.`);
+ const seen=new Set();
+ for(const p of newlyConfirmed){
+  if(p.structConfirmedAt!==at)throw Error(`Swing ${p.id} được cung cấp sai thời điểm xác nhận.`);
+  if(p.index>=at)throw Error('Swing chỉ hợp lệ khi nến phía sau đã đóng.');
+  if(!['SH','SL'].includes(p.type)||!Number.isFinite(p.price))throw Error('Swing không hợp lệ.');
+  if(seen.has(p.id)||(s.history.some(x=>x.id===p.id)&&!superseded.has(p.id)))throw Error('Pivot ID đã tồn tại.');
+  seen.add(p.id);
+ }
+ s.closed.push(bar);
  const prev=s.previousClose,external=s.external,internal=s.internal;
  const majorBefore={trend:external.trend,majorHigh:external.majorHigh,majorLow:external.majorLow};
  // Price breaches are evaluated against levels known BEFORE the current candle closed.
  if(external.trend!=='unknown'){
   const h=external.majorHigh,l=external.majorLow;
-  if(external.trend==='up'&&l&&close<l.price-MSS_TOLERANCE){
-   const oldLow=l;
-   changeRole(s,at,l,'major_low','broken_major_low','external_reversal');
-   external.trend='down';external.phase='awaiting_major_low';external.majorLow=null;
-   external.breakAt=at;external.breakLevel=oldLow.price;
-   s.segmentStart=at;clearInternal(s);
-   log(s,at,'major_reversal','external','Cấu trúc chính đảo chiều TĂNG → GIẢM',
-       `Giá đóng ${close} thấp hơn Major Low ${oldLow.price}; giữ Major High ${h?.price??'chưa có'}, Major Low mới chờ xác nhận.`,
-       [h?.id,oldLow.id].filter(Boolean),'ADV:S3,S7,S13-14;REV:S3,S8','error',
-       {label:'S+',direction:'down',close,brokenLevel:oldLow.price,retainedLevel:h?.price??null,
-        majorPivotId:oldLow.id,confirmed:true,tolerance:MSS_TOLERANCE});
-  }else if(external.trend==='down'&&h&&close>h.price+MSS_TOLERANCE){
-   const oldHigh=h;
-   changeRole(s,at,h,'major_high','broken_major_high','external_reversal');
-   external.trend='up';external.phase='awaiting_major_high';external.majorHigh=null;
-   external.breakAt=at;external.breakLevel=oldHigh.price;
-   s.segmentStart=at;clearInternal(s);
-   log(s,at,'major_reversal','external','Cấu trúc chính đảo chiều GIẢM → TĂNG',
-       `Giá đóng ${close} cao hơn Major High ${oldHigh.price}; giữ Major Low ${l?.price??'chưa có'}, Major High mới chờ xác nhận.`,
-       [oldHigh.id,l?.id].filter(Boolean),'ADV:S3,S7,S14;REV:S3,S8','success',
-       {label:'S+',direction:'up',close,brokenLevel:oldHigh.price,retainedLevel:l?.price??null,
-        majorPivotId:oldHigh.id,confirmed:true,tolerance:MSS_TOLERANCE});
+  if(strictReversal(s,at,close)){
   }else if(external.phase==='confirmed'&&h&&l){
    if(external.trend==='up'&&cross(prev,close,h.price,'up')){
     external.phase='awaiting_major_high';external.breakAt=at;external.breakLevel=h.price;
@@ -1090,39 +1097,34 @@ function advance(s,at,candleOrClose,newlyConfirmed=[]){
  }else{
   scanReversalSignals(s,at,bar,majorBefore);
  }
+ // Same-leg replacements known at THIS candle (engine.js alternation): the
+ // superseded pivot leaves the ledger now, never retroactively.
+ for(const id of superseded)s.history.splice(s.history.findIndex(x=>x.id===id),1);
  // Only pivots which are structurally confirmed by THIS closed candle may enter the ledger.
+ const added=[];
  for(const p of newlyConfirmed){
-  if(p.structConfirmedAt!==at)throw Error(`Swing ${p.id} được cung cấp sai thời điểm xác nhận.`);
-  if(p.index>=at)throw Error('Swing chỉ hợp lệ khi nến phía sau đã đóng.');
-  if(!['SH','SL'].includes(p.type)||!Number.isFinite(p.price))throw Error('Swing không hợp lệ.');
-  if(s.history.some(x=>x.id===p.id))throw Error('Pivot ID đã tồn tại.');
-  s.history.push({id:p.id,index:p.index,type:p.type,price:p.price,structConfirmedAt:at});
+  const q={id:p.id,index:p.index,type:p.type,price:p.price,structConfirmedAt:at};
+  s.history.push(q);added.push(q);
  }
  // Init when the local accepted swing history is sufficient.
  initialize(s,at);
- if(external.phase==='awaiting_major_high'&&external.breakAt!==null){
-  const pair=pendingMajorPair(s,'up');
-  if(pair){
-   setMajor(s,at,'up',pair.high,pair.low,'strongest_confirmed_major_break_wave');
-   log(s,at,'major_updated','external','Đã cập nhật Major High / Major Low',
-       `Major High ${pair.high.price}; Major Low ${pair.low.price}. Cặp đỉnh/đáy mạnh nhất đã xác nhận cho nhịp phá Major; không chọn cực trị chỉ vì xuất hiện gần nhất.`,
-       [pair.high.id,pair.low.id],'ADV:S11,S13-14','success',{direction:'up',majorHigh:pair.high.price,majorLow:pair.low.price,
-        majorHighIndex:pair.high.index,majorLowIndex:pair.low.index,selection:'strongest_confirmed_wave_provisional'});
-  }
- }else if(external.phase==='awaiting_major_low'&&external.breakAt!==null){
-  const pair=pendingMajorPair(s,'down');
-  if(pair){
-   setMajor(s,at,'down',pair.high,pair.low,'strongest_confirmed_major_break_wave');
-   log(s,at,'major_updated','external','Đã cập nhật Major High / Major Low',
-       `Major High ${pair.high.price}; Major Low ${pair.low.price}. Cặp đỉnh/đáy mạnh nhất đã xác nhận cho nhịp phá Major; không chọn cực trị chỉ vì xuất hiện gần nhất.`,
-       [pair.high.id,pair.low.id],'ADV:S11,S13-14','success',{direction:'down',majorHigh:pair.high.price,majorLow:pair.low.price,
-        majorHighIndex:pair.high.index,majorLowIndex:pair.low.index,selection:'strongest_confirmed_wave_provisional'});
-  }
+ // Update Major immediately on each newly confirmed swing outside it.
+ for(const q of added)rollMajorOnSwing(s,at,q);
+ // An active Major pivot replaced by a more extreme pivot of the SAME leg
+ // (and not already rolled above) follows that replacement: it is the same
+ // swing, now known to extend further.
+ for(const key of ['majorHigh','majorLow']){
+  const m=external[key];
+  if(!m||!superseded.has(m.id))continue;
+  const r=added.find(q=>q.type===m.type);
+  if(!r)continue;
+  changeRole(s,at,m,key==='majorHigh'?'major_high':'major_low','historical_major','same_leg_replaced');
+  changeRole(s,at,r,'confirmed_swing',key==='majorHigh'?'major_high':'major_low','same_leg_replaced');
+  external[key]=level(r);
  }
- // Re-evaluate active Major after accepting this candle's newly confirmed
- // Swing(s). This can roll a continuation WITHOUT requiring a second price
- // crossing after a fresh Major assignment (XAU40 at bars 16-25).
- rollMajorFromConfirmed(s,at);
+ // MSS_CISD_RULEBOOK: a candle's Close is judged against the Major that was
+ // active BEFORE that candle. A pair that becomes active on this candle (roll
+ // or initialization) is first tested by the NEXT closed candle.
  if(external.phase==='confirmed')refreshInternal(s,at);
  s.at=at;s.previousClose=close;
  if(!VALID_TRENDS.has(external.trend)||!VALID_TRENDS.has(s.internal.trend))throw Error('Xu hướng không hợp lệ.');
@@ -1131,21 +1133,27 @@ function advance(s,at,candleOrClose,newlyConfirmed=[]){
 function analysisFromAccepted(candles,accepted,upto){
  if(!Array.isArray(candles)||!candles.length)throw Error('Không có nến đã đóng.');
  const end=upto===undefined?candles.length-1:Math.min(candles.length-1,Math.max(0,upto));
- const grouped=new Map();
+ const grouped=new Map(),removed=new Map();
  for(const p of accepted){
   const at=p.structConfirmedAt;
   if(at===null||at===undefined||at>end)continue;
   if(!Number.isInteger(at)||at<=p.index||at<0)throw Error('Thời điểm xác nhận Swing không hợp lệ.');
   if(!grouped.has(at))grouped.set(at,[]);
   grouped.get(at).push(p);
+  const gone=p.supersededAt;
+  if(gone!==null&&gone!==undefined&&gone<=end){
+   if(!Number.isInteger(gone)||gone<=at)throw Error('Thời điểm thay thế Swing không hợp lệ.');
+   if(!removed.has(gone))removed.set(gone,[]);
+   removed.get(gone).push(p.id);
+  }
  }
  const state=makeState();
- for(let t=0;t<=end;t++)advance(state,t,candles[t],grouped.get(t)||[]);
+ for(let t=0;t<=end;t++)advance(state,t,candles[t],grouped.get(t)||[],removed.get(t)||[]);
  return {end,external:state.external,internal:state.internal,
          mss:{tolerance:MSS_TOLERANCE,last:state.mss.last,lastWeak:state.mss.lastWeak},
          cisd:{reference:state.cisd.reference,last:state.cisd.last},
          events:state.events,roleChanges:state.roleChanges,
-         acceptedCount:state.history.length,policy:{source:'ADV PPT S3-S14',majorSelection:'close-confirmed-rolling-pair-and-wave-extreme (provisional)',
+         acceptedCount:state.history.length,policy:{source:'ADV PPT S3-S14',majorSelection:'confirmed swing outside Major -> new edge + preceding opposite swing (user rule 2026-11-21)',
             initialMajor:'latest confirmed trend pair',closeBreak:'strict',tolerance:0,
             mssSource:'REV S3-S4,S8',cisdSource:'REV S5-S8',
             cisdWaveBoundary:'latest eligible opposite pivot (provisional)',noLookahead:true},
@@ -1159,11 +1167,181 @@ function analyzeAdvancedPrefix(candles,upto,base){
   if(!L)throw Error('Yêu cầu MarketStructureEngine để tính Swing nguồn.');
   base=L.analyzePrefix(candles,end);
  }
- return analysisFromAccepted(candles,base.confirmed,end);
+ // `accepted` is the causal log (incl. later-superseded pivots with their
+ // supersededAt); `confirmed` alone would rewrite history at earlier prefixes.
+ if(!Array.isArray(base.accepted)){
+  const L=(typeof require==='function' ? require('./engine.js') :
+    (typeof globalThis!=='undefined'?globalThis.MarketStructureEngine:null));
+  if(!L)throw Error('Thiếu nhật ký Swing nhân quả (accepted).');
+  base=L.analyzePrefix(candles,end);
+ }
+ return analysisFromAccepted(candles,base.accepted,end);
 }
 return {makeState,advance,analysisFromAccepted,analyzeAdvancedPrefix,pairTrend,lastOldDirectionCluster,MSS_TOLERANCE};
 });
 
+
+</script><script data-module="live_controller.js">
+/* MSAS live controller: transport + lifecycle only, no market-structure logic.
+ *
+ * Snapshot (/api/live/history, carries last_event_id) -> studio.load(); then an
+ * EventSource opened FROM THAT CURSOR (?after=last_event_id), so no event is lost
+ * between snapshot and stream; browser reconnects resume via Last-Event-ID.
+ *   candle.closed     -> studio.appendClosed(candle)   (exact next index only)
+ *   candle.partial    -> studio.setPartial(candle|null) (chart ghost, never analysed)
+ *   candle.corrected  -> studio.correct(candle)        (recompute from that index)
+ *   history.reset / source.changed / resync / lineage mismatch / missed index
+ *                     -> reload snapshot and reopen the stream from its cursor
+ *   feed.status       -> status pill (separate from structural notifications)
+ * Every open/resync carries a generation number; late responses of an older
+ * generation are discarded. Offline HTML or realtime=false: `ready` -> null.
+ */
+(function(){
+'use strict';
+const I=window.MSASI18N;
+const S=()=>window.MSASStudio;
+const $=id=>document.getElementById(id);
+const lang=()=>($('languageSelect')?.value==='vi'?'vi':'en');
+const t=(k,p={})=>I.text(k,lang(),p);
+let cfg=null,es=null,key=null,lineage=null,boot=null,status='offline',detail='',storage='',gen=0;
+const opened=new Set();
+
+async function getJSON(path,options){
+ const r=await fetch(path,options);let body;try{body=await r.json();}catch(_){throw Error('Invalid server response');}
+ if(!r.ok){const e=Error(body.error||('HTTP '+r.status));e.payload=body;throw e;}
+ return body;
+}
+function label(k){
+ const [p,sym,tf]=k.split(':');
+ const tfl=(cfg?.timeframes||[]).find(x=>x.id===tf)?.label||tf;
+ const pn=(cfg?.providers||[]).find(x=>x.id===p)?.name||p;
+ return sym+' · '+tfl+' · '+pn+' · LIVE';
+}
+function configuredKeys(){
+ const keys=[];
+ for(const s of cfg?.series||[])keys.push(s.subscription_id);
+ for(const a of cfg?.autostart||[])for(const tf of a.timeframes||[])keys.push((a.provider||cfg.default_provider)+':'+String(a.symbol).toUpperCase()+':'+tf);
+ for(const k of opened)keys.push(k);
+ return [...new Set(keys)];
+}
+function decorate(select){
+ select.querySelector('optgroup[data-live]')?.remove();
+ if(!cfg?.enabled)return;
+ const group=document.createElement('optgroup');group.dataset.live='1';group.label=t('liveGroup');
+ for(const k of configuredKeys()){const o=document.createElement('option');o.value='live:'+k;o.textContent=label(k);group.appendChild(o);}
+ select.insertBefore(group,select.firstChild);
+}
+function setStatus(s,d=''){
+ status=s||status;detail=d||'';
+ const pill=$('liveStatus');if(!pill)return;
+ pill.hidden=!key;pill.dataset.status=status;
+ pill.textContent=t('live_'+status)||status.toUpperCase();
+ pill.title=[detail,storage?t('liveStorage',{path:storage}):''].filter(Boolean).join('\n');
+}
+function stopStream(){if(es){es.close();es=null;}}
+async function snapshot(k,g){
+ // A brand-new subscription first backfills; wait (bounded) for its history.
+ for(let i=0;i<60;i++){
+  const p=await getJSON('/api/live/history?subscription_id='+encodeURIComponent(k));
+  if(g!==gen)return null;
+  if(p.live.bootstrapped&&p.candles.length>=1)return p;
+  setStatus(p.live.status,p.live.detail);
+  await new Promise(r=>setTimeout(r,750));
+  if(g!==gen)return null;
+ }
+ throw Error('Timed out waiting for live history');
+}
+async function sync(k,g){
+ stopStream();
+ const p=await snapshot(k,g);
+ if(!p||g!==gen)return;                         // superseded by a newer open/resync
+ lineage=p.live.lineage_id;boot=p.live.boot;storage=p.live.storage||'';
+ S().load(p);
+ setStatus(p.live.status,p.live.detail);
+ connect(k,g,p.live.last_event_id);
+}
+function resync(){
+ if(!key)return;
+ const g=++gen,k=key;
+ sync(k,g).catch(err=>{if(g===gen)setStatus('error',err.message);});
+}
+function connect(k,g,after){
+ const src=new EventSource('/api/live/events?subscription_id='+encodeURIComponent(k)+'&after='+encodeURIComponent(after));
+ es=src;
+ // Events of another server process (restart) or lineage never touch this snapshot.
+ const on=(type,fn)=>src.addEventListener(type,e=>{if(g!==gen||es!==src)return;let ev;try{ev=JSON.parse(e.data);}catch(_){return;}
+  if(ev.boot&&ev.boot!==boot)return resync();fn(ev);});
+ src.onerror=()=>{if(g===gen&&es===src)setStatus('reconnecting');};  // EventSource retries with Last-Event-ID
+ on('feed.status',ev=>setStatus(ev.status,ev.detail));
+ on('candle.partial',ev=>{if(ev.lineage_id===lineage)S().setPartial(ev.candle||null);});
+ on('candle.closed',ev=>{
+  if(ev.lineage_id!==lineage)return resync();
+  if(S().appendClosed(ev.candle)==='resync')resync();
+ });
+ on('candle.corrected',ev=>{if(ev.lineage_id!==lineage||S().correct(ev.candle)==='resync')resync();});
+ on('gap.detected',ev=>setStatus('gap',ev.missing_from_utc?('missing from '+ev.missing_from_utc):''));
+ on('history.reset',()=>resync());
+ on('resync',()=>resync());
+ on('source.changed',ev=>{S().popupNotice(t('liveSourceChanged'),'warning');setStatus('source_changed',ev.reason||'');resync();});
+}
+function close(){
+ gen++;stopStream();
+ key=null;lineage=null;setStatus('offline');
+}
+async function open(k){
+ close();
+ const g=gen;
+ const [provider,symbol,timeframe]=String(k).split(':');
+ const view=await getJSON('/api/live/subscriptions',{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({provider,symbol,timeframe})});
+ if(g!==gen)return;
+ key=view.subscription_id;opened.add(key);storage=view.storage||'';
+ setStatus(view.status,view.detail);
+ await sync(key,g);
+}
+function buildBar(){
+ const anchor=$('datasetSelect');if(!anchor||$('liveBar'))return;
+ const bar=document.createElement('span');bar.id='liveBar';bar.className='live-bar';
+ const prov=document.createElement('select');prov.id='liveProvider';prov.setAttribute('aria-label','Provider');
+ for(const p of cfg.providers){const o=document.createElement('option');o.value=p.id;o.textContent=p.name;prov.appendChild(o);}
+ prov.value=cfg.providers.some(p=>p.id===cfg.default_provider)?cfg.default_provider:cfg.providers[0]?.id;
+ const sym=document.createElement('input');sym.id='liveSymbol';sym.value=(cfg.autostart?.[0]?.symbol||'BTCUSDT').toUpperCase();
+ sym.maxLength=20;sym.spellcheck=false;sym.setAttribute('aria-label','Symbol');sym.size=9;
+ const tf=document.createElement('select');tf.id='liveTimeframe';tf.setAttribute('aria-label','Timeframe');
+ const fillTf=()=>{const allowed=new Set(cfg.providers.find(p=>p.id===prov.value)?.timeframes||[]);const keep=tf.value||'M15';tf.replaceChildren();
+  for(const x of cfg.timeframes)if(allowed.has(x.id)){const o=document.createElement('option');o.value=x.id;o.textContent=x.label;tf.appendChild(o);}
+  tf.value=[...tf.options].some(o=>o.value===keep)?keep:(tf.options[0]?.value||'');};
+ prov.addEventListener('change',fillTf);fillTf();
+ const go=document.createElement('button');go.type='button';go.className='upload-btn';go.id='liveOpen';
+ go.addEventListener('click',()=>{
+  const symbol=sym.value.trim().toUpperCase();
+  if(!/^[A-Z0-9]{2,20}$/.test(symbol)){S().setError(t('liveFailed',{message:'symbol'}));return;}
+  const k=prov.value+':'+symbol+':'+tf.value;opened.add(k);
+  const select=$('datasetSelect');decorate(select);select.value='live:'+k;
+  select.dispatchEvent(new Event('change'));
+ });
+ const pill=document.createElement('span');pill.id='liveStatus';pill.className='live-status mono';pill.hidden=true;pill.setAttribute('role','status');
+ bar.append(prov,sym,tf,go,pill);
+ anchor.insertAdjacentElement('afterend',bar);
+ relabel();
+ $('languageSelect')?.addEventListener('change',relabel);
+}
+function relabel(){
+ const go=$('liveOpen');if(go)go.textContent=t('liveConnect');
+ const sel=$('datasetSelect');if(sel&&cfg?.enabled){const v=sel.value;decorate(sel);sel.value=v;}
+ setStatus(status,detail);
+}
+const ready=(async()=>{
+ if(window.MSASOfflineAPI)return null;
+ try{
+  cfg=await getJSON('/api/live/config');
+  if(!cfg.enabled)return null;
+  buildBar();
+  return configuredKeys()[0]||null;
+ }catch(_){return null;}
+})();
+window.MSASLive={ready,open,close,decorate,status:()=>({key,lineage,status,detail,generation:gen})};
+})();
 
 </script><script data-module="studio.js">
 (function(){
@@ -1179,7 +1357,8 @@ let datasetId='btcusd-sample', datasetDetails=null, fileWaiting=null;
 const number=n=>Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const pivotPrice=n=>Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6});
 const compact=n=>Math.round(n).toLocaleString('en-US');
-const time=t=>String(t).slice(11,16);
+// Daily and longer candles all open at 00:00: show the date instead of the clock.
+const time=t=>/^(D|W|MN)/.test(datasetDetails?.meta?.timeframe||'')?String(t).slice(5,10):String(t).slice(11,16);
 const escaped=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const PALETTE={up:THEME.candles.up.body,down:THEME.candles.down.body,line:'#285ba6',mother:'#9e7134',raw:'#475d70'};
 let lang='en';
@@ -1212,8 +1391,7 @@ function setLanguage(value){
 // Notifications intentionally show only material structural decisions and
 // user-defined confirmation signals. Raw local pivots and Inside Bars remain
 // available on the chart/JSON audit; they do not flood the event feed.
-const IMPORTANT_KINDS=new Set(['major_reversal','major_updated','major_continuation',
-  'major_established','internal_reversal','internal_confirmed','mss_weak','cisd']);
+const IMPORTANT_KINDS=new Set(['major_reversal','major_continuation','major_established']);
 const PRIORITY={major_reversal:100,mss_weak:90,cisd:80,major_updated:65,
   major_continuation:55,internal_reversal:48,internal_confirmed:42,
   major_established:35,internal_established:0};
@@ -1223,7 +1401,12 @@ const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:redu
 let candles=[],analysis=null,current=0,playing=false,source='',speed=1,acc=0,lastFrame=0,request=null;
 let cache=new Map(),hover=null,geo=null,transition=null;
 let layers={structure:true,inside:true,raw:false};
+// Fixed-candle replay viewport. Mouse wheel zooms, drag pans, double-click follows live.
+let visibleBars=40,viewRight=null,dragStart=null,dragMoved=false;
 let feedSignature='',sourceMetaLine='';
+// Live mode: `candles` holds CLOSED candles only (engine input). The forming
+// candle lives in `livePartial` and is drawn as a ghost; it is never analysed.
+let liveMode=false,livePartial=null;
 const ease=x=>1-Math.pow(1-Math.max(0,Math.min(1,x)),3);
 const lerp=(a,b,t)=>a+(b-a)*t;
 function severity(ev){
@@ -1258,7 +1441,7 @@ function getAnalysis(i){
 }
 function setError(message){$('errorbox').textContent=message||'';$('errorbox').classList.toggle('show',!!message);}
 function inferFrame(){return datasetDetails?.meta?.timeframe||'OHLC';}
-function rangeFor(index){let lo=Infinity,hi=-Infinity;const from=Math.max(0,index-79);for(let i=from;i<=index;i++){lo=Math.min(lo,candles[i].low);hi=Math.max(hi,candles[i].high);}const s=Math.max(1,hi-lo);return {min:lo-s*.14,max:hi+s*.14};}
+function rangeFor(index){let lo=Infinity,hi=-Infinity;const from=Math.max(0,index-79);for(let i=from;i<=index;i++){lo=Math.min(lo,candles[i].low);hi=Math.max(hi,candles[i].high);}if(liveMode&&livePartial&&index===candles.length-1){lo=Math.min(lo,livePartial.low);hi=Math.max(hi,livePartial.high);}const s=Math.max(1,hi-lo);return {min:lo-s*.14,max:hi+s*.14};}
 function scaleAt(now){if(!transition)return rangeFor(current);const f=reduced?1:ease((now-transition.started)/transition.duration);return {min:lerp(transition.from.min,transition.to.min,f),max:lerp(transition.from.max,transition.to.max,f)};}
 function schedule(){if(request===null)request=requestAnimationFrame(tick);}
 function setPlaying(value){playing=!!value;lastFrame=0;acc=0;$('play').classList.toggle('running',playing);$('playText').textContent=t(playing?'pause':'play');$('playIcon').innerHTML=playing?PAUSE_ICON:PLAY_ICON;$('play').setAttribute('aria-label',t(playing?'pause':'play'));$('livePulse').classList.toggle('running',playing);if(playing)schedule();}
@@ -1332,14 +1515,11 @@ function updateFeed(animate){
  const atNow=currentEventList(),lead=atNow[0]||null;
  // Important signals are also announced INSIDE the chart, even if the
  // notification history is filtered. Only closed-bar events are eligible.
- const onChart=atNow.filter(ev=>['major_reversal','mss_weak','cisd'].includes(ev.kind));
+ const onChart=atNow.filter(ev=>ev.kind==='major_reversal');
  const banner=$('chartSignal');
  if(onChart.length){
   banner.classList.remove('hidden');banner.dataset.kind=onChart[0].kind;
-  banner.textContent=onChart.map(ev=>{
-   const tag=ev.kind==='major_reversal'?'MSS S+':ev.kind==='mss_weak'?'MSS C':'CISD B';
-   return tag+' · '+eventText(ev).title;
-  }).join('  /  ');
+  banner.textContent=onChart.map(ev=>'MSS S+ · '+eventText(ev).title).join('  /  ');
  }else{banner.classList.add('hidden');banner.textContent='';banner.dataset.kind='none';}
  const her=$('hero');
  const key=(lead?lead.kind+'|'+lead.title:'none')+'|'+current;
@@ -1374,9 +1554,12 @@ function draw(now=performance.now()){
  if(!candles.length||!analysis)return;
  const {ctx,w,h}=measure();if(w<80||h<100)return;
  const left=w<480?17:27,right=w<480?74:92,top=37,bottom=h-52,innerW=w-left-right,innerH=bottom-top;
- const maxWindow=w<380?16:w<610?20:w<860?45:80;
- const count=Math.min(candles.length,maxWindow),first=Math.max(0,Math.min(candles.length-count,current-count+4));
- const step=innerW/count,barWidth=Math.max(1,Math.min(17,step*.63));
+ const count=Math.max(1,Math.min(candles.length+(livePartial?1:0),visibleBars));
+ const rightIndex=Math.max(count-1,Math.min(current,viewRight===null?current:viewRight));
+ // Following the newest closed candle in live mode: keep one slot for the forming candle.
+ const ghost=liveMode&&livePartial&&current===candles.length-1&&rightIndex===current;
+ const first=Math.max(0,rightIndex-count+1+(ghost?1:0));
+ const step=innerW/count,barWidth=Math.max(1,step*.94);
  const xAt=i=>left+(i-first+.5)*step;
  const {min,max}=scaleAt(now),yAt=v=>top+(max-v)/(max-min)*innerH;
  const tr=transition,p=tr?Math.max(0,Math.min(1,(now-tr.started)/tr.duration)):1,k=ease(p);
@@ -1384,7 +1567,7 @@ function draw(now=performance.now()){
  ctx.fillStyle=THEME.background;ctx.fillRect(0,0,w,h);
  const ticks=Math.max(1,Math.ceil(85/Math.max(step,1)));
  ctx.font='10px ui-monospace, monospace';
- for(let i=first;i<first+count;i+=ticks){const x=xAt(i);ctx.fillStyle='#385064';ctx.textAlign='center';ctx.fillText(time(candles[i].time),x,h-27);}
+ for(let i=first;i<first+count&&i<candles.length;i+=ticks){const x=xAt(i);ctx.fillStyle='#385064';ctx.textAlign='center';ctx.fillText(time(candles[i].time),x,h-27);}
  for(let i=0;i<=5;i++){
   const y=top+(bottom-top)*i/5,value=max-(max-min)*i/5;
   ctx.textAlign='left';ctx.fillStyle='#425669';ctx.fillText(compact(value),left+innerW+9,y+3);
@@ -1505,7 +1688,7 @@ function draw(now=performance.now()){
  // Preserve both C and B if they occur together, instead of dropping one.
  if(analysis.advanced){
   const events=analysis.advanced.events.filter(ev=>
-    ['major_reversal','mss_weak','cisd'].includes(ev.kind) && ev.at<=current &&
+    ev.kind==='major_reversal' && ev.at<=current &&
     ev.at>=first && ev.at<first+count);
   const occupied=[];
   for(const ev of events.slice(-14)){
@@ -1541,6 +1724,17 @@ function draw(now=performance.now()){
     ctx.shadowColor=severity(ev);ctx.shadowBlur=15;
     ctx.beginPath();ctx.arc(xAt(focus.index),yAt(focus.price),9+k*22,0,Math.PI*2);ctx.stroke();ctx.restore();}
   }
+ }
+ // Forming live candle: outlined ghost, visibly separate from analysed candles.
+ if(ghost){
+  const g=livePartial,gx=xAt(current+1),up=g.close>=g.open;
+  ctx.save();ctx.globalAlpha=.55;ctx.strokeStyle='#1f2d38';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(gx,yAt(g.high));ctx.lineTo(gx,yAt(g.low));ctx.stroke();
+  const gt=yAt(Math.max(g.open,g.close)),gb=yAt(Math.min(g.open,g.close));
+  ctx.fillStyle=up?'rgba(255,255,255,.6)':'rgba(102,187,106,.45)';ctx.fillRect(gx-barWidth/2,gt,barWidth,Math.max(1.8,gb-gt));
+  ctx.setLineDash([3,3]);ctx.strokeRect(gx-barWidth/2,gt,barWidth,Math.max(1.8,gb-gt));ctx.setLineDash([]);
+  ctx.globalAlpha=.85;ctx.fillStyle='#24465e';ctx.font='bold 9px ui-monospace,monospace';ctx.textAlign='center';
+  ctx.fillText('LIVE',gx,Math.max(top+9,yAt(g.high)-6));ctx.restore();
  }
  const last=candles[current],x=xAt(current),valueY=yAt(last.close),positive=last.close>=last.open,col=positive?'#285c85':'#2c7b3f';
  ctx.strokeStyle=col;ctx.lineWidth=.9;ctx.setLineDash([4,5]);ctx.beginPath();ctx.moveTo(x+barWidth/2+3,valueY);ctx.lineTo(left+innerW,valueY);ctx.stroke();ctx.setLineDash([]);
@@ -1580,6 +1774,10 @@ function loadDataset(payload, initialIndex=0){
  if(!Array.isArray(data)||!data.length)throw Error(t('invalidCandles'));
  for(const c of data){for(const k of ['open','high','low','close']){if(!Number.isFinite(c[k]))throw Error(t('invalidOHLC'));}}
  stop();candles=data;datasetDetails=payload;datasetId=payload.dataset.id;source=payload.dataset.filename;
+ liveMode=!!payload.dataset.live;livePartial=liveMode?(payload.live?.partial||null):null;
+ if(liveMode){initialIndex=data.length-1;viewRight=null;}
+ else window.MSASLive?.close();
+ $('modeBadge').textContent=liveMode?(payload.meta?.provider==='simulated'?'SIMULATED FEED':'LIVE DATA'):'OFFLINE REPLAY';
  cache=new Map();current=0;analysis=getAnalysis(0);transition=null;lastFrame=0;feedSignature='';hover=null;
  $('scrubber').max=String(candles.length-1);$('firstTime').textContent=time(candles[0].time);$('lastTime').textContent=time(candles.at(-1).time);
  $('canvasTimeframe').textContent=inferFrame()+' / '+t('closed');
@@ -1600,11 +1798,17 @@ async function syncDatasetList(selectId){
  const chosen=selectId||selector.value||datasetId;
  selector.replaceChildren();
  for(const item of result.datasets){const opt=document.createElement('option');opt.value=item.id;opt.dataset.rawName=item.name;opt.textContent=item.name.replace(/\(mẫu\)/i,lang==='en'?'(sample)':'(mẫu)');selector.appendChild(opt);}
+ window.MSASLive?.decorate(selector);
  selector.value=chosen;
  return result.datasets;
 }
 async function switchDataset(id,initialIndex=0){
  stop();setError('');
+ if(String(id).startsWith('live:')&&window.MSASLive){
+  try{await window.MSASLive.open(String(id).slice(5));$('datasetSelect').value=id;}
+  catch(err){setError(t('liveFailed',{message:I.serverError(err,lang)}));$('datasetSelect').value=datasetId;}
+  return;
+ }
  $('datasetSelect').disabled=true;
  try{
   const payload=await apiJSON('/api/datasets/'+encodeURIComponent(id));
@@ -1727,14 +1931,34 @@ const chartBox=$('chartBox');
 chartBox.addEventListener('dragover',evt=>{if([...evt.dataTransfer?.types||[]].includes('Files')){evt.preventDefault();chartBox.classList.add('dropping');}});
 chartBox.addEventListener('dragleave',()=>chartBox.classList.remove('dropping'));
 chartBox.addEventListener('drop',evt=>{evt.preventDefault();chartBox.classList.remove('dropping');const file=evt.dataTransfer?.files?.[0];if(file)importFile(file);});
+$('chart').addEventListener('wheel',evt=>{
+ if(!candles.length)return;
+ evt.preventDefault();
+ const change=evt.deltaY<0?-4:4;
+ visibleBars=Math.max(8,Math.min(200,visibleBars+change));
+ // Keep the inspected historical area when zooming, not future candles.
+ if(viewRight!==null)viewRight=Math.min(current,Math.max(visibleBars-1,viewRight));
+ schedule();
+},{passive:false});
+$('chart').addEventListener('mousedown',evt=>{
+ if(evt.button!==0||!geo)return;
+ dragStart={x:evt.clientX,right:viewRight===null?current:viewRight};dragMoved=false;
+});
+window.addEventListener('mouseup',()=>{dragStart=null;});
+$('chart').addEventListener('dblclick',()=>{viewRight=null;schedule();});
 $('chart').addEventListener('mousemove',evt=>{
+ if(dragStart&&geo){
+  const shift=Math.round((dragStart.x-evt.clientX)/geo.step);
+  if(Math.abs(evt.clientX-dragStart.x)>4)dragMoved=true;
+  if(dragMoved){viewRight=Math.max(visibleBars-1,Math.min(current,dragStart.right+shift));schedule();return;}
+ }
  if(!geo)return;const r=$('chart').getBoundingClientRect(),idx=Math.floor((evt.clientX-r.left-geo.left)/geo.step)+geo.first;
  hover=idx<geo.first||idx>current||idx>=geo.first+geo.count?null:idx;
  if(hover===null)$('tooltip').classList.add('hidden');else updateTooltip(evt);
  updateTop();schedule();
 });
 $('chart').addEventListener('mouseleave',()=>{hover=null;$('tooltip').classList.add('hidden');updateTop();schedule();});
-$('chart').addEventListener('click',evt=>{if(!geo)return;const r=$('chart').getBoundingClientRect();stop();stepTo(Math.floor((evt.clientX-r.left-geo.left)/geo.step)+geo.first);});
+$('chart').addEventListener('click',evt=>{if(dragMoved){dragMoved=false;return;}if(!geo)return;const r=$('chart').getBoundingClientRect();stop();stepTo(Math.floor((evt.clientX-r.left-geo.left)/geo.step)+geo.first);});
 window.addEventListener('resize',schedule);
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)stop();});
 document.addEventListener('keydown',evt=>{
@@ -1742,9 +1966,46 @@ document.addEventListener('keydown',evt=>{
  if(evt.key==='ArrowLeft'){evt.preventDefault();stop();stepTo(current-1);}else if(evt.key==='ArrowRight'){evt.preventDefault();stop();stepTo(current+1);}else if(evt.key===' '){evt.preventDefault();$('play').click();}else if(evt.key.toLowerCase()==='u'&&!evt.ctrlKey&&!evt.metaKey){$('csvFile').click();}
 });
 $('languageSelect').addEventListener('change',e=>setLanguage(e.target.value));
+// Narrow surface for static/live_controller.js. Live candles enter ONLY via
+// appendClosed (one CLOSED candle at a time, exact next index). Cached analyses
+// of earlier prefixes are kept untouched: a new candle never changes the past.
+window.MSASStudio={
+ load(payload){loadDataset(payload);},
+ isLive(){return liveMode;},
+ datasetId(){return datasetId;},
+ t, lang:()=>lang, setError, popupNotice, serverError:err=>I.serverError(err,lang),
+ appendClosed(c){
+  if(!liveMode)return 'ignored';
+  if(c.index<candles.length)return 'duplicate';
+  if(c.index>candles.length)return 'resync';
+  for(const k of ['open','high','low','close'])if(!Number.isFinite(c[k]))return 'resync';
+  const follow=current===candles.length-1;
+  candles.push(c);
+  if(livePartial&&livePartial.time<=c.time)livePartial=null;
+  datasetDetails.meta.rows=candles.length;datasetDetails.meta.last_time=c.time;
+  $('scrubber').max=String(candles.length-1);$('lastTime').textContent=time(c.time);
+  if(follow)stepTo(candles.length-1,{animate:true,flash:true});else{updateTop();schedule();}
+  return 'ok';
+ },
+ correct(c){
+  if(!liveMode||c.index>=candles.length)return 'resync';
+  candles[c.index]=c;
+  for(const k of [...cache.keys()])if(k>=c.index)cache.delete(k);
+  analysis=getAnalysis(current);updateTop();updateFeed(false);schedule();
+  return 'ok';
+ },
+ setPartial(c){if(!liveMode)return;livePartial=c;schedule();}
+};
 refreshStaticLocale();
 (async()=>{
- try{await syncDatasetList('btcusd-sample');await switchDataset('btcusd-sample',15);}catch(err){setError(t('serverUnavailable',{message:I.serverError(err,lang)}));}
+ // Real-time server: open the first configured live series. Otherwise (offline
+ // HTML, realtime=false, or live failure) the bundled sample replay is shown.
+ let liveKey=null;try{liveKey=await window.MSASLive?.ready;}catch(_){liveKey=null;}
+ try{
+  await syncDatasetList(liveKey?'live:'+liveKey:'btcusd-sample');
+  if(liveKey){await switchDataset('live:'+liveKey);if(liveMode)return;}
+  await switchDataset('btcusd-sample',15);
+ }catch(err){setError(t('serverUnavailable',{message:I.serverError(err,lang)}));}
 })();
 })();
 

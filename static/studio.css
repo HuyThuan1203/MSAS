@@ -160,3 +160,12 @@ button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8
 .structure-pivots,.snapshot-pivots,.snapshot-internal{display:none!important}
 #chart{cursor:crosshair;touch-action:none}
 #chart:active{cursor:grabbing}
+/* Live market-data controls (hidden unless the server runs with realtime enabled) */
+.live-bar{display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap}
+.live-bar select,.live-bar input{height:29px;border:1px solid #476577;border-radius:7px;background:#182b38;color:#eaf8ff;font-size:11px;font-weight:700;padding:0 6px}
+.live-bar input{width:84px;text-transform:uppercase}
+.live-status{height:22px;display:inline-flex;align-items:center;padding:0 8px;border-radius:11px;font-size:10px;font-weight:800;letter-spacing:.04em;background:#3a4b57;color:#e9f3f8}
+.live-status[data-status="live"]{background:#0f6b55;color:#fff}
+.live-status[data-status="backfilling"],.live-status[data-status="connecting"],.live-status[data-status="source_changed"]{background:#7a5a1e;color:#fff}
+.live-status[data-status="reconnecting"],.live-status[data-status="gap"],.live-status[data-status="error"],.live-status[data-status="offline"]{background:#8d2f3f;color:#fff}
+@media (max-width:550px){.live-bar input{width:70px}.live-bar select{max-width:90px}}
