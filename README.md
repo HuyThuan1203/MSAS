@@ -1,3 +1,17 @@
+## V5.5 — Live market data (crypto spot) and one-shot setup
+
+```powershell
+python build.py                  # once: config, market_data/ folder, offline HTML, self-test
+python run.py                    # opens the UI and starts fetching live candles
+python run.py --realtime false   # replay/import only, no network
+```
+
+Live candles (Binance Spot, fallback Bybit Spot; 1m … 1D/24h, 1W, 1M) are
+stored as closed-candle day files under `market_data/live/<provider>/<SYMBOL>/<TF>/`
+and deleted automatically after `retention_days` (default 30). Only candles the
+exchange's own clock has closed reach the structure engines. Details, API,
+fallback policy and verification status: `docs/live/REALTIME_GATEWAY.md`.
+
 ## Reproducible random OHLC QA and evidence video (V5.3)
 
 The **production app remains lightweight**: stress tests do not run during replay

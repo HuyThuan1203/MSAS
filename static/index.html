@@ -55,7 +55,7 @@
 </div>
 </section>
 <aside aria-label="Replay event notifications" class="stream" data-i18n-aria="feedAria">
-<div class="stream-top"><div><div class="stream-heading"><i class="beacon" id="livePulse"></i><h2 data-i18n="notifications">Notifications</h2></div><p data-i18n="updatedOnClose">Updated after each candle closes</p></div><span class="mode">OFFLINE REPLAY</span></div>
+<div class="stream-top"><div><div class="stream-heading"><i class="beacon" id="livePulse"></i><h2 data-i18n="notifications">Notifications</h2></div><p data-i18n="updatedOnClose">Updated after each candle closes</p></div><span class="mode" id="modeBadge">OFFLINE REPLAY</span></div>
 <div class="asof"><span data-i18n="candleClose">LAST CLOSED CANDLE</span><b class="mono" id="feedTime">--</b></div>
 <div aria-live="polite" class="structure-snapshot" id="structureSnapshot">
 <div class="snapshot-title" data-i18n="currentStatus">STRUCTURE AT THIS CANDLE CLOSE</div>
@@ -105,5 +105,5 @@
 
 
 
-<script defer="" src="/chart-theme.js"></script><script defer="" src="/i18n.js"></script><script defer="" src="/engine.js"></script><script defer="" src="/advanced_engine.js"></script><script defer="" src="/studio.js"></script></body>
+<script defer="" src="/chart-theme.js"></script><script defer="" src="/i18n.js"></script><script defer="" src="/engine.js"></script><script defer="" src="/advanced_engine.js"></script><script defer="" src="/live_controller.js"></script><script defer="" src="/studio.js"></script></body>
 </html>

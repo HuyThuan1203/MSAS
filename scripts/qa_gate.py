@@ -26,6 +26,8 @@ NODE_SUITES = (
     "tests/test_major_rolling_reversal.js",
     "tests/test_mss_cisd.js",
     "tests/test_ui_theme_i18n.js",
+    "tests/test_immediate_swings.js",
+    "tests/test_stream_causal.js",
 )
 
 

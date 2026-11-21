@@ -1,0 +1,3 @@
+# MSAS runtime dependencies.
+# The server and the live market-data gateway use only the Python standard
+# library (3.10+). Add pinned runtime packages here; build.py installs them.

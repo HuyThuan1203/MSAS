@@ -89,7 +89,10 @@
       for(const type of ['SH','SL']){
         if((type==='SH'&&!leftHigh)||(type==='SL'&&!leftLow))continue;
         const value=type==='SH'?b.high:b.low;
-        const ok=type==='SH'?b.high>right.high:b.low<right.low;
+        // Ordinary 3-bar test is strict. After an ISB, the breakout only has to
+        // NOT exceed the extreme (equal high/low means it broke the other side).
+        const ok=viaIsb?(type==='SH'?right.high<=b.high:right.low>=b.low):
+                        (type==='SH'?b.high>right.high:b.low<right.low);
         if(!ok&&!viaIsb)continue; // ordinary non-turn, not a candidate
         const status=ok?'eligible':'isb_rejected';
         swings.push({id:type+'-'+i,index:i,confirmedAt:r,type,price:value,status,
@@ -177,7 +180,8 @@
         trend='unknown'; reason='Các cặp SH/SL không đồng thuận theo HH+HL hoặc LH+LL; không tự gán đi ngang.';
       }
     }
-    events.sort((a,b)=>a.at-b.at||['breakout','inside','swing','replace','pair','start'].indexOf(a.kind)-['breakout','inside','swing','replace','pair','start'].indexOf(b.kind));
+    const ORDER=['start','breakout','inside','swing','replace','pair','classification','trend'];
+    events.sort((a,b)=>a.at-b.at||ORDER.indexOf(a.kind)-ORDER.indexOf(b.kind));
     const summary={raw:swings.length,insideRejected:swings.filter(s=>s.status==='inside_rejected').length,
       ambiguous:swings.filter(s=>s.status==='ambiguous').length,
       superseded:swings.filter(s=>s.structStatus==='superseded').length,ignored:swings.filter(s=>s.structStatus==='ignored').length,isbRejected:swings.filter(s=>s.status==='isb_rejected').length,

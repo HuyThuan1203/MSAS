@@ -15,3 +15,7 @@ qa-artifacts/
 .coverage
 coverage/
 node_modules/
+
+# Local runtime config and downloaded market data (see msas.config.example.json)
+msas.config.json
+market_data/

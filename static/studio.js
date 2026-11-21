@@ -11,7 +11,8 @@ let datasetId='btcusd-sample', datasetDetails=null, fileWaiting=null;
 const number=n=>Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const pivotPrice=n=>Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6});
 const compact=n=>Math.round(n).toLocaleString('en-US');
-const time=t=>String(t).slice(11,16);
+// Daily and longer candles all open at 00:00: show the date instead of the clock.
+const time=t=>/^(D|W|MN)/.test(datasetDetails?.meta?.timeframe||'')?String(t).slice(5,10):String(t).slice(11,16);
 const escaped=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const PALETTE={up:THEME.candles.up.body,down:THEME.candles.down.body,line:'#285ba6',mother:'#9e7134',raw:'#475d70'};
 let lang='en';
@@ -57,6 +58,9 @@ let layers={structure:true,inside:true,raw:false};
 // Fixed-candle replay viewport. Mouse wheel zooms, drag pans, double-click follows live.
 let visibleBars=40,viewRight=null,dragStart=null,dragMoved=false;
 let feedSignature='',sourceMetaLine='';
+// Live mode: `candles` holds CLOSED candles only (engine input). The forming
+// candle lives in `livePartial` and is drawn as a ghost; it is never analysed.
+let liveMode=false,livePartial=null;
 const ease=x=>1-Math.pow(1-Math.max(0,Math.min(1,x)),3);
 const lerp=(a,b,t)=>a+(b-a)*t;
 function severity(ev){
@@ -91,7 +95,7 @@ function getAnalysis(i){
 }
 function setError(message){$('errorbox').textContent=message||'';$('errorbox').classList.toggle('show',!!message);}
 function inferFrame(){return datasetDetails?.meta?.timeframe||'OHLC';}
-function rangeFor(index){let lo=Infinity,hi=-Infinity;const from=Math.max(0,index-79);for(let i=from;i<=index;i++){lo=Math.min(lo,candles[i].low);hi=Math.max(hi,candles[i].high);}const s=Math.max(1,hi-lo);return {min:lo-s*.14,max:hi+s*.14};}
+function rangeFor(index){let lo=Infinity,hi=-Infinity;const from=Math.max(0,index-79);for(let i=from;i<=index;i++){lo=Math.min(lo,candles[i].low);hi=Math.max(hi,candles[i].high);}if(liveMode&&livePartial&&index===candles.length-1){lo=Math.min(lo,livePartial.low);hi=Math.max(hi,livePartial.high);}const s=Math.max(1,hi-lo);return {min:lo-s*.14,max:hi+s*.14};}
 function scaleAt(now){if(!transition)return rangeFor(current);const f=reduced?1:ease((now-transition.started)/transition.duration);return {min:lerp(transition.from.min,transition.to.min,f),max:lerp(transition.from.max,transition.to.max,f)};}
 function schedule(){if(request===null)request=requestAnimationFrame(tick);}
 function setPlaying(value){playing=!!value;lastFrame=0;acc=0;$('play').classList.toggle('running',playing);$('playText').textContent=t(playing?'pause':'play');$('playIcon').innerHTML=playing?PAUSE_ICON:PLAY_ICON;$('play').setAttribute('aria-label',t(playing?'pause':'play'));$('livePulse').classList.toggle('running',playing);if(playing)schedule();}
@@ -204,9 +208,11 @@ function draw(now=performance.now()){
  if(!candles.length||!analysis)return;
  const {ctx,w,h}=measure();if(w<80||h<100)return;
  const left=w<480?17:27,right=w<480?74:92,top=37,bottom=h-52,innerW=w-left-right,innerH=bottom-top;
- const count=Math.max(1,Math.min(candles.length,visibleBars));
+ const count=Math.max(1,Math.min(candles.length+(livePartial?1:0),visibleBars));
  const rightIndex=Math.max(count-1,Math.min(current,viewRight===null?current:viewRight));
- const first=Math.max(0,rightIndex-count+1);
+ // Following the newest closed candle in live mode: keep one slot for the forming candle.
+ const ghost=liveMode&&livePartial&&current===candles.length-1&&rightIndex===current;
+ const first=Math.max(0,rightIndex-count+1+(ghost?1:0));
  const step=innerW/count,barWidth=Math.max(1,step*.94);
  const xAt=i=>left+(i-first+.5)*step;
  const {min,max}=scaleAt(now),yAt=v=>top+(max-v)/(max-min)*innerH;
@@ -215,7 +221,7 @@ function draw(now=performance.now()){
  ctx.fillStyle=THEME.background;ctx.fillRect(0,0,w,h);
  const ticks=Math.max(1,Math.ceil(85/Math.max(step,1)));
  ctx.font='10px ui-monospace, monospace';
- for(let i=first;i<first+count;i+=ticks){const x=xAt(i);ctx.fillStyle='#385064';ctx.textAlign='center';ctx.fillText(time(candles[i].time),x,h-27);}
+ for(let i=first;i<first+count&&i<candles.length;i+=ticks){const x=xAt(i);ctx.fillStyle='#385064';ctx.textAlign='center';ctx.fillText(time(candles[i].time),x,h-27);}
  for(let i=0;i<=5;i++){
   const y=top+(bottom-top)*i/5,value=max-(max-min)*i/5;
   ctx.textAlign='left';ctx.fillStyle='#425669';ctx.fillText(compact(value),left+innerW+9,y+3);
@@ -373,6 +379,17 @@ function draw(now=performance.now()){
     ctx.beginPath();ctx.arc(xAt(focus.index),yAt(focus.price),9+k*22,0,Math.PI*2);ctx.stroke();ctx.restore();}
   }
  }
+ // Forming live candle: outlined ghost, visibly separate from analysed candles.
+ if(ghost){
+  const g=livePartial,gx=xAt(current+1),up=g.close>=g.open;
+  ctx.save();ctx.globalAlpha=.55;ctx.strokeStyle='#1f2d38';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(gx,yAt(g.high));ctx.lineTo(gx,yAt(g.low));ctx.stroke();
+  const gt=yAt(Math.max(g.open,g.close)),gb=yAt(Math.min(g.open,g.close));
+  ctx.fillStyle=up?'rgba(255,255,255,.6)':'rgba(102,187,106,.45)';ctx.fillRect(gx-barWidth/2,gt,barWidth,Math.max(1.8,gb-gt));
+  ctx.setLineDash([3,3]);ctx.strokeRect(gx-barWidth/2,gt,barWidth,Math.max(1.8,gb-gt));ctx.setLineDash([]);
+  ctx.globalAlpha=.85;ctx.fillStyle='#24465e';ctx.font='bold 9px ui-monospace,monospace';ctx.textAlign='center';
+  ctx.fillText('LIVE',gx,Math.max(top+9,yAt(g.high)-6));ctx.restore();
+ }
  const last=candles[current],x=xAt(current),valueY=yAt(last.close),positive=last.close>=last.open,col=positive?'#285c85':'#2c7b3f';
  ctx.strokeStyle=col;ctx.lineWidth=.9;ctx.setLineDash([4,5]);ctx.beginPath();ctx.moveTo(x+barWidth/2+3,valueY);ctx.lineTo(left+innerW,valueY);ctx.stroke();ctx.setLineDash([]);
  const pillY=Math.max(top+10,Math.min(bottom-11,valueY));ctx.fillStyle=positive?'#245779':'#2f7b40';ctx.beginPath();ctx.roundRect(left+innerW+3,pillY-12,right-8,24,5);ctx.fill();
@@ -411,6 +428,10 @@ function loadDataset(payload, initialIndex=0){
  if(!Array.isArray(data)||!data.length)throw Error(t('invalidCandles'));
  for(const c of data){for(const k of ['open','high','low','close']){if(!Number.isFinite(c[k]))throw Error(t('invalidOHLC'));}}
  stop();candles=data;datasetDetails=payload;datasetId=payload.dataset.id;source=payload.dataset.filename;
+ liveMode=!!payload.dataset.live;livePartial=liveMode?(payload.live?.partial||null):null;
+ if(liveMode){initialIndex=data.length-1;viewRight=null;}
+ else window.MSASLive?.close();
+ $('modeBadge').textContent=liveMode?(payload.meta?.provider==='simulated'?'SIMULATED FEED':'LIVE DATA'):'OFFLINE REPLAY';
  cache=new Map();current=0;analysis=getAnalysis(0);transition=null;lastFrame=0;feedSignature='';hover=null;
  $('scrubber').max=String(candles.length-1);$('firstTime').textContent=time(candles[0].time);$('lastTime').textContent=time(candles.at(-1).time);
  $('canvasTimeframe').textContent=inferFrame()+' / '+t('closed');
@@ -431,11 +452,17 @@ async function syncDatasetList(selectId){
  const chosen=selectId||selector.value||datasetId;
  selector.replaceChildren();
  for(const item of result.datasets){const opt=document.createElement('option');opt.value=item.id;opt.dataset.rawName=item.name;opt.textContent=item.name.replace(/\(mẫu\)/i,lang==='en'?'(sample)':'(mẫu)');selector.appendChild(opt);}
+ window.MSASLive?.decorate(selector);
  selector.value=chosen;
  return result.datasets;
 }
 async function switchDataset(id,initialIndex=0){
  stop();setError('');
+ if(String(id).startsWith('live:')&&window.MSASLive){
+  try{await window.MSASLive.open(String(id).slice(5));$('datasetSelect').value=id;}
+  catch(err){setError(t('liveFailed',{message:I.serverError(err,lang)}));$('datasetSelect').value=datasetId;}
+  return;
+ }
  $('datasetSelect').disabled=true;
  try{
   const payload=await apiJSON('/api/datasets/'+encodeURIComponent(id));
@@ -593,9 +620,46 @@ document.addEventListener('keydown',evt=>{
  if(evt.key==='ArrowLeft'){evt.preventDefault();stop();stepTo(current-1);}else if(evt.key==='ArrowRight'){evt.preventDefault();stop();stepTo(current+1);}else if(evt.key===' '){evt.preventDefault();$('play').click();}else if(evt.key.toLowerCase()==='u'&&!evt.ctrlKey&&!evt.metaKey){$('csvFile').click();}
 });
 $('languageSelect').addEventListener('change',e=>setLanguage(e.target.value));
+// Narrow surface for static/live_controller.js. Live candles enter ONLY via
+// appendClosed (one CLOSED candle at a time, exact next index). Cached analyses
+// of earlier prefixes are kept untouched: a new candle never changes the past.
+window.MSASStudio={
+ load(payload){loadDataset(payload);},
+ isLive(){return liveMode;},
+ datasetId(){return datasetId;},
+ t, lang:()=>lang, setError, popupNotice, serverError:err=>I.serverError(err,lang),
+ appendClosed(c){
+  if(!liveMode)return 'ignored';
+  if(c.index<candles.length)return 'duplicate';
+  if(c.index>candles.length)return 'resync';
+  for(const k of ['open','high','low','close'])if(!Number.isFinite(c[k]))return 'resync';
+  const follow=current===candles.length-1;
+  candles.push(c);
+  if(livePartial&&livePartial.time<=c.time)livePartial=null;
+  datasetDetails.meta.rows=candles.length;datasetDetails.meta.last_time=c.time;
+  $('scrubber').max=String(candles.length-1);$('lastTime').textContent=time(c.time);
+  if(follow)stepTo(candles.length-1,{animate:true,flash:true});else{updateTop();schedule();}
+  return 'ok';
+ },
+ correct(c){
+  if(!liveMode||c.index>=candles.length)return 'resync';
+  candles[c.index]=c;
+  for(const k of [...cache.keys()])if(k>=c.index)cache.delete(k);
+  analysis=getAnalysis(current);updateTop();updateFeed(false);schedule();
+  return 'ok';
+ },
+ setPartial(c){if(!liveMode)return;livePartial=c;schedule();}
+};
 refreshStaticLocale();
 (async()=>{
- try{await syncDatasetList('btcusd-sample');await switchDataset('btcusd-sample',15);}catch(err){setError(t('serverUnavailable',{message:I.serverError(err,lang)}));}
+ // Real-time server: open the first configured live series. Otherwise (offline
+ // HTML, realtime=false, or live failure) the bundled sample replay is shown.
+ let liveKey=null;try{liveKey=await window.MSASLive?.ready;}catch(_){liveKey=null;}
+ try{
+  await syncDatasetList(liveKey?'live:'+liveKey:'btcusd-sample');
+  if(liveKey){await switchDataset('live:'+liveKey);if(liveMode)return;}
+  await switchDataset('btcusd-sample',15);
+ }catch(err){setError(t('serverUnavailable',{message:I.serverError(err,lang)}));}
 })();
 })();
 
