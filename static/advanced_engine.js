@@ -178,8 +178,9 @@ function scanReversalSignals(s,at,bar,previousMajor){
  if(threshold&&Number.isFinite(isDown?bar.high:bar.low)){
   // C: only wick crosses the Major boundary; the body stays inside it.
   const wickBreak=isDown?bar.high>threshold.price+MSS_TOLERANCE:bar.low<threshold.price-MSS_TOLERANCE;
-  const bodyInside=isDown?bar.open<=threshold.price && bar.close<threshold.price:
-                           bar.open>=threshold.price && bar.close>threshold.price;
+  // Close exactly ON the level did not cross it (S+ is strict) -> still C.
+  const bodyInside=isDown?bar.open<=threshold.price && bar.close<=threshold.price:
+                           bar.open>=threshold.price && bar.close>=threshold.price;
   const weak=wickBreak&&bodyInside;
   const key=trend+':'+threshold.id;
   if(weak&&s.mss.weakAttempt!==key){
@@ -214,6 +215,40 @@ function scanReversalSignals(s,at,bar,previousMajor){
                 referenceStartIndex:ref.startIndex,majorDirectionUnchanged:true};
  }
 }
+/** S+ : strict Close beyond the ACTIVE opposing Major (tolerance 0).
+ * Main UP and Close < Major Low -> DOWN (retain MH, ML pending); symmetric.
+ * Returns true when Main was reversed on this candle.
+ */
+function strictReversal(s,at,close){
+ const external=s.external,h=external.majorHigh,l=external.majorLow;
+ if(external.trend==='up'&&l&&close<l.price-MSS_TOLERANCE){
+  const oldLow=l;
+  changeRole(s,at,l,'major_low','broken_major_low','external_reversal');
+  external.trend='down';external.phase='awaiting_major_low';external.majorLow=null;
+  external.breakAt=at;external.breakLevel=oldLow.price;
+  s.segmentStart=at;clearInternal(s);
+  log(s,at,'major_reversal','external','Cấu trúc chính đảo chiều TĂNG → GIẢM',
+      `Giá đóng ${close} thấp hơn Major Low ${oldLow.price}; giữ Major High ${h?.price??'chưa có'}, Major Low mới chờ xác nhận.`,
+      [h?.id,oldLow.id].filter(Boolean),'ADV:S3,S7,S13-14;REV:S3,S8','error',
+      {label:'S+',direction:'down',close,brokenLevel:oldLow.price,retainedLevel:h?.price??null,
+       majorPivotId:oldLow.id,confirmed:true,tolerance:MSS_TOLERANCE});
+  return true;
+ }
+ if(external.trend==='down'&&h&&close>h.price+MSS_TOLERANCE){
+  const oldHigh=h;
+  changeRole(s,at,h,'major_high','broken_major_high','external_reversal');
+  external.trend='up';external.phase='awaiting_major_high';external.majorHigh=null;
+  external.breakAt=at;external.breakLevel=oldHigh.price;
+  s.segmentStart=at;clearInternal(s);
+  log(s,at,'major_reversal','external','Cấu trúc chính đảo chiều GIẢM → TĂNG',
+      `Giá đóng ${close} cao hơn Major High ${oldHigh.price}; giữ Major Low ${l?.price??'chưa có'}, Major High mới chờ xác nhận.`,
+      [oldHigh.id,l?.id].filter(Boolean),'ADV:S3,S7,S14;REV:S3,S8','success',
+      {label:'S+',direction:'up',close,brokenLevel:oldHigh.price,retainedLevel:l?.price??null,
+       majorPivotId:oldHigh.id,confirmed:true,tolerance:MSS_TOLERANCE});
+  return true;
+ }
+ return false;
+}
 function cross(prev,now,threshold,direction){
  if(threshold===null||threshold===undefined)return false;
  return direction==='up'?(now>threshold&&(prev===null||prev<=threshold)):(now<threshold&&(prev===null||prev>=threshold));
@@ -227,35 +262,25 @@ function advance(s,at,candleOrClose,newlyConfirmed=[],supersededIds=[]){
  const bar={open:Number.isFinite(raw.open)?raw.open:null,
             high:Number.isFinite(raw.high)?raw.high:null,
             low:Number.isFinite(raw.low)?raw.low:null,close};
- s.closed.push(bar);
  if(at!==s.at+1)throw Error('Phải xử lý từng nến đã đóng theo thứ tự, không bỏ qua hoặc quay ngược.');
+ // Validate every input BEFORE any state mutation (state stays reusable on error).
+ const superseded=new Set(supersededIds);
+ for(const id of superseded)if(!s.history.some(x=>x.id===id))throw Error(`Swing ${id} bị thay thế nhưng chưa từng được chấp nhận.`);
+ const seen=new Set();
+ for(const p of newlyConfirmed){
+  if(p.structConfirmedAt!==at)throw Error(`Swing ${p.id} được cung cấp sai thời điểm xác nhận.`);
+  if(p.index>=at)throw Error('Swing chỉ hợp lệ khi nến phía sau đã đóng.');
+  if(!['SH','SL'].includes(p.type)||!Number.isFinite(p.price))throw Error('Swing không hợp lệ.');
+  if(seen.has(p.id)||(s.history.some(x=>x.id===p.id)&&!superseded.has(p.id)))throw Error('Pivot ID đã tồn tại.');
+  seen.add(p.id);
+ }
+ s.closed.push(bar);
  const prev=s.previousClose,external=s.external,internal=s.internal;
  const majorBefore={trend:external.trend,majorHigh:external.majorHigh,majorLow:external.majorLow};
  // Price breaches are evaluated against levels known BEFORE the current candle closed.
  if(external.trend!=='unknown'){
   const h=external.majorHigh,l=external.majorLow;
-  if(external.trend==='up'&&l&&close<l.price-MSS_TOLERANCE){
-   const oldLow=l;
-   changeRole(s,at,l,'major_low','broken_major_low','external_reversal');
-   external.trend='down';external.phase='awaiting_major_low';external.majorLow=null;
-   external.breakAt=at;external.breakLevel=oldLow.price;
-   s.segmentStart=at;clearInternal(s);
-   log(s,at,'major_reversal','external','Cấu trúc chính đảo chiều TĂNG → GIẢM',
-       `Giá đóng ${close} thấp hơn Major Low ${oldLow.price}; giữ Major High ${h?.price??'chưa có'}, Major Low mới chờ xác nhận.`,
-       [h?.id,oldLow.id].filter(Boolean),'ADV:S3,S7,S13-14;REV:S3,S8','error',
-       {label:'S+',direction:'down',close,brokenLevel:oldLow.price,retainedLevel:h?.price??null,
-        majorPivotId:oldLow.id,confirmed:true,tolerance:MSS_TOLERANCE});
-  }else if(external.trend==='down'&&h&&close>h.price+MSS_TOLERANCE){
-   const oldHigh=h;
-   changeRole(s,at,h,'major_high','broken_major_high','external_reversal');
-   external.trend='up';external.phase='awaiting_major_high';external.majorHigh=null;
-   external.breakAt=at;external.breakLevel=oldHigh.price;
-   s.segmentStart=at;clearInternal(s);
-   log(s,at,'major_reversal','external','Cấu trúc chính đảo chiều GIẢM → TĂNG',
-       `Giá đóng ${close} cao hơn Major High ${oldHigh.price}; giữ Major Low ${l?.price??'chưa có'}, Major High mới chờ xác nhận.`,
-       [oldHigh.id,l?.id].filter(Boolean),'ADV:S3,S7,S14;REV:S3,S8','success',
-       {label:'S+',direction:'up',close,brokenLevel:oldHigh.price,retainedLevel:l?.price??null,
-        majorPivotId:oldHigh.id,confirmed:true,tolerance:MSS_TOLERANCE});
+  if(strictReversal(s,at,close)){
   }else if(external.phase==='confirmed'&&h&&l){
    if(external.trend==='up'&&cross(prev,close,h.price,'up')){
     external.phase='awaiting_major_high';external.breakAt=at;external.breakLevel=h.price;
@@ -286,6 +311,8 @@ function advance(s,at,candleOrClose,newlyConfirmed=[],supersededIds=[]){
  }
  // A confirmed S+ takes priority over weak C / early B on this same candle.
  // C and B never switch external.trend and never create Major pivots.
+ const signalSnapshot={events:s.events.length,lastWeak:s.mss.lastWeak,weakAttempt:s.mss.weakAttempt,
+   cisdLast:s.cisd.last,cisdRef:s.cisd.reference,cisdEmitted:s.cisd.emitted.length};
  if(majorBefore.trend!=='unknown'&&external.trend!==majorBefore.trend){
   const ev=s.events.find(e=>e.at===at&&e.kind==='major_reversal');
   s.mss.last={at,label:'S+',direction:external.trend,eventId:ev?.id??null,
@@ -296,19 +323,10 @@ function advance(s,at,candleOrClose,newlyConfirmed=[],supersededIds=[]){
  }
  // Same-leg replacements known at THIS candle (engine.js alternation): the
  // superseded pivot leaves the ledger now, never retroactively.
- const superseded=new Set(supersededIds);
- for(const id of superseded){
-  const i=s.history.findIndex(x=>x.id===id);
-  if(i<0)throw Error(`Swing ${id} bị thay thế nhưng chưa từng được chấp nhận.`);
-  s.history.splice(i,1);
- }
+ for(const id of superseded)s.history.splice(s.history.findIndex(x=>x.id===id),1);
  // Only pivots which are structurally confirmed by THIS closed candle may enter the ledger.
  const added=[];
  for(const p of newlyConfirmed){
-  if(p.structConfirmedAt!==at)throw Error(`Swing ${p.id} được cung cấp sai thời điểm xác nhận.`);
-  if(p.index>=at)throw Error('Swing chỉ hợp lệ khi nến phía sau đã đóng.');
-  if(!['SH','SL'].includes(p.type)||!Number.isFinite(p.price))throw Error('Swing không hợp lệ.');
-  if(s.history.some(x=>x.id===p.id))throw Error('Pivot ID đã tồn tại.');
   const q={id:p.id,index:p.index,type:p.type,price:p.price,structConfirmedAt:at};
   s.history.push(q);added.push(q);
  }
@@ -327,6 +345,19 @@ function advance(s,at,candleOrClose,newlyConfirmed=[],supersededIds=[]){
   changeRole(s,at,m,key==='majorHigh'?'major_high':'major_low','historical_major','same_leg_replaced');
   changeRole(s,at,r,'confirmed_swing',key==='majorHigh'?'major_high':'major_low','same_leg_replaced');
   external[key]=level(r);
+ }
+ // The Close of THIS candle must also respect a Major pair that became
+ // active on this candle (initialization or immediate roll). If it is
+ // already strictly beyond the opposing side, S+ fires now; same-candle
+ // C/B labels are withdrawn because S+ takes priority.
+ const reversedEarlier=majorBefore.trend!=='unknown'&&majorBefore.trend!==external.trend;
+ if(!reversedEarlier&&strictReversal(s,at,close)){
+  const ev=s.events.at(-1);
+  s.events=s.events.filter((e,i)=>i<signalSnapshot.events||!(e.at===at&&(e.kind==='cisd'||e.kind==='mss_weak')));
+  s.mss.lastWeak=signalSnapshot.lastWeak;s.mss.weakAttempt=null;
+  s.cisd.last=signalSnapshot.cisdLast;s.cisd.reference=null;s.cisd.emitted.length=signalSnapshot.cisdEmitted;
+  s.mss.last={at,label:'S+',direction:external.trend,eventId:ev.id,brokenLevel:ev.data.brokenLevel};
+  for(const q of added)rollMajorOnSwing(s,at,q);
  }
  if(external.phase==='confirmed')refreshInternal(s,at);
  s.at=at;s.previousClose=close;
@@ -372,7 +403,13 @@ function analyzeAdvancedPrefix(candles,upto,base){
  }
  // `accepted` is the causal log (incl. later-superseded pivots with their
  // supersededAt); `confirmed` alone would rewrite history at earlier prefixes.
- return analysisFromAccepted(candles,base.accepted||base.confirmed,end);
+ if(!Array.isArray(base.accepted)){
+  const L=(typeof require==='function' ? require('./engine.js') :
+    (typeof globalThis!=='undefined'?globalThis.MarketStructureEngine:null));
+  if(!L)throw Error('Thiếu nhật ký Swing nhân quả (accepted).');
+  base=L.analyzePrefix(candles,end);
+ }
+ return analysisFromAccepted(candles,base.accepted,end);
 }
 return {makeState,advance,analysisFromAccepted,analyzeAdvancedPrefix,pairTrend,lastOldDirectionCluster,MSS_TOLERANCE};
 });
