@@ -1,3 +1,28 @@
+# MSAS V5.5 — Real-time swing confirmation and immediate Major update (user rules 2026-11-21)
+
+These rules supersede the V5.4 selection policy below where they conflict. They come from the user's explicit instruction of 2026-11-21 (real-time feed, closed candles only), not from a new slide.
+
+1. **No lookahead, streaming.** Every decision is taken on the candle that closes it. Analysing a prefix equals analysing the truncated series; earlier prefixes never change (`tests/test_major_rolling_reversal.js`, `test_mss_cisd.js`, stress QA no-lookahead).
+2. **ISB breakout before a swing is valid** (`static/engine.js`). If the candle after the center is an Inside Bar of the center (the center is the mother), nothing is known until a later candle breaks the mother range. SH is valid only if that breakout candle's High is below the SH (it broke the low side); otherwise the candidate is `isb_rejected`. SL symmetric. If the left neighbour is an inside child, the comparison uses its mother's range. The swing event time is the breakout candle.
+3. **Causal SH/SL alternation.** A same-type swing with no opposite swing in between is `ignored` if it is not more extreme (e.g. a lower SH in a falling leg with no SL yet), or supersedes the previous one **at its own confirmation candle** (`supersededAt`). `analyzePrefix().accepted` is the causal log consumed by `advanced_engine.js`; `confirmed` is the current path only.
+4. **Immediate Major update** (`rollMajorOnSwing`). Main UP: a confirmed SH strictly above the active MH (or above the broken level while MH is pending after S+) becomes MH on that candle, and ML moves to the latest accepted SL preceding it. Main DOWN symmetric. A Close beyond MH is no longer required for this roll; a corrective swing after the new edge is no longer awaited (V5.4 XAU48 policy retired). If the active MH/ML is superseded by a more extreme same-leg pivot, the role follows the replacement.
+5. Unchanged: S+ is a strict Close beyond the active opposing Major (tol 0); C (wick) and B (CISD) never flip Main.
+
+## V5.5 regression values (engine outputs, replacing the V5.4 table where different)
+
+| Case | Index (UTC) | Main | MH | ML | Why |
+|---|---:|---|---|---|---|
+| XAU40 | 18 (19:30) | DOWN | SH-14 4001.5 | SL-17 3991.1 | SL-17 confirmed at 18 → immediate roll (V5.4: index 19) |
+| XAU40 | 23 (20:45) | DOWN | SH-18 3996.5 | SL-21 3991.0 | SL-21 < ML 3991.1; right candle 22 is inside, known when 23 breaks it |
+| XAU40 screenshot | 24 (21:00) | DOWN | SH-18 3996.5 | SL-21 3991.0 | **differs from the V5.4 pinned 4001.5 / 3991.1 — needs user confirmation** |
+| XAU40 | 36 (00:45) | — | — | — | SH-34 rejected: inside bar 35 broken upward |
+| XAU48 | 35 (14:45) | UP | SH-34 3396.648 | SL-31 3384.648 | SH-34 above MH → ML = preceding SL |
+| XAU48 | 37 (15:15) | DOWN (S+) | SH-34 3396.648 | pending | Close 3382.348 < ML 3384.648 |
+| XAU48 final | 47 | DOWN | SH-34 3396.648 | SL-37 3373.545 | user-annotated MH/ML values preserved; Main is DOWN (V5.4 said UP) |
+
+
+---
+
 # MSAS V5.4 — Closed-price Major rolling and structure checkpoints
 
 **Sources:** `Cau_truc_nang_cao_-_Final.pptx`, slides 5–7, 11, 13–14; `Mau_hinh_xac_nhan_ao_chieu_-_Final (1).pptx`, slides 2–4 and 8. The source PPTs are user-provided but are not published in this public repository. **Scope:** replay and pattern classification; NOT an entry/exit signal.

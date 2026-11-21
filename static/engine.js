@@ -50,71 +50,110 @@
       }
     }
 
+    // Swing confirmation (closed candles only, user rule 2026-11-21):
+    // a candidate center is valid only after the market has BROKEN OUT of the
+    // Inside-Bar range. Inside children are collapsed into their mother:
+    //  - left reference  = previous candle, or its mother if it is an inside child
+    //  - right reference = next candle, or, if the next candle is inside the
+    //    center (the center is a mother), the first candle that breaks out.
+    // SH needs center.high > both references; SL needs center.low < both.
+    // The event time is the right reference candle; while every candle after the
+    // center is still inside it, nothing is known and nothing is emitted.
     const swings=[];
+    const motherOf=j=>insideByIndex[j]!==null?c[zones[insideByIndex[j]].mother]:c[j];
     for(let i=1;i<n-1;i++){
-      const a=c[i-1],b=c[i],z=c[i+1];
-      const isHigh=b.high>a.high && b.high>z.high;
-      const isLow=b.low<a.low && b.low<z.low;
-      if(!isHigh&&!isLow) continue;
-      const ambiguous=isHigh && isLow;
+      const b=c[i],raw=c[i-1],rawRight=c[i+1];
+      const zIndex=insideByIndex[i];
+      if(zIndex!==null){
+        // Inside child: rejected (A6). Keep the audit record for raw 3-bar turns.
+        const rawHigh=b.high>raw.high&&b.high>rawRight.high,rawLow=b.low<raw.low&&b.low<rawRight.low;
+        for(const type of ['SH','SL']){
+          if((type==='SH'&&!rawHigh)||(type==='SL'&&!rawLow))continue;
+          const value=type==='SH'?b.high:b.low,mother=c[zones[zIndex].mother];
+          swings.push({id:type+'-'+i,index:i,confirmedAt:i+1,type,price:value,status:'inside_rejected',
+            structStatus:'rejected',structConfirmedAt:null,supersededAt:null,comp:'',zoneId:zIndex});
+          emit(i+1,'swing',(type==='SH'?'Swing High':'Swing Low')+' cục bộ · '+hhmm(b.time),
+            'Giá '+value.toFixed(2)+'. VÔ HIỆU: điểm nằm trong biên nến mẹ '+hhmm(mother.time)+'.','error',i,
+            {type,pivotTime:hhmm(b.time),confirmationTime:hhmm(rawRight.time),price:value,status:'inside_rejected',motherTime:hhmm(mother.time)});
+        }
+        continue;
+      }
+      const left=motherOf(i-1);
+      const leftHigh=b.high>left.high,leftLow=b.low<left.low;
+      if(!leftHigh&&!leftLow)continue;
+      let r=i+1;
+      const childZone=insideByIndex[i+1];
+      if(childZone!==null&&zones[childZone].mother===i)r=zones[childZone].brokenAt;
+      if(r===null||r===undefined)continue; // ISB not broken yet: unknown, never shown early
+      const right=c[r],viaIsb=r!==i+1;
       for(const type of ['SH','SL']){
-        if((type==='SH'&&!isHigh)||(type==='SL'&&!isLow)) continue;
+        if((type==='SH'&&!leftHigh)||(type==='SL'&&!leftLow))continue;
         const value=type==='SH'?b.high:b.low;
-        const zIndex=insideByIndex[i];
-        const status=ambiguous?'ambiguous':zIndex!==null?'inside_rejected':'eligible';
-        const swing={id:type+'-'+i,index:i,confirmedAt:i+1,type,price:value,status,
-          structStatus:status==='eligible'?'pending':'rejected',structConfirmedAt:null,comp:'',
-          zoneId:zIndex};
-        swings.push(swing);
-        emit(i+1,'swing',(type==='SH'?'Swing High':'Swing Low')+' cục bộ · '+hhmm(b.time),
-          'Giá '+value.toFixed(2)+'; xác nhận khi nến '+hhmm(z.time)+' đóng. '+
-          (ambiguous?'Cùng nến hình thành SH và SL: OHLC không biết thứ tự biến động, loại khỏi cấu trúc.':
-           zIndex!==null?'VÔ HIỆU: điểm nằm trong biên nến mẹ '+hhmm(c[zones[zIndex].mother].time)+'.':
-           'Qua bộ lọc Inside Bar; chờ kiểm tra đỉnh–đáy luân phiên.'),
-          ambiguous?'neutral':zIndex!==null?'error':'info',i,{type,pivotTime:hhmm(b.time),confirmationTime:hhmm(z.time),price:value,status,motherTime:zIndex!==null?hhmm(c[zones[zIndex].mother].time):null});
+        const ok=type==='SH'?b.high>right.high:b.low<right.low;
+        if(!ok&&!viaIsb)continue; // ordinary non-turn, not a candidate
+        const status=ok?'eligible':'isb_rejected';
+        swings.push({id:type+'-'+i,index:i,confirmedAt:r,type,price:value,status,
+          structStatus:ok?'pending':'rejected',structConfirmedAt:null,supersededAt:null,comp:'',zoneId:null,
+          isbBreakAt:viaIsb?r:null});
+        emit(r,'swing',(type==='SH'?'Swing High':'Swing Low')+' cục bộ · '+hhmm(b.time),
+          'Giá '+value.toFixed(2)+'; '+(viaIsb?'nến '+hhmm(right.time)+' phá biên Inside Bar của nến mẹ '+hhmm(b.time)+'. ':'xác nhận khi nến '+hhmm(right.time)+' đóng. ')+
+          (ok?'Qua bộ lọc Inside Bar; kiểm tra đỉnh–đáy luân phiên.':'VÔ HIỆU: nến phá biên vượt qua cực trị này.'),
+          ok?'info':'error',i,{type,pivotTime:hhmm(b.time),confirmationTime:hhmm(right.time),price:value,status,isbBreakTime:viaIsb?hhmm(right.time):null});
       }
     }
 
-    // A strictly eligible three-CLOSED-bar swing is known at its right bar.
-    // Opposing pivots are NOT a prerequisite. The alternating path is a
-    // separate display/structural pairing view and must not delay detection.
-    // Same-kind replacements are recorded when later closed bars arrive;
-    // previously emitted pivots retain their historical confirmation time.
-    const eligible=swings.filter(p=>p.status==='eligible').sort((x,y)=>x.index-y.index);
-    for(const p of eligible){p.structStatus='confirmed';p.structConfirmedAt=p.confirmedAt;}
-    const path=[];
+    // Causal alternation (B2/B3): SH and SL must alternate. Processed in
+    // confirmation order, exactly as a live feed would deliver them:
+    //  - opposite type      -> accepted at its own confirmation candle;
+    //  - same type, more extreme -> the previous one is superseded AT THIS
+    //    candle (supersededAt), the new one is accepted;
+    //  - same type, not more extreme -> ignored, never shown as structure
+    //    (e.g. a lower SH in a falling leg with no SL in between).
+    // Earlier prefixes are never rewritten: `accepted` keeps superseded pivots
+    // with their supersededAt so downstream replay can be reproduced causally.
+    const eligible=swings.filter(p=>p.status==='eligible').sort((x,y)=>x.confirmedAt-y.confirmedAt||x.index-y.index);
+    const path=[],accepted=[];
     for(const p of eligible){
       const previous=path[path.length-1];
       if(previous&&previous.type===p.type){
         const moreExtreme=p.type==='SH'?p.price>previous.price:p.price<previous.price;
-        if(moreExtreme)path[path.length-1]=p;
-      }else path.push(p);
-    }
-    const confirmed=path;
-    let priorHigh=null,priorLow=null;
-    for(const p of confirmed){
-      if(p.type==='SH'){
-        p.comp=priorHigh?(p.price>priorHigh.price?'HH':p.price<priorHigh.price?'LH':'EQH'):'SH';
-        priorHigh=p;
+        if(!moreExtreme){
+          p.structStatus='ignored';
+          emit(p.confirmedAt,'replace','Không dùng '+p.type+' trùng loại',
+            'Chưa có '+(p.type==='SH'?'Swing Low':'Swing High')+' hợp lệ kể từ '+p.type+' '+hhmm(c[previous.index].time)+' ('+previous.price.toFixed(2)+'); '+p.type+' '+hhmm(c[p.index].time)+' không phải đỉnh/đáy cấu trúc.',
+            'warning',p.index,{type:p.type,action:'ignore',previousTime:hhmm(c[previous.index].time),newTime:hhmm(c[p.index].time)});
+          continue;
+        }
+        previous.structStatus='superseded';previous.supersededAt=p.confirmedAt;
+        p.structStatus='confirmed';p.structConfirmedAt=p.confirmedAt;
+        path[path.length-1]=p;accepted.push(p);
+        emit(p.confirmedAt,'replace','Dời '+p.type+' sang mốc mới',
+          'Mốc '+hhmm(c[previous.index].time)+' được thay bằng '+hhmm(c[p.index].time)+' do cực trị '+(p.type==='SH'?'cao hơn':'thấp hơn')+' trước khi có swing đối ứng hợp lệ.',
+          'warning',p.index,{type:p.type,action:'replace',previousTime:hhmm(c[previous.index].time),newTime:hhmm(c[p.index].time)});
       }else{
-        p.comp=priorLow?(p.price>priorLow.price?'HL':p.price<priorLow.price?'LL':'EQL'):'SL';
-        priorLow=p;
+        p.structStatus='confirmed';p.structConfirmedAt=p.confirmedAt;
+        path.push(p);accepted.push(p);
+        if(previous)emit(p.confirmedAt,'pair','Luân phiên '+previous.type+' → '+p.type,
+          p.type+' '+hhmm(c[p.index].time)+' xác nhận sau '+previous.type+' '+hhmm(c[previous.index].time)+'.','success',p.index,
+          {previousType:previous.type,previousTime:hhmm(c[previous.index].time),oppositeType:p.type,oppositeTime:hhmm(c[p.index].time)});
       }
     }
-    // Explanatory notifications for classification and causal trend changes.
-    for(let i=0;i<confirmed.length;i++){
-      const p=confirmed[i];
-      const prior=confirmed.slice(0,i).reverse().find(x=>x.type===p.type);
+    const confirmed=path;
+    // Classification and trend are replayed in acceptance order over the
+    // running path, so a later replacement never rewrites an earlier message.
+    const running=[];let previousTrend='unknown';
+    for(const p of accepted){
+      const last=running[running.length-1];
+      if(last&&last.type===p.type)running[running.length-1]=p;else running.push(p);
+      const prior=running.slice(0,-1).reverse().find(x=>x.type===p.type);
+      p.comp=!prior?p.type:p.type==='SH'?(p.price>prior.price?'HH':p.price<prior.price?'LH':'EQH'):
+        (p.price>prior.price?'HL':p.price<prior.price?'LL':'EQL');
       if(prior){
         const short=p.comp,kind=(short==='HH'||short==='HL')?'success':(short==='LH'||short==='LL')?'warning':'neutral';
         emit(p.structConfirmedAt,'classification','Nhận diện '+short+' · '+hhmm(c[p.index].time),
           p.type+' '+p.price.toFixed(2)+' so với '+prior.price.toFixed(2)+' tại '+hhmm(c[prior.index].time)+'.',kind,p.index,{type:p.type,classification:short,pivotTime:hhmm(c[p.index].time),price:p.price,previousPrice:prior.price,previousTime:hhmm(c[prior.index].time)});
       }
-    }
-    let previousTrend='unknown',checked=[];
-    for(const p of confirmed){
-      checked.push(p);
-      const vH=checked.filter(x=>x.type==='SH'),vL=checked.filter(x=>x.type==='SL');
+      const vH=running.filter(x=>x.type==='SH'),vL=running.filter(x=>x.type==='SL');
       const curH=vH.at(-1)?.comp,curL=vL.at(-1)?.comp;
       const next=vH.length>=2&&vL.length>=2 ?
           (curH==='HH'&&curL==='HL'?'up':curH==='LH'&&curL==='LL'?'down':'unknown') : 'unknown';
@@ -141,10 +180,10 @@
     events.sort((a,b)=>a.at-b.at||['breakout','inside','swing','replace','pair','start'].indexOf(a.kind)-['breakout','inside','swing','replace','pair','start'].indexOf(b.kind));
     const summary={raw:swings.length,insideRejected:swings.filter(s=>s.status==='inside_rejected').length,
       ambiguous:swings.filter(s=>s.status==='ambiguous').length,
-      superseded:swings.filter(s=>s.structStatus==='superseded').length,
+      superseded:swings.filter(s=>s.structStatus==='superseded').length,ignored:swings.filter(s=>s.structStatus==='ignored').length,isbRejected:swings.filter(s=>s.status==='isb_rejected').length,
       confirmed:confirmed.length,pending:swings.filter(s=>s.structStatus==='pending').length,
       insideCandles:insideByIndex.filter(x=>x!==null).length};
-    return {candles:c,zones,insideByIndex,swings,path,confirmed,events,trend,reason,summary,lastH,lastL,end};
+    return {candles:c,zones,insideByIndex,swings,path,confirmed,accepted,events,trend,reason,summary,lastH,lastL,end};
   }
 
   return {analyzePrefix};

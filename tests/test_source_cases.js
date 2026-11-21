@@ -34,7 +34,8 @@ assert(invalid&&invalid.confirmedAt===21&&invalid.status==='inside_rejected');
 assert(after.zones.some(z=>z.mother===18&&z.brokenAt===21&&z.breakDirection==='tr\u00ean'));
 const end=analyzePrefix(data);
 assert(end.swings.find(x=>x.index===20&&x.type==='SL').status==='inside_rejected');
-assert(end.swings.find(x=>x.index===38&&x.type==='SL').structStatus==='pending');
+// Swings are confirmed at their right candle; no pending state awaiting an opposite swing.
+assert(end.swings.find(x=>x.index===38&&x.type==='SL').structStatus==='confirmed');
 // PPT 1, slides 5/9: do not force up/down without two same-type pairs.
 assert.equal(analyzePrefix(data,0).trend,'unknown');
 assert.equal(analyzePrefix(data,5).trend,'unknown');
@@ -42,7 +43,8 @@ assert.equal(analyzePrefix(data,5).trend,'unknown');
 const consecutive=[candle(0,10,2),candle(1,12,3),candle(2,11,4),candle(3,14,5),candle(4,13,6)];
 const noPair=analyzePrefix(consecutive);
 assert.equal(noPair.summary.confirmed,0);
-assert.equal(noPair.swings.find(x=>x.index===1&&x.type==='SH').structStatus,'superseded');
+// Candle 2 is inside SH-1 and the breakout (candle 3) goes higher -> SH-1 never a top.
+assert.equal(noPair.swings.find(x=>x.index===1&&x.type==='SH').status,'isb_rejected');
 // Chronological causality: prefix recomputation is identical to truncated input.
 for(let t=0;t<data.length;t++){
  const a=analyzePrefix(data,t),b=analyzePrefix(data.slice(0,t+1));

@@ -121,40 +121,34 @@ function initialize(s,at){
      `Major High ${H.price}; Major Low ${L.price}. Xác định từ Swing đã được chấp nhận theo HH+HL / LH+LL.`,
      [H.id,L.id],'ADV:S5,S14','success',{direction:trend,majorHigh:H.price,majorLow:L.price});
 }
-/** Choose the strongest ALREADY CONFIRMED structural extreme of the pending
- * break wave, not the last swing to happen to confirm after a Close breakout.
- * A major role is assigned only at `at`, never at the historical pivot time.
- * Slide 11/13: major expansion 10/9 or 14/13; source does not fully specify
- * competing pivot tie-breaks, so this remains an explicit provisional policy.
+/** Major update on a newly CONFIRMED swing (user rule 2026-11-21; ADV slide 11).
+ * Main UP: an accepted SH strictly above the active Major High (or above the
+ * broken level while the new MH is still unknown after S+) immediately becomes
+ * the Major High, and the Major Low moves to the latest accepted SL preceding
+ * that SH (the low the new leg started from). Main DOWN is symmetric.
+ * Runs at the candle that confirms the swing; never earlier, never later.
  */
-function pendingMajorPair(s,direction){
- const e=s.external,kind=direction==='up'?'SH':'SL';
- if(e.breakAt===null||e.breakLevel===null)return null;
- const anchor=direction==='up'?(e.majorHigh?.index??s.segmentStart-1):(e.majorLow?.index??s.segmentStart-1);
- const eligible=s.history.filter(p=>p.type===kind&&p.index>anchor&&
-  (direction==='up'?p.price>e.breakLevel:p.price<e.breakLevel));
- // An accepted extreme may be known BEFORE the Close crosses the old Major
- // boundary. Prefer the strongest price across the wave, not the latest pivot.
- eligible.sort((a,b)=>direction==='up'?b.price-a.price||a.index-b.index:a.price-b.price||a.index-b.index);
- for(const extreme of eligible){
-  // If the new extreme was already confirmed BEFORE the closing breakout,
-  // the protected counter-extreme can form AFTER it but BEFORE the breakout.
-  // XAU source user annotation: MH SH-34 followed by corrective ML SL-37.
-  // Otherwise use the latest preceding opposite pivot (PPT 14/13 case).
-  const opposites=s.history.filter(p=>p.type!==kind && p.index>anchor);
-  const follow=opposites.filter(p=>p.index>extreme.index && p.index<=e.breakAt);
-  follow.sort((a,b)=>direction==='up'?a.price-b.price||a.index-b.index:b.price-a.price||a.index-b.index);
-  const opposite=follow[0]||earlierOpposite(s.history,extreme);
-  if(opposite){
-   if(direction==='down'&&e.majorHigh&&opposite.price>=e.majorHigh.price){
-    // Higher opposing wick is NOT a new bearish Lower High. The protected
-    // prior Major High stays active until a real lower high is confirmed.
-    return {high:e.majorHigh,low:extreme};
-   }
-   return direction==='up'?{high:extreme,low:opposite}:{high:opposite,low:extreme};
-  }
- }
- return null;
+function rollMajorOnSwing(s,at,p){
+ const e=s.external;
+ if(e.trend!=='up'&&e.trend!=='down')return false;
+ const up=e.trend==='up';
+ if(p.type!==(up?'SH':'SL'))return false;
+ const edge=up?(e.majorHigh?e.majorHigh.price:e.breakLevel):(e.majorLow?e.majorLow.price:e.breakLevel);
+ if(edge===null||edge===undefined)return false;
+ if(!(up?p.price>edge+MSS_TOLERANCE:p.price<edge-MSS_TOLERANCE))return false;
+ const opposite=s.history.filter(q=>q.type!==p.type&&q.index<p.index).at(-1);
+ const keep=up?e.majorLow:e.majorHigh;
+ if(!opposite&&!keep)return false;
+ const high=up?p:(opposite||keep),low=up?(opposite||keep):p;
+ const wasPending=e.phase!=='confirmed';
+ setMajor(s,at,e.trend,high,low,'swing_outside_major');
+ log(s,at,'major_updated','external','Đã cập nhật Major High / Major Low',
+     up?`Swing High ${p.price} đã xác nhận nằm ngoài Major High ${edge}: Major High → ${high.price}; Major Low dời về Swing Low liền trước ${low.price}.`:
+        `Swing Low ${p.price} đã xác nhận nằm ngoài Major Low ${edge}: Major Low → ${low.price}; Major High dời về Swing High liền trước ${high.price}.`,
+     [high.id,low.id],'ADV:S11,S13-14;USER:2026-11-21','success',
+     {direction:e.trend,majorHigh:high.price,majorLow:low.price,majorHighIndex:high.index,majorLowIndex:low.index,
+      previousEdge:edge,afterPending:wasPending,selection:'confirmed_swing_outside_major'});
+ return true;
 }
 /** Most recent candle cluster moving in the OLD main trend, within the latest
  * eligible swing wave. The Open of its FIRST candle is the CISD reference.
@@ -220,65 +214,11 @@ function scanReversalSignals(s,at,bar,previousMajor){
                 referenceStartIndex:ref.startIndex,majorDirectionUnchanged:true};
  }
 }
-/** Refresh a CONFIRMED Major pair from a fully accepted continuation wave.
- *
- * A breakout already observed after an old Major became active counts as
- * price confirmation (even if the boundary was assigned with price already
- * outside it). Promotion still REQUIRES accepted Swing evidence; this is
- * independent from S+ reversal and never invents a pivot at the breakout.
- *
- * REV:S8 + ADV:S7,S11,S14 establish Close and rolling role semantics. Which
- * eligible corrective pivot to pair is not completely defined by the PPT;
- * these deterministic tie-breaks are provisional and regression-tested.
- */
-function rollMajorFromConfirmed(s,at){
- const e=s.external;
- if(e.phase!=='confirmed'||!e.majorHigh||!e.majorLow)return false;
- const up=e.trend==='up',oldEdge=up?e.majorHigh:e.majorLow;
- const from=Math.max(0,s.majorRoleAt+1);
- const priceProved=s.closed.slice(from,at+1).some(b=>
-    up?b.close>oldEdge.price+MSS_TOLERANCE:b.close<oldEdge.price-MSS_TOLERANCE);
- if(!priceProved)return false;
- let high=null,low=null;
- if(up){
-  const highs=s.history.filter(p=>p.type==='SH'&&p.index>e.majorHigh.index&&p.price>e.majorHigh.price&&p.structConfirmedAt>s.majorRoleAt)
-        .sort((a,b)=>b.price-a.price||a.index-b.index);
-  for(const newHigh of highs){
-   // The user-labeled XAU48 main swing includes an accepted corrective SL
-   // AFTER the major high. Never choose the old preceding low while that
-   // corrective pivot is not yet known (it would lock a premature ML).
-   const corrective=s.history.filter(p=>p.type==='SL'&&p.index>newHigh.index&&p.structConfirmedAt>s.majorRoleAt)
-         .sort((a,b)=>a.price-b.price||a.index-b.index)[0];
-   if(corrective){high=newHigh;low=corrective;break;}
-  }
- }else{
-  const lows=s.history.filter(p=>p.type==='SL'&&p.index>e.majorLow.index&&p.price<e.majorLow.price&&p.structConfirmedAt>s.majorRoleAt)
-       .sort((a,b)=>a.price-b.price||a.index-b.index);
-  for(const newLow of lows){
-   // A lower HIGH must precede the fresh LL, otherwise retain the old
-   // protected MH. A wick-only higher SH cannot become a new bearish MH.
-   const highs=s.history.filter(p=>p.type==='SH'&&p.index>e.majorLow.index&&
-       p.index<newLow.index&&p.price<e.majorHigh.price)
-       .sort((a,b)=>b.index-a.index);
-   const newHigh=highs[0];
-   if(newHigh){high=newHigh;low=newLow;break;}
-  }
- }
- if(!high||!low)return false;
- setMajor(s,at,e.trend,high,low,'close_confirmed_rolling_major_provisional');
- log(s,at,'major_updated','external','Cập nhật Major theo sóng đã xác nhận',
-     `Đã xác nhận ${e.trend==='up'?'tiếp diễn tăng':'tiếp diễn giảm'} bằng Close; Major High ${high.price}, Major Low ${low.price}.`,
-     [high.id,low.id],'ADV:S7,S11,S14','success',
-     {direction:e.trend,majorHigh:high.price,majorLow:low.price,
-      majorHighIndex:high.index,majorLowIndex:low.index,
-      selection:'close_confirmed_roll_provisional'});
- return true;
-}
 function cross(prev,now,threshold,direction){
  if(threshold===null||threshold===undefined)return false;
  return direction==='up'?(now>threshold&&(prev===null||prev<=threshold)):(now<threshold&&(prev===null||prev>=threshold));
 }
-function advance(s,at,candleOrClose,newlyConfirmed=[]){
+function advance(s,at,candleOrClose,newlyConfirmed=[],supersededIds=[]){
  // Numeric close-only synthetic fixtures are supported for structural tests.
  // They cannot generate candle-shape (C) or Open/Close (B) labels.
  const raw=typeof candleOrClose==='number'?{close:candleOrClose}:candleOrClose;
@@ -354,39 +294,40 @@ function advance(s,at,candleOrClose,newlyConfirmed=[]){
  }else{
   scanReversalSignals(s,at,bar,majorBefore);
  }
+ // Same-leg replacements known at THIS candle (engine.js alternation): the
+ // superseded pivot leaves the ledger now, never retroactively.
+ const superseded=new Set(supersededIds);
+ for(const id of superseded){
+  const i=s.history.findIndex(x=>x.id===id);
+  if(i<0)throw Error(`Swing ${id} bị thay thế nhưng chưa từng được chấp nhận.`);
+  s.history.splice(i,1);
+ }
  // Only pivots which are structurally confirmed by THIS closed candle may enter the ledger.
+ const added=[];
  for(const p of newlyConfirmed){
   if(p.structConfirmedAt!==at)throw Error(`Swing ${p.id} được cung cấp sai thời điểm xác nhận.`);
   if(p.index>=at)throw Error('Swing chỉ hợp lệ khi nến phía sau đã đóng.');
   if(!['SH','SL'].includes(p.type)||!Number.isFinite(p.price))throw Error('Swing không hợp lệ.');
   if(s.history.some(x=>x.id===p.id))throw Error('Pivot ID đã tồn tại.');
-  s.history.push({id:p.id,index:p.index,type:p.type,price:p.price,structConfirmedAt:at});
+  const q={id:p.id,index:p.index,type:p.type,price:p.price,structConfirmedAt:at};
+  s.history.push(q);added.push(q);
  }
  // Init when the local accepted swing history is sufficient.
  initialize(s,at);
- if(external.phase==='awaiting_major_high'&&external.breakAt!==null){
-  const pair=pendingMajorPair(s,'up');
-  if(pair){
-   setMajor(s,at,'up',pair.high,pair.low,'strongest_confirmed_major_break_wave');
-   log(s,at,'major_updated','external','Đã cập nhật Major High / Major Low',
-       `Major High ${pair.high.price}; Major Low ${pair.low.price}. Cặp đỉnh/đáy mạnh nhất đã xác nhận cho nhịp phá Major; không chọn cực trị chỉ vì xuất hiện gần nhất.`,
-       [pair.high.id,pair.low.id],'ADV:S11,S13-14','success',{direction:'up',majorHigh:pair.high.price,majorLow:pair.low.price,
-        majorHighIndex:pair.high.index,majorLowIndex:pair.low.index,selection:'strongest_confirmed_wave_provisional'});
-  }
- }else if(external.phase==='awaiting_major_low'&&external.breakAt!==null){
-  const pair=pendingMajorPair(s,'down');
-  if(pair){
-   setMajor(s,at,'down',pair.high,pair.low,'strongest_confirmed_major_break_wave');
-   log(s,at,'major_updated','external','Đã cập nhật Major High / Major Low',
-       `Major High ${pair.high.price}; Major Low ${pair.low.price}. Cặp đỉnh/đáy mạnh nhất đã xác nhận cho nhịp phá Major; không chọn cực trị chỉ vì xuất hiện gần nhất.`,
-       [pair.high.id,pair.low.id],'ADV:S11,S13-14','success',{direction:'down',majorHigh:pair.high.price,majorLow:pair.low.price,
-        majorHighIndex:pair.high.index,majorLowIndex:pair.low.index,selection:'strongest_confirmed_wave_provisional'});
-  }
+ // Update Major immediately on each newly confirmed swing outside it.
+ for(const q of added)rollMajorOnSwing(s,at,q);
+ // An active Major pivot replaced by a more extreme pivot of the SAME leg
+ // (and not already rolled above) follows that replacement: it is the same
+ // swing, now known to extend further.
+ for(const key of ['majorHigh','majorLow']){
+  const m=external[key];
+  if(!m||!superseded.has(m.id))continue;
+  const r=added.find(q=>q.type===m.type);
+  if(!r)continue;
+  changeRole(s,at,m,key==='majorHigh'?'major_high':'major_low','historical_major','same_leg_replaced');
+  changeRole(s,at,r,'confirmed_swing',key==='majorHigh'?'major_high':'major_low','same_leg_replaced');
+  external[key]=level(r);
  }
- // Re-evaluate active Major after accepting this candle's newly confirmed
- // Swing(s). This can roll a continuation WITHOUT requiring a second price
- // crossing after a fresh Major assignment (XAU40 at bars 16-25).
- rollMajorFromConfirmed(s,at);
  if(external.phase==='confirmed')refreshInternal(s,at);
  s.at=at;s.previousClose=close;
  if(!VALID_TRENDS.has(external.trend)||!VALID_TRENDS.has(s.internal.trend))throw Error('Xu hướng không hợp lệ.');
@@ -395,21 +336,27 @@ function advance(s,at,candleOrClose,newlyConfirmed=[]){
 function analysisFromAccepted(candles,accepted,upto){
  if(!Array.isArray(candles)||!candles.length)throw Error('Không có nến đã đóng.');
  const end=upto===undefined?candles.length-1:Math.min(candles.length-1,Math.max(0,upto));
- const grouped=new Map();
+ const grouped=new Map(),removed=new Map();
  for(const p of accepted){
   const at=p.structConfirmedAt;
   if(at===null||at===undefined||at>end)continue;
   if(!Number.isInteger(at)||at<=p.index||at<0)throw Error('Thời điểm xác nhận Swing không hợp lệ.');
   if(!grouped.has(at))grouped.set(at,[]);
   grouped.get(at).push(p);
+  const gone=p.supersededAt;
+  if(gone!==null&&gone!==undefined&&gone<=end){
+   if(!Number.isInteger(gone)||gone<=at)throw Error('Thời điểm thay thế Swing không hợp lệ.');
+   if(!removed.has(gone))removed.set(gone,[]);
+   removed.get(gone).push(p.id);
+  }
  }
  const state=makeState();
- for(let t=0;t<=end;t++)advance(state,t,candles[t],grouped.get(t)||[]);
+ for(let t=0;t<=end;t++)advance(state,t,candles[t],grouped.get(t)||[],removed.get(t)||[]);
  return {end,external:state.external,internal:state.internal,
          mss:{tolerance:MSS_TOLERANCE,last:state.mss.last,lastWeak:state.mss.lastWeak},
          cisd:{reference:state.cisd.reference,last:state.cisd.last},
          events:state.events,roleChanges:state.roleChanges,
-         acceptedCount:state.history.length,policy:{source:'ADV PPT S3-S14',majorSelection:'close-confirmed-rolling-pair-and-wave-extreme (provisional)',
+         acceptedCount:state.history.length,policy:{source:'ADV PPT S3-S14',majorSelection:'confirmed swing outside Major -> new edge + preceding opposite swing (user rule 2026-11-21)',
             initialMajor:'latest confirmed trend pair',closeBreak:'strict',tolerance:0,
             mssSource:'REV S3-S4,S8',cisdSource:'REV S5-S8',
             cisdWaveBoundary:'latest eligible opposite pivot (provisional)',noLookahead:true},
@@ -423,7 +370,9 @@ function analyzeAdvancedPrefix(candles,upto,base){
   if(!L)throw Error('Yêu cầu MarketStructureEngine để tính Swing nguồn.');
   base=L.analyzePrefix(candles,end);
  }
- return analysisFromAccepted(candles,base.confirmed,end);
+ // `accepted` is the causal log (incl. later-superseded pivots with their
+ // supersededAt); `confirmed` alone would rewrite history at earlier prefixes.
+ return analysisFromAccepted(candles,base.accepted||base.confirmed,end);
 }
 return {makeState,advance,analysisFromAccepted,analyzeAdvancedPrefix,pairTrend,lastOldDirectionCluster,MSS_TOLERANCE};
 });
